@@ -12,7 +12,7 @@ export async function sendToServer(query) {
       body: todo,
       headers: { 'Content-Type': 'application/json' },
     })).json();
-    console.log("PPPPPPPPPPPPPPPPPP");
+    console.log("REQUEST>>");
     //console.log(response.data.telegram.getMessagesByTags);
     return response.data || response.errors[0].message
   }catch(e){

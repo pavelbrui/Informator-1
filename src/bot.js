@@ -1,6 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { sendToServer } from './utils/bots.js';
-import { Console } from 'console';
 const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
 
 const bot = new TelegramBot(FinderByChats, { polling: true });
@@ -27,7 +26,7 @@ const optionsSearch = {
 }
   const optionsSearch2 ={
     reply_markup:  {
-    keyboard: [[ 'Settings', 'Instruction']],
+    keyboard: [[ 'Settings']],
     resize_keyboard: true,
   }}
 
@@ -155,8 +154,6 @@ bot.on('message', async (msg) => {
     await filters(chat_id, userSettings[chat_id]?.keyWords, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
     await bot.sendMessage(chat_id, "Repeat? You can to change configuration", optionsSearch2 );
     await bot.sendMessage(chat_id, JSON.stringify(userSettings[chat_id]), optionsSearch)
-    // Clear user settings after searching
-   // userSettings[chat_id];
     break;
 
   default:
@@ -165,15 +162,15 @@ bot.on('message', async (msg) => {
     if (msg.reply_to_message){
   if ( msg.reply_to_message.text === infoMess[3])  userSettings[chat_id].limitMessages = msg.text; 
   if ( msg.reply_to_message.text === infoMess[4]){
-    userSettings[chat_id].keyWords = msg.text.split('/').map((w)=>w.split('&'));
-
+    userSettings[chat_id].keyWords = msg.text.split('/').filter((k)=>k !=="").map((w)=>w.split('&'));
     const settings = userSettings[chat_id];
     const searchQuery = JSON.stringify(settings);
     console.log(searchQuery);
     await bot.sendMessage(chat_id, `Searching with settings: ${searchQuery}`);
     await filters(chat_id, userSettings[chat_id]?.keyWords, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
     await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearch2 );
-    await bot.sendMessage(chat_id, JSON.stringify(userSettings[chat_id]), optionsSearch)
+    await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch)
+    break
   }
   if ( msg.reply_to_message.text === infoMess[0]) userSettings[chat_id].chats = msg.text.split(',')
   if ( msg.reply_to_message.text === infoMess[1]) userSettings[chat_id].sities = msg.text.split(',')
