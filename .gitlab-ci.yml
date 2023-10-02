@@ -1,0 +1,66 @@
+stages:
+  - build
+  - deploy images
+  - deploy
+
+build:
+  stage: build
+  image:
+    name: node:18
+    entrypoint: ['']
+  script:
+    - npm install
+    - npm run build
+
+deploy images:
+  variables:
+    REGISTRY: registry.gitlab.aexol.com/aexol/son-api
+    TAG: ${CI_COMMIT_SHORT_SHA}
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH != "master"
+  image: docker:20.10.13
+  stage: deploy images
+  before_script: []
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.aexol.com
+    - docker build -t ${REGISTRY}:${TAG}  .
+    - docker tag ${REGISTRY}:${TAG} ${REGISTRY}:latest
+    - docker push ${REGISTRY}:latest
+    - docker push ${REGISTRY}:${TAG}
+
+.deploy: &deploy
+  stage: deploy
+
+deploy_dev:
+  environment:
+    name: dev
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+  variables:
+    REGISTRY: registry.gitlab.aexol.com/aexol/son-api
+    TAG: ${CI_COMMIT_SHORT_SHA}
+    HOSTNAME: api.dev.sonapi.aexol.work
+  script:
+    - docker-compose -p dev up -d
+  tags:
+    - son-api-dev-deploy
+  <<: *deploy
+
+deploy_prod:
+  environment:
+    name: prod
+  variables:
+    REGISTRY: registry.gitlab.aexol.com/aexol/son-api
+    TAG: ${CI_COMMIT_SHORT_SHA}
+    HOSTNAME: api.sonapi.aexol.work
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+  script:
+    - docker-compose -p prod up -d
+  tags:
+    - son-api-dev-deploy
+  <<: *deploy

@@ -1,0 +1,149 @@
+{
+    "resolvers": {
+        "GmailMutation.signByText": {
+            "resolve": {
+                "name": "lib/GmailMutation/signByText"
+            }
+        },
+        "Query.olx": {
+            "resolve": {
+                "name": "lib/Query/olx"
+            }
+        },
+        "OlxQuery.getCookies": {
+            "resolve": {
+                "name": "lib/OlxQuery/getCookies"
+            }
+        },
+        "OlxMutation.autoResponder": {
+            "resolve": {
+                "name": "lib/OlxMutation/autoResponder"
+            }
+        },
+        "OlxMutation.autoResponderLoop": {
+            "resolve": {
+                "name": "lib/OlxMutation/autoResponderLoop"
+            },
+            "data": {
+                "model": {
+                    "name": "Database model",
+                    "description": "Specify model name",
+                    "value": "AutoResponder",
+                    "required": true
+                }
+            }
+        },
+        "TelegramQuery.getChatContent": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getChatContent"
+            }
+        },
+        "Query.telegram": {
+            "resolve": {
+                "name": "lib\\Query\\telegram"
+            }
+        },
+        "TelegramQuery.getCookies": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getCookies"
+            }
+        },
+        "TelegramQuery.getChats": {
+            "noCode": {
+                "package": "gei-crud",
+                "version": "0.8.7",
+                "resolver": "List objects",
+                "data": {
+                    "model": {
+                        "name": "Database model",
+                        "description": "Specify model name",
+                        "value": "Object",
+                        "required": true
+                    },
+                    "sourceFilterParameters": {
+                        "name": "Get only owned objects by parameters from source",
+                        "description": "Specify parameters that comes as source from previous resolver. Source must be an object, please specify its keys",
+                        "value": []
+                    }
+                }
+            },
+            "resolve": {
+                "name": "gei-crud@Query.objects"
+            },
+            "data": {
+                "model": {
+                    "value": "ChatCollection"
+                }
+            }
+        },
+        "TelegramQuery.getChatMessages": {
+            "noCode": {
+                "package": "gei-crud",
+                "version": "0.8.7",
+                "resolver": "List objects",
+                "data": {
+                    "model": {
+                        "name": "Database model",
+                        "description": "Specify model name",
+                        "value": "Object",
+                        "required": true
+                    },
+                    "sourceFilterParameters": {
+                        "name": "Get only owned objects by parameters from source",
+                        "description": "Specify parameters that comes as source from previous resolver. Source must be an object, please specify its keys",
+                        "value": []
+                    }
+                }
+            },
+            "resolve": {
+                "name": "gei-crud@Query.objects"
+            },
+            "data": {
+                "model": {
+                    "value": "MessageCollection"
+                }
+            }
+        },
+        "TelegramMutation.startBot": {
+            "resolve": {
+                "name": "lib\\TelegramMutation\\startBot"
+            }
+        },
+        "Mutation.telegram": {
+            "resolve": {
+                "name": "lib\\Mutation\\telegram"
+            }
+        },
+        "TelegramMutation.newChats": {
+            "resolve": {
+                "name": "lib\\TelegramMutation\\newChats"
+            }
+        },
+        "TelegramQuery.getChatsMessages": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getChatsMessages"
+            }
+        },
+        "TelegramQuery.getMessagesByTopic": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getMessagesByTopic"
+            }
+        },
+        "TelegramQuery.getMessagesFromManyChats": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getMessagesFromManyChats"
+            }
+        },
+        "TelegramQuery.getMessagesByTags": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getMessagesByTags"
+            }
+        },
+        "TelegramQuery.getMessagesByTagsAndTopic": {
+            "resolve": {
+                "name": "lib\\TelegramQuery\\getMessagesByTagsAndTopic"
+            }
+        }
+    },
+    "requestTimeout": 6000
+}

@@ -1,0 +1,159 @@
+type Mutation{
+	gmail(
+		login: Credentials!
+	): GmailMutation!
+	olx(
+		login: Credentials!
+		loginType: LoginType
+		microsoftMail: String
+		microsoftPassword: String
+	): OlxMutation!
+	telegram: TelegramMutation!
+}
+
+type TelegramMutation{
+	startBot: Boolean!
+	newChats(
+		ids: [String]
+	): Boolean!
+}
+
+type TelegramQuery{
+	getCookies: Boolean!
+	getChats(
+		regName: String
+	): [Chat!]
+	getChatsMessages(
+		input: [GetInfoInput!]!
+	): [Message!]
+	getChatContent(
+		input: GetInfoInput!
+	): [String!]
+	getMessagesFromManyChats(
+		daysAgo: Int
+		keyWords: [[String!]!]
+		keyWordsReg: Boolean
+		chats: [String!]
+		chatsReg: Boolean
+	): [Message!]
+	getMessagesByTags(
+		daysAgo: Int
+		keyWords: [[String!]!]
+		keyWordsReg: Boolean
+		collections: [String!]
+		collectionsReg: Boolean
+		chats: [String!]
+		chatsReg: Boolean
+	): [Message!]
+	getMessagesByTagsAndTopic(
+		daysAgo: Int
+		topic: [String!]!
+		keyWords: [[String!]!]
+		keyWordsReg: Boolean
+		collections: [String!]
+		collectionsReg: Boolean
+		chats: [String!]
+		chatsReg: Boolean
+	): [Message!]
+	getMessagesByTopic(
+		daysAgo: Int
+		topic: [String!]!
+		collections: [String!]
+		collectionsReg: Boolean
+		chats: [String!]
+		chatsReg: Boolean
+	): [Message!]
+}
+
+input GetInfoInput{
+	chat_id: [String]
+	regContentTags: [String]
+	regChatName: String!
+	chatsCount: Int
+	messageCount: Int
+	images: Boolean
+}
+
+type Message{
+	from: String!
+	from_id: String
+	text: String!
+	date: String
+	id: String
+	chat_id: String
+	chat_name: String
+	message_thread_id: String
+	reply_to_message_id: String
+	photo: String
+	type: String
+}
+
+type Chat{
+	type: String
+	id: String
+	name_id: String
+	name: String!
+	updateAt: String
+	messages: [Message!]
+}
+
+type GmailMutation{
+	signByText(
+		text: String
+	): ResponseWithUrls!
+	signLast(
+		autentiLogin: Credentials!
+	): ResponseWithUrls!
+}
+
+type Query{
+	olx(
+		login: Credentials!
+		loginType: LoginType
+	): OlxQuery!
+	telegram: TelegramQuery!
+}
+
+input Credentials{
+	email: String!
+	password: String!
+}
+
+type OlxMutation{
+	autoResponder(
+		responseText: String!
+		timeLimit: Int
+	): [String!]
+	autoResponderLoop(
+		responseText: String!
+		timeLimit: Int
+	): [String!]
+}
+
+type OlxQuery{
+	getCookies: ResponseWithUrls!
+	getApartmens: String
+}
+
+type ResponseWithUrls{
+	responseText: String
+	urls: [String!]
+}
+
+enum LoginType{
+	Login_with_Olx_password
+	Login_with_Google_account
+	Login_with_cookies_instead_password
+}
+
+type CookieObject{
+	content: String
+	owner: String
+	name: String
+	requestedUrl: String
+}
+
+schema{
+	query: Query
+	mutation: Mutation
+}
