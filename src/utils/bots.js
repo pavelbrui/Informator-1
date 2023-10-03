@@ -17,7 +17,7 @@ export async function sendToServer(query) {
     //console.log(response.data.telegram.getMessagesByTags);
     return response.data || response.errors[0].message
   }catch(e){
-    console.log(e.json())
+    console.log(e)
     return e
     }
 }
@@ -48,7 +48,7 @@ export async function filters(bot, chat_id, keyWords, collections, chats, daysAg
   const messages = data?.telegram?.getMessagesByTags
   if (!messages?.length) {
     console.log(data)
-  await bot.sendMessage(chat_id, response);
+  await bot.sendMessage(chat_id, response, optionsSearch2);
   return
  }
   response = messages.slice(0,n || 10).map((m)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString()
@@ -80,7 +80,7 @@ export async function gpt(bot, chat_id, topic, collections, chats, daysAgo,n){
   const data = await sendToServer(getMessagesByTopic)
   if (!data?.telegram?.getMessagesByTopic) {
     console.log(data)
-  await bot.sendMessage(chat_id, response);
+  await bot.sendMessage(chat_id, response, optionsSearch2);
   return
  }
   response = data?.telegram?.getMessagesByTopic[0]?.text || "i don't know!"

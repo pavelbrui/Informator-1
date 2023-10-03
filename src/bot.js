@@ -196,7 +196,7 @@ bot.on('message', async (msg) => {
     console.log(searchQuery);
     await bot.sendMessage(chat_id, `Searching with settings: ${searchQuery}`);
     await gpt(bot, chat_id, userSettings[chat_id]?.topic, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
-    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearchGPT);
+    await bot.sendMessage(chat_id, "You can enter other topic or change settings", optionsSearchGPT);
    // await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch2)
     break
   }
