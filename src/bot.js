@@ -1,10 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { sendToServer } from './utils/bots.js';
+import {filters, gpt } from './utils/bots.js';
 const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
 
 const bot = new TelegramBot(FinderByChats, { polling: true });
 
-let infoMess =[]
+let infoMess = {}
 let userSettings = {};
 
 
@@ -20,8 +20,17 @@ const optionsSearchType = {
 
 const optionsSearch = {
   reply_markup:  {
-    inline_keyboard: [[{text :'Add KeyWords and run', callback_data:'KeyWords'}]],
+    inline_keyboard: [[{text :'Add KeyWords and run🚀', callback_data:'KeyWords'}]],
     resize_keyboard: true,
+    one_time_keyboard: true
+  },
+}
+
+const optionsSearchGPT = {
+  reply_markup:  {
+    inline_keyboard: [[{text :'Enter topic or description and run🚀', callback_data:'Topic'}]],
+    resize_keyboard: true,
+    one_time_keyboard: true
   },
 }
   const optionsSearch2 ={
@@ -32,7 +41,7 @@ const optionsSearch = {
 
 const optionsSearchSettings = {
   reply_markup: {
-    keyboard: [['SearchType', 'LimitReturnedMessages', 'DaysAgo']],
+    keyboard: [['ChatNamesFilter', 'DaysAgo', 'SearchType', 'LimitReturnedMessages']],
     resize_keyboard: true,
   },
 };
@@ -50,6 +59,7 @@ const optionsNumberMessages = {
     force_reply: true, 
     inline_keyboard: [[{text :'3',  callback_data: 'button_3' }, {text :'5',  callback_data: 'button_5' }, {text :'10',  callback_data: 'button_10' }],[{text :'20',  callback_data: 'button_20' }, {text :'Other',  callback_data: 'button_other',  color: 'blue'}]], 
     resize_keyboard: true,
+    one_time_keyboard: true
   },
 };
 
@@ -91,8 +101,8 @@ bot.on('message', async (msg) => {
  switch (content) {
   case '/start':
     await bot.sendMessage(chat_id, ' *Welcome to Messages Search Bot!* 🌟', { parse_mode: 'Markdown' });
-    infoMess[6]='🚀 For starting choose type search:'
-    bot.sendMessage(chat_id, infoMess[6] , optionsSearchType);
+    infoMess.startTypeSearch='🚀 For starting choose type search:'
+    bot.sendMessage(chat_id, infoMess.startTypeSearch , optionsSearchType);
     userSettings[chat_id] = {}
     break;
 
@@ -110,22 +120,28 @@ bot.on('message', async (msg) => {
     break;
 
   case 'SearchType':
-    infoMess[5]='Choose type search:'
-    bot.sendMessage(chat_id, infoMess[5] , optionsSearchType);
+    infoMess.searchType='Choose type search:'
+    bot.sendMessage(chat_id, infoMess.searchType , optionsSearchType);
     break;
 
   case 'DaysAgo':
     console.log(" 'DaysAgo'!!!");
-    infoMess[2] = `Choose max old messages for search:`
-    bot.sendMessage(chat_id, infoMess[2] , optionsInputDaysAgo);
+    infoMess.maxOldMessages = `Choose max old messages for search:`
+    bot.sendMessage(chat_id, infoMess.maxOldMessages , optionsInputDaysAgo);
    break
 
   case 'LimitReturnedMessages':
     console.log("LimitReturnedMessages!!!!");
-    infoMess[3]='Choose max number returned messages:'
-    
-    bot.sendMessage(chat_id, infoMess[3], optionsNumberMessages);
-    break;
+    infoMess.maxReturnMess='Choose max number returned messages for one response:'
+    bot.sendMessage(chat_id, infoMess.maxReturnMess , optionsNumberMessages)
+    break
+
+  case 'ChatNamesFilter':
+      infoMess.chatNames = `Enter ${content} or fragments (separated by '/'):`
+        bot.sendMessage(chat_id, infoMess.chatNames , optionsInputChats);
+     break
+  
+  
 
     case '1 day':
     case '3 days':
@@ -160,22 +176,34 @@ bot.on('message', async (msg) => {
     // Handle other messages if needed
     console.log(msg)
     if (msg.reply_to_message){
-  if ( msg.reply_to_message.text === infoMess[3])  userSettings[chat_id].limitMessages = msg.text; 
-  if ( msg.reply_to_message.text === infoMess[4]){
+  if ( msg.reply_to_message.text === infoMess.maxReturnMess)  userSettings[chat_id].limitMessages = msg.text; 
+  if ( msg.reply_to_message.text === infoMess.writeKeyWords){
     userSettings[chat_id].keyWords = msg.text.split('/').filter((k)=>k !=="").map((w)=>w.split('&'));
     const settings = userSettings[chat_id];
     const searchQuery = JSON.stringify(settings);
     console.log(searchQuery);
     await bot.sendMessage(chat_id, `Searching with settings: ${searchQuery}`);
-    await filters(chat_id, userSettings[chat_id]?.keyWords, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
-    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearch2 );
-    await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch)
+    await filters(bot, chat_id, userSettings[chat_id]?.keyWords, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
+    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearch );
+    //await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch2)
     break
   }
-  if ( msg.reply_to_message.text === infoMess[0]) userSettings[chat_id].chats = msg.text.split(',')
-  if ( msg.reply_to_message.text === infoMess[1]) userSettings[chat_id].sities = msg.text.split(',')
+
+  if ( msg.reply_to_message.text === infoMess.writeTopic){
+    userSettings[chat_id].topic = msg.text.split('/');
+    const settings = userSettings[chat_id];
+    const searchQuery = JSON.stringify(settings);
+    console.log(searchQuery);
+    await bot.sendMessage(chat_id, `Searching with settings: ${searchQuery}`);
+    await gpt(bot, chat_id, userSettings[chat_id]?.topic, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
+    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearch );
+   // await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch2)
+    break
+  }
+  if ( msg.reply_to_message.text === infoMess.chatNames) userSettings[chat_id].chats = msg.text.split('/')
+  if ( msg.reply_to_message.text === infoMess.sities) userSettings[chat_id].sities = msg.text.split('/')
   await bot.sendMessage(chat_id, "Let's go! Add filters:", optionsSearch2 );
-  await bot.sendMessage(chat_id,  JSON.stringify(userSettings[chat_id]).replace('/{}/', '') , optionsSearch);
+ // await bot.sendMessage(chat_id,  JSON.stringify(userSettings[chat_id])?.replace('/{}/', '') , optionsSearch);
   break
     }
   bot.sendMessage(chat_id, ".......")
@@ -192,25 +220,10 @@ bot.on('message', async (msg) => {
     const topic =arr[0] || topicWithColection
     const collection = arr[1]
     const collections = collection?.split(',') || ["wroclaw"]
-    const getMessagesByTopic = `query {
-      telegram {
-          getMessagesByTopic(chats: "${collections}", topic: "${topic}") {
-            chat_name
-            chat_id
-            id
-            reply_to_message_id
-            date
-            from
-            text
-          }
-        }
-    }`
-    const data = await sendToServer(getMessagesByTopic)
-    response = data?.telegram?.getMessagesByTopic[0]?.text || "i don't know!"
-    bot.sendMessage(chat_id, response); 
-   //if(messages?.length>10) bot.sendMessage(chat_id, "Next 10 messages>>")
+    await gpt(chat_id, topic, collections)
+    
 
-} else if(content?.includes('#')&&content.includes('#')){
+} else if(content?.includes('#')){
   const reg = /\#\]\[/g
   const wordsWithColection = content?.replace( '#', "", 1)
   console.log(wordsWithColection);
@@ -221,9 +234,8 @@ bot.on('message', async (msg) => {
   console.log(keyWords);
   const collection = arr[1]
     const collections = collection?.split(',') || ["Bialystok","po"]
-   await filters(keyWords, chat_id, collections)
+   await filters(chat_id, keyWords, collections)
 
-   
 }else{
  console.log(" else block no response")
 }
@@ -253,28 +265,36 @@ bot.on('callback_query', async (callback) => {
 
 
     case 'KeyWords':
-          infoMess[4]= `Enter keywords or fragments (separated by '/', if you want find message include group keyWords use symbol &. For example if you write Warszawa&Bialystok/warshaw&tomorrow, bot find for you messages includes full fragments 'warszawa' and fragment 'Bialystok' + all messages with fragment warszaw and word tomorrow in one text):` 
-            bot.sendMessage(chat_id, infoMess[4] , optionsInputValue);
+          infoMess.writeKeyWords= `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`;
+            bot.sendMessage(chat_id, infoMess.writeKeyWords, optionsInputValue)//, { parse_mode: 'Markdown' });
+         break
+
+    case 'Topic':
+          infoMess.writeTopic= `*Enter only topic or full description for your query*:` ;
+            bot.sendMessage(chat_id, infoMess.writeTopic, optionsInputValue)//, { parse_mode: 'Markdown' });
          break
       
-         case 'ChatNames':
-          infoMess[0] = `Enter ${content} or fragments (separated by '/'):`
-            bot.sendMessage(chat_id, infoMess[0] , optionsInputChats);
-         break
       
-         case 'Sities':
-          infoMess[1] = `Enter ${content}:`
-            bot.sendMessage(chat_id, infoMess[1] , optionsInputSities);
+    
+    case 'Sities':
+          infoMess.sities = `Enter ${content}:`
+            bot.sendMessage(chat_id, infoMess.sities , optionsInputSities);
          break
 
     case 'GPT search':
     case 'Filters + GPT':
+      userSettings[chat_id].searchType = content;
+      userSettings[chat_id].limitMessages = userSettings[chat_id].limitMessages || 5;
+      userSettings[chat_id].daysAgo = userSettings[chat_id].daysAgo || 30;
+     await bot.sendMessage(chat_id, "Let's go! Your settings now:\n " + JSON.stringify(userSettings[chat_id]), optionsSearch2 );
+      bot.sendMessage(chat_id,'You can change the settings or go to enter your topic and run search: ', optionsSearchGPT)
+      break;
     case 'Filters' :
       userSettings[chat_id].searchType = content;
       userSettings[chat_id].limitMessages = userSettings[chat_id].limitMessages || 5;
       userSettings[chat_id].daysAgo = userSettings[chat_id].daysAgo || 30;
-     await bot.sendMessage(chat_id, "Let's go! Your settings now:", optionsSearch2 );
-      bot.sendMessage(chat_id, JSON.stringify(userSettings[chat_id])+'\n You can change settings or go to write your key words for search: ', optionsSearch)
+     await bot.sendMessage(chat_id, "Let's go! Your settings now:\n " + JSON.stringify(userSettings[chat_id]), optionsSearch2 );
+      bot.sendMessage(chat_id,'You can change the settings or go to enter keywords and run search: ', optionsSearch)
       break;
       
       
@@ -292,7 +312,7 @@ bot.on('callback_query', async (callback) => {
 
 
 bot.on('polling_error', (error) => {
-    console.log(`Polling error: ${error}`);
+    console.log(`Polling error: ${error.body}`);
   });
 
 
@@ -306,32 +326,4 @@ bot.on('polling_error', (error) => {
 
 
 
- async function filters(chat_id, keyWords, collections, chats, daysAgo,n ){
-  let response = 'Not found anyone message'
-  //let messages =["Not found anyone message"]
-  const getMessagesByTags = `query {
-	telegram{
-		getMessagesByTags(
-			chats: ${JSON.stringify(chats || ["Белосток"])}
-			keyWords: ${JSON.stringify(keyWords)}
-      collections:${JSON.stringify(collections || ['Bialystok'])}
-      daysAgo: ${daysAgo || 30}
-		){
-      chat_name
-      chat_id
-      id
-      reply_to_message_id
-      date
-      from
-      text
-		}
-	}
-}`
-  const data = await sendToServer(getMessagesByTags) 
-  const messages = data?.telegram?.getMessagesByTags
-  response = messages?.length ? messages.slice(0,n || 10).map((m)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString() : data
-  bot.sendMessage(chat_id,`I found ${messages?.length>1000 ? "more then 1000" : messages?.length} messages!!!`)
-  bot.sendMessage(chat_id, response); 
-   if(messages?.length>10) bot.sendMessage(chat_id, "Next 10 messages>>")
-   
-}
+ 

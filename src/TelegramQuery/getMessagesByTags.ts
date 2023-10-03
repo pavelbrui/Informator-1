@@ -68,7 +68,7 @@ for (const collec of args.collections? args.collections : ["Bialystok", "poz"]) 
         //console.log(result);
         
     }
-    
+    if(messages.length ===0) return []
     console.log(messages?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
     console.log(messages?.length)   
     return messages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text || " ", from: mess.from || mess.from_id }))
