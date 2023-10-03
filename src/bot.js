@@ -33,7 +33,7 @@ const optionsSearchGPT = {
     one_time_keyboard: true
   },
 }
-  const optionsSearch2 ={
+ export const optionsSearch2 ={
     reply_markup:  {
     keyboard: [[ 'Settings']],
     resize_keyboard: true,
@@ -196,14 +196,14 @@ bot.on('message', async (msg) => {
     console.log(searchQuery);
     await bot.sendMessage(chat_id, `Searching with settings: ${searchQuery}`);
     await gpt(bot, chat_id, userSettings[chat_id]?.topic, userSettings[chat_id]?.sities, userSettings[chat_id]?.chats,userSettings[chat_id]?.daysAgo,userSettings[chat_id]?.limitMessages )
-    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearch );
+    await bot.sendMessage(chat_id, "You can enter other keyWords or change settings", optionsSearchGPT);
    // await bot.sendMessage(chat_id, 'Or you can simply quickly write key words start with symbol #', optionsSearch2)
     break
   }
   if ( msg.reply_to_message.text === infoMess.chatNames) userSettings[chat_id].chats = msg.text.split('/')
   if ( msg.reply_to_message.text === infoMess.sities) userSettings[chat_id].sities = msg.text.split('/')
-  await bot.sendMessage(chat_id, "Let's go! Add filters:", optionsSearch2 );
- // await bot.sendMessage(chat_id,  JSON.stringify(userSettings[chat_id])?.replace('/{}/', '') , optionsSearch);
+  await bot.sendMessage(chat_id, "Success!", optionsSearch2 );
+  await bot.sendMessage(chat_id,  "Your settings:\n"+JSON.stringify(userSettings[chat_id])?.replace('/{}/', '') ,userSettings[chat_id].searchType === 'Filters' ? optionsSearch : optionsSearchGPT);
   break
     }
   bot.sendMessage(chat_id, ".......")
@@ -251,19 +251,6 @@ bot.on('callback_query', async (callback) => {
   const chat_id = callback.message?.chat?.id
   const content = callback.data
   switch (content) {
-    // case 'SearchType':
-    // infoMess[5]='Choose type search:'
-    // const optionsSearchType = {
-    //   reply_markup: {
-    //     inline_keyboard: [[{text:'GPT search', callback_data: 'GPT search'} , {text:'Filters', callback_data:'Filters' }, {text:'Filters + GPT', callback_data:'Filters + GPT' }], ['Back']],
-    //     force_reply: true,
-    //     resize_keyboard: true,
-    //   },
-    // };
-    // bot.sendMessage(chat_id, infoMess[5] , optionsSearchType);
-    // break;
-
-
     case 'KeyWords':
           infoMess.writeKeyWords= `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`;
             bot.sendMessage(chat_id, infoMess.writeKeyWords, optionsInputValue)//, { parse_mode: 'Markdown' });
@@ -286,6 +273,7 @@ bot.on('callback_query', async (callback) => {
       userSettings[chat_id].searchType = content;
       userSettings[chat_id].limitMessages = userSettings[chat_id].limitMessages || 5;
       userSettings[chat_id].daysAgo = userSettings[chat_id].daysAgo || 30;
+      delete userSettings[chat_id].keyWords;
      await bot.sendMessage(chat_id, "Let's go! Your settings now:\n " + JSON.stringify(userSettings[chat_id]), optionsSearch2 );
       bot.sendMessage(chat_id,'You can change the settings or go to enter your topic and run search: ', optionsSearchGPT)
       break;

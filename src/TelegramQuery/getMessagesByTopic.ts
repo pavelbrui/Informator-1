@@ -66,15 +66,16 @@ export const handler = async (input: FieldResolveInput) =>
           console.log("iteracija!:",collection);   
             }
    if(messagesForGpt.length ===0) return []
-            console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
-            console.log(messagesForGpt?.length)  
+   console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+   console.log(messagesForGpt?.length)  
       
-        const response = await sendToOpenAi(messagesForGpt.slice(0, 100), args.topic[0])
-  if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
-  'createdAt')({topic: args.topic, chats: args.chats, response});
+   const response = await sendToOpenAi(messagesForGpt.slice(0, 50), args.topic[0])
+   if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
+       'createdAt')({topic: args.topic, chats: args.chats, response});
 
-  console.log(await response); 
-  return [{content: await response}]
+  //console.log(response); 
+  console.log (JSON.parse(response))
+  return [{text: response, from: ""}]
     }
 )(input.arguments);
 
@@ -84,13 +85,11 @@ export const handler = async (input: FieldResolveInput) =>
 
 async function sendToOpenAi(messages: any[], topic:string){
   const allContent = messages.map((message)=>{
-    const {text, chat_id, chat_name, from , from_id} = message
-    return `${chat_name || chat_id} - ${from || from_id} : ${text}, `
+    const {text, chat_id, chat_name, from , from_id, date} = message
+    return `${chat_name || chat_id} - ${from || from_id} : ${text}, ${date} `
   })
 
-   
-   // const openai = new OpenAI({apiKey:"it876uyt5y6we4jx", organization:'org-OcXM2M35rxb1tx4ENJmdmbuP'})
-    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami message:{from: String, content: String}"}, {role: "user", content:`{ messages:'${allContent}', topic:'${topic}'}` }]});
+    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {chat: String, from: String, text: String, date: String}"}, {role: "user", content:`{ messages:'${allContent}', topic:'${topic}'}` }]});
      
     console.log(completion?.usage);
     console.log(completion?.choices[0]?.message);
