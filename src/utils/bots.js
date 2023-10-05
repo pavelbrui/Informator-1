@@ -63,7 +63,7 @@ export async function filters(bot, chat_id, keyWords, collections, chats, daysAg
 
 
 
-export async function gpt(bot, chat_id, topic, collections, chats, daysAgo,n){
+export async function gpt(bot, chat_id, topic, collections, chats, daysAgo, n){
   let response = 'Anyone message not found'
   const getMessagesByTopic = `query {
     telegram {

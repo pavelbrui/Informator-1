@@ -26,6 +26,14 @@ const optionsSearch = {
   },
 }
 
+const optionsAddChatFilter = {
+  reply_markup:  {
+    inline_keyboard: [[{text :'Limit chat names', callback_data:'addChats'}, {text: 'skip', callback_data: 'skipAddChats'}]],
+    resize_keyboard: true,
+    one_time_keyboard: true
+  },
+}
+
 const optionsSearchGPT = {
   reply_markup:  {
     inline_keyboard: [[{text :'Enter topic or description and run🚀', callback_data:'Topic'}]],
@@ -218,9 +226,9 @@ bot.on('message', async (msg) => {
       arr = topicWithColection.split('-')
     }
     const topic =arr[0] || topicWithColection
-    const collection = arr[1]
-    const collections = collection?.split(',') || ["wroclaw"]
-    await gpt(chat_id, topic, collections)
+    const chat = arr[1]
+    const chats = chat?.split(',') || ["wroclaw"]
+    await gpt(chat_id, topic, chats)
     
 
 } else if(content?.includes('#')){
