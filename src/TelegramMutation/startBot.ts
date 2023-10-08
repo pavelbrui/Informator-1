@@ -1,44 +1,108 @@
-
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
+import { MongOrb, getEnv } from '../utils/orm.js';
 import TelegramBot from 'node-telegram-bot-api';
-import { MongOrb, getEnv } from './../utils/orm.js';
+
+import { options, menuOptions } from '../utils/botOptions.js';
+import { callbackHandler, infoMess } from '../utils/botCallbackHandler.js';
+import { replyToMessageHandler } from '../utils/botReplyHandler.js';
+import { otherMessagesHandler } from '../utils/botOtherMessagesHandler.js';
+
+
 
 export const handler = async (input: FieldResolveInput) => 
-  resolverFor('TelegramMutation','startBot',async (args) => {
+  resolverFor('TelegramMutation','newChats',async (args) => {
+
+    const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
+    const bot = new TelegramBot(FinderByChats, { polling: true });
+    
+    let userSettings: any = {};
+    //bot.sendMessage(839036065, `Hej! New chats started successed !`)
+    bot.on('message', async (msg) => {
+      try {
+      const id = msg.message_id;
+      const chat_name = msg.chat.title;
+      const chat_id = msg.chat.id;
+      const from = msg.from?.username  || msg.from?.first_name +"_"+ msg.from?.last_name
+      const from_id = msg.from?.id
+      const content = msg.text;
+      const date = new Date(msg.date * 1000); 
+      console.log("For FINDER! from: ", from, ", chat_id: ", chat_id, ", text: ", content)
+      
+      if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id, content, date }}},  { upsert: true });
+     switch (content) {
+      case '/start':
+        await bot.sendMessage(chat_id, ' *Welcome to Messages Search Bot!* 🌟', { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);
+        userSettings[chat_id] = { daysAgo: 30, limitMessages: 5 }
+        break;
+    
+      case 'Settings' :
+       await  bot.sendMessage(chat_id, 'Choose an option:', menuOptions.SearchSettings);
+        break;
+    
+      case 'Back':
+       await  bot.sendMessage(chat_id, 'Choose an option:', options.Search);
+        break;
+    
+    
+      case 'SearchType':
+        await bot.sendMessage(chat_id, infoMess.searchType , options.SearchType);
+        break;
+    
+      case 'DaysAgo':
+        await bot.sendMessage(chat_id, infoMess.maxOldMessages , options.InputDaysAgo);
+       break
+    
+      case 'LimitReturnedMessages':
+        bot.sendMessage(chat_id, infoMess.maxReturnMess , options.NumberMessages)
+        break
+    
+      case 'ChatNamesFilter':
+            bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
+         break
+    
+      case '1 day':
+      case '3 days':
+      case '7 days':
+      case '30 days':
+          userSettings[chat_id].daysAgo = content?.split(" ")[0] ;
+          await bot.sendMessage(chat_id, "Your settings:", menuOptions.Search2 )
+          await bot.sendMessage(chat_id, JSON.stringify(userSettings[chat_id]), options.Search)
+       break;
+          
+         
+      default:
+       // Handle reply messages
+       if (msg.reply_to_message?.text){
+        const settings = userSettings[chat_id];
+        replyToMessageHandler(msg.reply_to_message.text,infoMess, bot, chat_id, msg, settings)
+        break;
+    }
+    
+       // Handle other messages
+    bot.sendMessage(chat_id, ".......")
+    otherMessagesHandler(bot, userSettings[chat_id], chat_id, content);
+ 
+     }} catch (error) {
+      console.error('Error in message handler:', error);
+    
+    }
+    
+    })
 
 
-const bot2 = new TelegramBot(getEnv("HappyEmigrant"), { polling: true });
-// Obsługa przychodzących wiadomości
-bot2.on('message', async (msg) => {
-  //console.log(msg);
-  const id = msg.message_id;
-  const chat_name = msg.chat.title;
-  const chat_id = msg.chat.id;
-  const from = msg.from?.username  || msg.from?.first_name +"_"+ msg.from?.last_name
-  const from_id = msg.from?.id
-  const message_thread_id =msg.message_thread_id
-  const reply_to_message_id = msg.reply_to_message?.message_id
-  const text = msg.text;
-  const date = new Date(msg.date * 1000).toISOString(); 
-  console.log("For HappyEmigrant! from: ", from, ", chat_id: ", chat_id, ", text: ", text, ", date: ", date )
-  if(text?.length&&text?.length>1) await MongOrb('Bialystok').collection.updateOne({id: chat_id},{ $set: {name: chat_name} , $push: {messages:{chat_name, chat_id,id,message_thread_id,reply_to_message_id, from, from_id, text, date }}},  { upsert: true });
-});
-
-
-
-
-bot2.on('polling_error', (error) => {
-  console.log(`Polling error: ${error}`);
-});
-
-
-
-
-
-
-
-
-
-return true
+     
+  bot.on('callback_query', async (callback) => {
+    console.log(callback.message)
+    const chat_id = callback.message?.chat?.id
+    if(chat_id) callbackHandler(callback, infoMess, bot, userSettings[chat_id])
+  })
+    
+  bot.on('polling_error', (error) => {
+        console.log(`Polling error: ${error.message}`);
+      });
+    
+       
+    return true
   })(input.arguments);

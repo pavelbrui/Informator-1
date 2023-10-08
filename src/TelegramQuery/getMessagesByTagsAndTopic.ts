@@ -57,6 +57,7 @@ export const handler = async (input: FieldResolveInput) =>
             },
             {
               $project: {
+                "type": 1,
                 "text": 1,            
                 "from": 1,   
                 "from_id": 1,         
@@ -79,9 +80,8 @@ export const handler = async (input: FieldResolveInput) =>
    if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
        'createdAt')({topic: args.topic, chats: args.chats, response});
 
-  //console.log(response); 
-  console.log (JSON.parse(response))
-  return [{text: response, from: ""}]
+  console.log (response.join(", \n"))
+  return  response
     }
 )(input.arguments);
 
@@ -91,14 +91,27 @@ export const handler = async (input: FieldResolveInput) =>
 
 async function sendToOpenAi(messages: any[], topic:string){
   const allContent = messages.map((message)=>{
-    const {text, chat_id, chat_name, from , from_id, date} = message
-    return `${chat_name || chat_id} - ${from || from_id} : ${text}, ${date} `
+    const {text, type} = message
+    if (text.length>3 || Array.isArray(text)&&text.filter((mes)=>mes.length>3).length>0) return  Array.isArray(text)?  text.filter((mes)=>mes.length>3).join(', ') : `"${text}"`
+    
   })
 
-    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {chat: String, from: String, text: String, date: String}"}, {role: "user", content:`{ messages:'${allContent}', topic:'${topic}'}` }]});
-     
-    console.log(completion?.usage);
-    console.log(completion?.choices[0]?.message);
-    return completion?.choices[0]?.message.content || completion?.error.message;
+    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {text: String}"}, {role: "user", content:`{ messages:'${allContent}', topic:'${topic}'}` }]});
+      
     
+    console.log(completion?.usage);
+    
+    console.log(completion?.choices[0]?.message);
+    if(completion?.error.message)  return [{text: completion?.error.message, from: "ERROR"}]
+
+    const findedTexts: string[] = completion?.choices[0]?.message.content.toArray()
+    console.log(findedTexts)
+    
+    const returnMessages = messages.filter((message)=>findedTexts.some(keyword => message.text.includes(keyword)))
+    
+    
+    if(returnMessages.length === 0) return []
+    console.log(returnMessages?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+    console.log(returnMessages?.length)   
+    return returnMessages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text || " ", from: mess.from || mess.from_id }))
   }
