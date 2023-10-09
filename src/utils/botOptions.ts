@@ -27,13 +27,6 @@ export const options = {
      },
    },
    
-    AddChatFilter:{
-     reply_markup:  {
-       inline_keyboard: [[{text :'Limit chat names', callback_data:'addChatFilter'}]],
-       resize_keyboard: true,
-       one_time_keyboard: true
-     },
-   },
    
     AddChatFilterOpt:{
      reply_markup:  {

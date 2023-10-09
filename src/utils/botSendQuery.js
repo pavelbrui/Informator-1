@@ -1,6 +1,5 @@
-//import  fetch from 'node-fetch'
 
-export async function sendToServer(query) {
+export  async function sendToServer(query) {
 
     const todo = JSON.stringify({
         query
@@ -20,5 +19,3 @@ export async function sendToServer(query) {
     return e
     }
 }
-
-

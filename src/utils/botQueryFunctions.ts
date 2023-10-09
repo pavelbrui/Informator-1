@@ -92,7 +92,7 @@ export async function gptWithFilters(bot: any, chat_id: number, settings: Search
   const getMessagesByTagsAndTopic = `query {
     telegram {
         getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || ["Белосток"])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities || ['Bialystok'])},
-        daysAgo: ${settings.daysAgo || 30}, topic: ${JSON.stringify(settings.topic)}) {
+        daysAgo: ${settings.daysAgo || 30}, keyWords: ${JSON.stringify(settings.keyWords)}) {
           chat_name
           id
           date

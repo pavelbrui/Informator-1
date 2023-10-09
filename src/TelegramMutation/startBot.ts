@@ -19,13 +19,14 @@ export const handler = async (input: FieldResolveInput) =>
     let userSettings: any = {};
     //bot.sendMessage(839036065, `Hej! New chats started successed !`)
     bot.on('message', async (msg) => {
-      try {
+      
       const id = msg.message_id;
       const chat_name = msg.chat.title;
       const chat_id = msg.chat.id;
       const from = msg.from?.username  || msg.from?.first_name +"_"+ msg.from?.last_name
       const from_id = msg.from?.id
       const content = msg.text;
+      try {
       const date = new Date(msg.date * 1000); 
       console.log("For FINDER! from: ", from, ", chat_id: ", chat_id, ", text: ", content)
       
@@ -86,6 +87,7 @@ export const handler = async (input: FieldResolveInput) =>
  
      }} catch (error) {
       console.error('Error in message handler:', error);
+      MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push: { chat_id, error }},  { upsert: true });
     
     }
     
@@ -96,7 +98,13 @@ export const handler = async (input: FieldResolveInput) =>
   bot.on('callback_query', async (callback) => {
     console.log(callback.message)
     const chat_id = callback.message?.chat?.id
+    try {
     if(chat_id) callbackHandler(callback, infoMess, bot, userSettings[chat_id])
+
+  } catch (error) {
+    console.error('Error in message handler:', error);
+    MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push: { chat_id, error }},  { upsert: true });
+  }
   })
     
   bot.on('polling_error', (error) => {

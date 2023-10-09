@@ -6,20 +6,25 @@ import { options, menuOptions } from "./botOptions.js"
 export let infoMess = {
 
     startTypeSearch:'🚀 For starting choose type search:',
+
     maxOldMessages : `Choose max old messages for search:`,
     searchType:'Choose type search:',
     maxReturnMess:'Choose max number returned messages for one response:',
     chatNames :`Enter chat names or fragments (separated by '/'):`,
 
 
-
     writeKeyWords: `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
-    writeKeyWordsForTopic: `*Step 2: Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
+    
     writeTopic:`*Enter only topic or full description for your query*:`,
-    writeTopicWithFilters: `*Step 1: Enter topic or full description for your query*:`,
-    chatNamesFilter: `*For this search type you must provide chat names or fragments:*\n Enter chat names or fragments (separated by '/'):`,
+    chatNamesFilterReq: `*For this search type you must provide chat names or fragments:*\n Enter chat names or fragments (separated by '/'):`,
+    
 
-    chatNamesFilterOpt: `You can add chat filter by chat names or fragments (separated by '/'):`,
+    addChatNamesOrSkip: `Before starting you can limit chats for search`,
+    chatNamesFilterOpt: `Enter chat names or fragments (separated by '/'):`,
+    writeTopicWithFilters: `*Step 1: Enter topic or full description for your query*:`,
+    writeKeyWordsForTopic: `*Step 2: Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
+    
+    
 
     sities: `Enter sities filter value:`
 
@@ -55,15 +60,15 @@ const chat_id = callback.message?.chat?.id
     case 'Filters + GPT':
         settings.searchType = content;
       delete settings.keyWords;
-     await bot.sendMessage(chat_id, "Let's go! Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2 );
-      await bot.sendMessage(chat_id,'You can change the settings or go to enter your query and run search: ', options.SearchFiltersAndGPT)
+     await bot.sendMessage(chat_id, "Good choose! Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2 );
+      await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt)
       break;
 
       case 'GPT search':
         settings.searchType = content;
         delete settings.keyWords;
        await bot.sendMessage(chat_id, "Good choose!\n ", menuOptions.Search2 );
-       await bot.sendMessage(chat_id,'For this search type you must provide chat names or fragments:', options.InputValue)
+       await bot.sendMessage(chat_id, infoMess.chatNamesFilterReq, options.InputValue)
         break;
 
       
@@ -77,11 +82,17 @@ const chat_id = callback.message?.chat?.id
 
 
     case  'addChatFilter':
-      bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
+      await bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
    break
 
-   case  'AddChatFilterOpt':
-      bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
+   case  'addChatFilterOpt':
+     await bot.sendMessage(chat_id, infoMess.chatNamesFilterOpt , options.InputValue);
+   break
+   case 'skipAddChats':
+    await bot.sendMessage(chat_id, "Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2);
+    await bot.sendMessage(
+      chat_id, infoMess.writeTopicWithFilters, options.InputValue);
+    break;
    break
       
       
