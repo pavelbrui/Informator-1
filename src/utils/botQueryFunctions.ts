@@ -76,7 +76,7 @@ export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
       }
   }`
   const data = await sendToServer(getMessagesByTopic)
-  const messages = data?.telegram?.getMessagesByTagsAndTopic
+  const messages = data?.telegram?.getMessagesByTopic
 
   if (!messages?.length) {
    console.log(data)
