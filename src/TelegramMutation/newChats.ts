@@ -5,14 +5,13 @@ import { MongOrb, getEnv } from './../utils/orm.js';
 
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('TelegramMutation','startBot',async (args) => {
-
-
 const bot2 = new TelegramBot(getEnv("HappyEmigrant"), { polling: true });
-bot2.sendMessage(839036065, `Hej! New chats started successed !`)
+
 // Obsługa przychodzących wiadomości
 bot2.on('message', async (msg) => {
   console.log(msg);
   const id = msg.message_id;
+  const isBot = msg.from?.is_bot
   const chat_name = msg.chat.title;
   const chat_id = msg.chat.id;
   const from = msg.from?.username  || msg.from?.first_name +"_"+ msg.from?.last_name
@@ -26,20 +25,10 @@ bot2.on('message', async (msg) => {
 });
 
 
-
-
 bot2.on('polling_error', (error) => {
   console.log(`Polling error: ${error}`);
 });
-
-
-
-
-
-
-
-
-
+bot2.sendMessage(839036065, `Hej! New chats started successed !`)
 return true
   })(input.arguments);
 

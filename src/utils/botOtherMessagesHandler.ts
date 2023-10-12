@@ -3,7 +3,8 @@ import { filters, gpt } from "./botQueryFunctions.js"
 
 
 
-export async function  otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content?: string){
+export async function  
+otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content?: string){
     let arr: string[] = []
     
     if(content?.includes('{')&&content.includes('}')){

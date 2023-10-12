@@ -1,4 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { sendToServer } from './utils/botSendQuery.js';
 
 
  // call to start second bot
@@ -9,7 +10,7 @@ import TelegramBot from 'node-telegram-bot-api';
  }
  }`
  const runBot = await sendToServer(query)
- bot.sendMessage(839036065, `Hej! New chats started successed ${JSON.stringify(runBot.telegram)}`)
+ //bot.sendMessage(839036065, `Hej! New chats started successed ${JSON.stringify(runBot.telegram)}`)
 
 
 
@@ -19,7 +20,7 @@ const todo = JSON.stringify({
   query: `mutation
 Mutation{
  telegram{
-startBot
+startBot2
 }
 }`,
 });

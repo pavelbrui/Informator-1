@@ -15,9 +15,10 @@ export const handler = async (input: FieldResolveInput) =>
 
     const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
     const bot = new TelegramBot(FinderByChats, { polling: true });
-    
+    const defaultSettings = { daysAgo: 30, limitMessages: 5 }
     let userSettings: any = {};
     //bot.sendMessage(839036065, `Hej! New chats started successed !`)
+
     bot.on('message', async (msg) => {
       
       const id = msg.message_id;
@@ -29,13 +30,13 @@ export const handler = async (input: FieldResolveInput) =>
       try {
       const date = new Date(msg.date * 1000); 
       console.log("For FINDER! from: ", from, ", chat_id: ", chat_id, ", text: ", content)
+      if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
       
       if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id, content, date }}},  { upsert: true });
      switch (content) {
       case '/start':
         await bot.sendMessage(chat_id, ' *Welcome to Messages Search Bot!* 🌟', { parse_mode: 'Markdown' });
         await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);
-        userSettings[chat_id] = { daysAgo: 30, limitMessages: 5 }
         break;
     
       case 'Settings' :
@@ -56,11 +57,11 @@ export const handler = async (input: FieldResolveInput) =>
        break
     
       case 'LimitReturnedMessages':
-        bot.sendMessage(chat_id, infoMess.maxReturnMess , options.NumberMessages)
+        await bot.sendMessage(chat_id, infoMess.maxReturnMess , options.NumberMessages)
         break
     
       case 'ChatNamesFilter':
-            bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
+           await bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
          break
     
       case '1 day':
@@ -76,18 +77,17 @@ export const handler = async (input: FieldResolveInput) =>
       default:
        // Handle reply messages
        if (msg.reply_to_message?.text){
-        const settings = userSettings[chat_id];
-        replyToMessageHandler(msg.reply_to_message.text,infoMess, bot, chat_id, msg, settings)
+        const settings = userSettings[chat_id]
+        await replyToMessageHandler(msg.reply_to_message.text,infoMess, bot, chat_id, msg, settings)
         break;
     }
     
        // Handle other messages
-    bot.sendMessage(chat_id, ".......")
-    otherMessagesHandler(bot, userSettings[chat_id], chat_id, content);
+      await  bot.sendMessage(chat_id, ".......")
+      await otherMessagesHandler(bot, userSettings[chat_id], chat_id, content);
  
      }} catch (error) {
-      console.error('Error in message handler:', error);
-      MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push: { chat_id, error }},  { upsert: true });
+      pushError(error)
     
     }
     
@@ -96,17 +96,19 @@ export const handler = async (input: FieldResolveInput) =>
 
      
   bot.on('callback_query', async (callback) => {
+    
     console.log(callback.message)
-    const chat_id = callback.message?.chat?.id
+    const chat_id = callback.message?.chat.id 
     try {
-    if(chat_id) callbackHandler(callback, infoMess, bot, userSettings[chat_id])
+    if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
+    if(chat_id) callbackHandler(callback, infoMess, bot, userSettings[chat_id] )
 
   } catch (error) {
-    console.error('Error in message handler:', error);
-    MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push: { chat_id, error }},  { upsert: true });
+    pushError(error)
   }
   })
-    
+
+
   bot.on('polling_error', (error) => {
         console.log(`Polling error: ${error.message}`);
       });
@@ -114,3 +116,11 @@ export const handler = async (input: FieldResolveInput) =>
        
     return true
   })(input.arguments);
+
+
+
+
+  async function pushError(error: any){
+    console.error('Error in message handler:', error);
+  // await MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push:{errors: {  error }}},  { upsert: true });
+  }

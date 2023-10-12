@@ -86,6 +86,7 @@ export async function  replyToMessageHandler(text: string, infoMess:any, bot:any
         break;
     
       default:
+        console.log('HHHHH')
         break;
     }
 }
