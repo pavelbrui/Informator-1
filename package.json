@@ -43,9 +43,7 @@
         "node-fetch": "^2.6.0",
         "node-telegram-bot-api": "^0.63.0",
         "openai": "^4.8.0",
-        "puppeteer": "^19.8.0",
         "stucco-js": "^0.10.18",
-        "telegraf": "^4.13.1",
         "ws": "^8.12.0"
     }
 }
