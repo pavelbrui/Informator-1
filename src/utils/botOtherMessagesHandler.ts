@@ -40,7 +40,7 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
         await bot.sendMessage(
           chat_id,
           infoMess.settingsNow + yourSettings(settings),
-          settings.searchType === buttonTexts.Filters ? options.Search : settings.searchType === buttonTexts.GPTSearch ? options.SearchGPT : options.SearchFiltersAndGPT
+          options.SearchType 
         );
   }
 }

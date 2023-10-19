@@ -5,7 +5,7 @@ import { getEnv } from "./orm.js";
 
 
 export function yourSettings(settings: SearchSettings ){
-    return  JSON.stringify(settings).replace(",", "\n").replaceAll("{", "\n").replace("}", "")
+    return  JSON.stringify(settings).replaceAll(',"', '\n"').replace("{", "\n").replace("}", "")
 }
 
 
@@ -15,30 +15,29 @@ export function yourSettings(settings: SearchSettings ){
     startTypeSearch:'🚀 For starting choose type search:',
     chooseOption: 'Choose an option:',
 
-    filtersSettings: "Let's go! Your settings now:\n ",
+    filtersSettings: "Let's go! Your settings now: ",
     filtersMessage: 'You can change the settings or go to enter keywords and run search: ',
-    writeKeyWords: `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
+    writeKeyWords: `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: \n'Warszawa&Bialystok/warshaw&tomorrow'\n >> you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
 
     gptTypeInfo:"Good choose!\n For this search type you must limit chats:\n ",
     chatNamesFilterReq: `Enter chat names or fragments (separated by '/'):`,
-    settingsNow: 'Your settings now:\n',
+    settingsNow: 'Your settings now:',
     writeTopic:`*Enter only topic or full description for your query*:`,            
    
 
-    
-   
-    
-    filtersAndGptSettings: "Good choose! Your settings now:\n ",
+    filtersAndGptSettings: "Good choose! Your settings now: ",
     addChatNamesOrSkip: `Before starting you can limit chats for search`,
-    chatNamesFilterOpt: `Enter chat names or fragments (separated by '/'):`,
-    writeTopicWithFilters: `*Step 1: Enter topic or full description for your query*:`,
-    writeKeyWordsForTopic: `*Step 2: Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
-    
+    chatNamesFilterOpt: `Enter the names  or part names of chats \n(separated by use '/'):`,
+    writeTopicWithFilters: `Enter only topic or full description for your query:`,
+    writeKeyWordsForTopic: `For example if you write:\n 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
+    step_1:"*Step 1: Chats filter*",
+    step_2:"*Step 2: Topic*",
+    step_3:"*Step 3: Enter keywords or fragments\n(for variants use '/', for combinations use '&')*",
     
     maxOldMessages : `Choose max old messages for search:`,
     searchType:'Choose type search:',
     maxReturnMess:'Choose max number returned messages for one response:',
-    chatNames :`Enter chat names or fragments (separated by '/'):`,
+    chatNames :`Enter chat names or fragments names (separated by '/'):`,
     sities: `Enter sities filter value:`,
 
 

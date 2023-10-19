@@ -33,6 +33,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       
       case infoMess.writeTopicWithFilters:
         settings.topic = msg.text.split('/');
+        await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
         await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
         break;
 
@@ -56,6 +57,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       case infoMess.chatNamesFilterOpt:
         settings.chats = msg.text.split('/');
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
+        if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
         await bot.sendMessage(
           chat_id, settings.searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeTopicWithFilters, options.InputValue);
         break;

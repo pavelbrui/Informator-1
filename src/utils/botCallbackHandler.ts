@@ -15,7 +15,8 @@ const chat_id = callback.message?.chat?.id
          break
 
    case 'KeyWordsForTopic':
-            bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
+    await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' }) 
+     await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
          break
 
     case 'Topic':
@@ -23,7 +24,8 @@ const chat_id = callback.message?.chat?.id
          break
       
     case 'TopicWithFilters':
-        bot.sendMessage(chat_id, infoMess.writeTopicWithFilters, options.InputValue) //, { parse_mode: 'Markdown' });
+      await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
+      await  bot.sendMessage(chat_id, infoMess.writeTopicWithFilters, options.InputValue) //, { parse_mode: 'Markdown' });
          break
       
     
@@ -40,7 +42,8 @@ const chat_id = callback.message?.chat?.id
         settings.searchType = content;
       delete settings.keyWords;
      await bot.sendMessage(chat_id, infoMess.filtersAndGptSettings  + yourSettings(settings), menuOptions.Back );
-      await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt)
+     await bot.sendMessage(chat_id, infoMess.step_1, { parse_mode: 'Markdown' }) 
+     await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt)
       break;
 
       case 'GPT search':
@@ -69,6 +72,7 @@ const chat_id = callback.message?.chat?.id
    break
    case 'skipAddChats':
     await bot.sendMessage(chat_id, infoMess.settingsNow + yourSettings(settings), menuOptions.SettingsButton);
+    await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
     await bot.sendMessage(
       chat_id, infoMess.writeTopicWithFilters, options.InputValue);
     break;
