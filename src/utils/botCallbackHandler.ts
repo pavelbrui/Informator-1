@@ -1,37 +1,12 @@
 import { options, menuOptions } from "./botOptions.js"
 
+import { infoMess, yourSettings } from "./botMessages.js"
 
 
 
-export let infoMess = {
-
-    startTypeSearch:'🚀 For starting choose type search:',
-
-    maxOldMessages : `Choose max old messages for search:`,
-    searchType:'Choose type search:',
-    maxReturnMess:'Choose max number returned messages for one response:',
-    chatNames :`Enter chat names or fragments (separated by '/'):`,
 
 
-    writeKeyWords: `*Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
-    
-    writeTopic:`*Enter only topic or full description for your query*:`,
-    chatNamesFilterReq: `*For this search type you must provide chat names or fragments:*\n Enter chat names or fragments (separated by '/'):`,
-    
-
-    addChatNamesOrSkip: `Before starting you can limit chats for search`,
-    chatNamesFilterOpt: `Enter chat names or fragments (separated by '/'):`,
-    writeTopicWithFilters: `*Step 1: Enter topic or full description for your query*:`,
-    writeKeyWordsForTopic: `*Step 2: Enter keywords or fragments\n (for variants use '/', for combinations use '&')*\n For example if you write: 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
-    
-    
-
-    sities: `Enter sities filter value:`
-
-}
-
-
-export async function callbackHandler(callback:any, infoMess:any, bot:any, settings: SearchSettings){
+export async function callbackHandler(callback:any, bot:any, settings: SearchSettings){
 const chat_id = callback.message?.chat?.id
   const content = callback.data
   switch (content) {
@@ -55,19 +30,23 @@ const chat_id = callback.message?.chat?.id
     case 'Sities':
             bot.sendMessage(chat_id, infoMess.sities, options.InputValue);
          break
+    case 'BackToSearchTypes':
+      await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
+      await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);
+      break
 
     
     case 'Filters + GPT':
         settings.searchType = content;
       delete settings.keyWords;
-     await bot.sendMessage(chat_id, "Good choose! Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2 );
+     await bot.sendMessage(chat_id, infoMess.filtersAndGptSettings  + yourSettings(settings), menuOptions.Back );
       await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt)
       break;
 
       case 'GPT search':
         settings.searchType = content;
         delete settings.keyWords;
-       await bot.sendMessage(chat_id, "Good choose!\n ", menuOptions.Search2 );
+       await bot.sendMessage(chat_id, infoMess.gptTypeInfo, options.Back );
        await bot.sendMessage(chat_id, infoMess.chatNamesFilterReq, options.InputValue)
         break;
 
@@ -76,8 +55,8 @@ const chat_id = callback.message?.chat?.id
       settings.searchType = content;
       settings.limitMessages = settings.limitMessages || 5;
       settings.daysAgo = settings.daysAgo || 30;
-     await bot.sendMessage(chat_id, "Let's go! Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2 );
-     await  bot.sendMessage(chat_id,'You can change the settings or go to enter keywords and run search: ', options.Search)
+     await bot.sendMessage(chat_id, infoMess.filtersSettings + yourSettings(settings), menuOptions.SettingsButton );
+     await  bot.sendMessage(chat_id,infoMess.filtersMessage, options.Search)
       break;
 
 
@@ -89,7 +68,7 @@ const chat_id = callback.message?.chat?.id
      await bot.sendMessage(chat_id, infoMess.chatNamesFilterOpt , options.InputValue);
    break
    case 'skipAddChats':
-    await bot.sendMessage(chat_id, "Your settings now:\n " + JSON.stringify(settings), menuOptions.Search2);
+    await bot.sendMessage(chat_id, infoMess.settingsNow + yourSettings(settings), menuOptions.SettingsButton);
     await bot.sendMessage(
       chat_id, infoMess.writeTopicWithFilters, options.InputValue);
     break;
@@ -98,8 +77,8 @@ const chat_id = callback.message?.chat?.id
       
     default:
       settings.limitMessages = callback.data?.replace("button_","") ; 
- await bot.sendMessage(chat_id, "Your parameters:", menuOptions.Search2 );
-  await bot.sendMessage(chat_id, JSON.stringify(settings), options.Search);
+ await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton );
+  await bot.sendMessage(chat_id, yourSettings(settings), options.Search);
   }
 }
 

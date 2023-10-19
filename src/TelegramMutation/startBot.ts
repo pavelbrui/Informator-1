@@ -3,10 +3,11 @@ import { resolverFor } from '../zeus/index.js';
 import { MongOrb, getEnv } from '../utils/orm.js';
 import TelegramBot from 'node-telegram-bot-api';
 
-import { options, menuOptions } from '../utils/botOptions.js';
-import { callbackHandler, infoMess } from '../utils/botCallbackHandler.js';
+import { options, menuOptions, buttonTexts } from '../utils/botOptions.js';
+import { callbackHandler} from '../utils/botCallbackHandler.js';
 import { replyToMessageHandler } from '../utils/botReplyHandler.js';
 import { otherMessagesHandler } from '../utils/botOtherMessagesHandler.js';
+import { infoMess, yourSettings } from "../utils/botMessages.js"
 
 
 
@@ -29,48 +30,48 @@ export const handler = async (input: FieldResolveInput) =>
       const content = msg.text;
       try {
       const date = new Date(msg.date * 1000); 
-      console.log("For FINDER! from: ", from, ", chat_id: ", chat_id, ", text: ", content)
+      console.log("\nFor FINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
       if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
       
       if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id, content, date }}},  { upsert: true });
      switch (content) {
       case '/start':
-        await bot.sendMessage(chat_id, ' *Welcome to Messages Search Bot!* 🌟', { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
         await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);
         break;
     
-      case 'Settings' :
-       await  bot.sendMessage(chat_id, 'Choose an option:', menuOptions.SearchSettings);
+      case buttonTexts.Settings :
+       await  bot.sendMessage(chat_id, infoMess.chooseOption, menuOptions.SearchSettings);
         break;
     
-      case 'Back':
-       await  bot.sendMessage(chat_id, 'Choose an option:', options.Search);
+      case buttonTexts.Back:
+       await  bot.sendMessage(chat_id,infoMess.chooseOption, options.Search);
         break;
     
     
-      case 'SearchType':
+      case buttonTexts.SearchType:
         await bot.sendMessage(chat_id, infoMess.searchType , options.SearchType);
         break;
     
-      case 'DaysAgo':
+      case buttonTexts.DaysAgo:
         await bot.sendMessage(chat_id, infoMess.maxOldMessages , options.InputDaysAgo);
        break
     
-      case 'LimitReturnedMessages':
+      case buttonTexts.LimitReturnedMessages:
         await bot.sendMessage(chat_id, infoMess.maxReturnMess , options.NumberMessages)
         break
     
-      case 'ChatNamesFilter':
+      case buttonTexts.ChatNamesFilter:
            await bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
          break
     
-      case '1 day':
-      case '3 days':
-      case '7 days':
-      case '30 days':
+      case buttonTexts.DaysAgoOptions[0]:
+      case buttonTexts.DaysAgoOptions[1]:
+      case buttonTexts.DaysAgoOptions[2]:
+      case buttonTexts.DaysAgoOptions[3]:
           userSettings[chat_id].daysAgo = content?.split(" ")[0] ;
-          await bot.sendMessage(chat_id, "Your settings:", menuOptions.Search2 )
-          await bot.sendMessage(chat_id, JSON.stringify(userSettings[chat_id]), options.Search)
+          await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton )
+          await bot.sendMessage(chat_id, yourSettings(userSettings[chat_id]), options.Search)
        break;
           
          
@@ -78,7 +79,7 @@ export const handler = async (input: FieldResolveInput) =>
        // Handle reply messages
        if (msg.reply_to_message?.text){
         const settings = userSettings[chat_id]
-        await replyToMessageHandler(msg.reply_to_message.text,infoMess, bot, chat_id, msg, settings)
+        await replyToMessageHandler(msg.reply_to_message.text, bot, chat_id, msg, settings)
         break;
     }
     
@@ -97,11 +98,11 @@ export const handler = async (input: FieldResolveInput) =>
      
   bot.on('callback_query', async (callback) => {
     
-    console.log(callback.message)
+    //console.log(callback.message)
     const chat_id = callback.message?.chat.id 
     try {
     if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
-    if(chat_id) callbackHandler(callback, infoMess, bot, userSettings[chat_id] )
+    if(chat_id) callbackHandler(callback, bot, userSettings[chat_id] )
 
   } catch (error) {
     pushError(error)

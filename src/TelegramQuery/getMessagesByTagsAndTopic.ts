@@ -77,7 +77,7 @@ export const handler = async (input: FieldResolveInput) =>
    console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
    console.log(messagesForGpt?.length)  
       
-   const response = await sendToOpenAi(messagesForGpt.slice(0, 50), args.topic[0])
+   const response = await sendToOpenAi(messagesForGpt.slice(0, 100), args.topic[0])
    if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
        'createdAt')({topic: args.topic, chats: args.chats, response});
 

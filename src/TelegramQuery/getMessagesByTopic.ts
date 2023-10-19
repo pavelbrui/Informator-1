@@ -4,7 +4,7 @@ import { resolverFor } from '../zeus/index.js';
 import { MongOrb, getEnv } from '../utils/orm.js';
 
 import { MongoClient} from 'mongodb';
-import { openAIcreateChatCompletion, sendToOpenAi } from '../utils/openAi.js';
+import { sendToOpenAi } from '../utils/openAi.js';
 
 
 
@@ -65,15 +65,24 @@ export const handler = async (input: FieldResolveInput) =>
         messagesForGpt = messagesForGpt.concat(result)
           console.log("iteracija!:",collection);   
             }
-            if(messagesForGpt.length ===0) return []
-            console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
-            console.log(messagesForGpt?.length)  
+            if(messagesForGpt.length ===0) return [{  }]
+            //console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+            console.log("---------- All:", messagesForGpt?.length)  
                
-            const response = await sendToOpenAi(messagesForGpt.slice(0, 50), args.topic[0])
-            if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
-                'createdAt')({topic: args.topic, chats: args.chats, response});
+            let messages: any[] = []
+            let n  = 3// Math.ceil(messagesForGpt / 100)
+
+            // limiter
+            if(n>5) n=3
+
+            for (let i = 1; i <= n; i++) {
+            const chunkMessages= await sendToOpenAi(messagesForGpt.slice((i-1)*100, i*100), args.topic[0])
+              messages = messages.concat(chunkMessages)
+            }
+            if(messages?.length&&messages?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
+                'createdAt')({topic: args.topic, chats: args.chats, messages});
          
-           return  response
+           return messages
     }
 )(input.arguments);
 

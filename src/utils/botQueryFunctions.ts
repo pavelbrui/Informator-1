@@ -47,12 +47,12 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
   const messages = data?.telegram?.getMessagesByTags
   if (!messages?.length) {
     console.log(data)
-  await bot.sendMessage(chat_id, response, menuOptions.Search2);
+  await bot.sendMessage(chat_id, response, menuOptions.SettingsButton);
   return
  }
   response = messages.slice(0,settings.limitMessages || 10).map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString()
   await bot.sendMessage(chat_id,`I found ${messages?.length>1000 ? "more then 1000" : messages?.length} messages!!!`)
-  await bot.sendMessage(chat_id, response, menuOptions.Search2); 
+  await bot.sendMessage(chat_id, response, menuOptions.SettingsButton); 
    if(messages?.length>10) bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} messages>>`)
 }
 
@@ -80,12 +80,12 @@ export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
 
   if (!messages?.length) {
    console.log(data)
- await bot.sendMessage(chat_id, responseToChat, menuOptions.Search2);
+ await bot.sendMessage(chat_id, responseToChat, menuOptions.SettingsButton);
  return
  }
  responseToChat = messages.slice(0,settings.limitMessages || 10).map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString()
  await bot.sendMessage(chat_id,`I found ${messages?.length>1000 ? "more then 1000" : messages?.length} messages!!!`)
- await bot.sendMessage(chat_id, responseToChat, menuOptions.Search2); 
+ await bot.sendMessage(chat_id, responseToChat, menuOptions.SettingsButton); 
   if(messages?.length>10) bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} messages>>`)
 }
 
@@ -109,11 +109,11 @@ export async function gptWithFilters(bot: any, chat_id: number, settings: Search
 
  if (!messages?.length) {
   console.log(data)
-await bot.sendMessage(chat_id, responseToChat, menuOptions.Search2);
+await bot.sendMessage(chat_id, responseToChat, menuOptions.SettingsButton);
 return
 }
 responseToChat = messages.slice(0,settings.limitMessages || 10).map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString()
 await bot.sendMessage(chat_id,`I found ${messages?.length>1000 ? "more then 1000" : messages?.length} messages!!!`)
-await bot.sendMessage(chat_id, responseToChat, menuOptions.Search2); 
+await bot.sendMessage(chat_id, responseToChat, menuOptions.SettingsButton); 
  if(messages?.length>10) bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} messages>>`)
 }

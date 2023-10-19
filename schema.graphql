@@ -1,13 +1,4 @@
 type Mutation{
-	gmail(
-		login: Credentials!
-	): GmailMutation!
-	olx(
-		login: Credentials!
-		loginType: LoginType
-		microsoftMail: String
-		microsoftPassword: String
-	): OlxMutation!
 	telegram: TelegramMutation!
 }
 
@@ -97,42 +88,9 @@ type Chat{
 	messages: [Message!]
 }
 
-type GmailMutation{
-	signByText(
-		text: String
-	): ResponseWithUrls!
-	signLast(
-		autentiLogin: Credentials!
-	): ResponseWithUrls!
-}
 
 type Query{
-	olx(
-		login: Credentials!
-		loginType: LoginType
-	): OlxQuery!
 	telegram: TelegramQuery!
-}
-
-input Credentials{
-	email: String!
-	password: String!
-}
-
-type OlxMutation{
-	autoResponder(
-		responseText: String!
-		timeLimit: Int
-	): [String!]
-	autoResponderLoop(
-		responseText: String!
-		timeLimit: Int
-	): [String!]
-}
-
-type OlxQuery{
-	getCookies: ResponseWithUrls!
-	getApartmens: String
 }
 
 type ResponseWithUrls{
@@ -146,12 +104,6 @@ enum LoginType{
 	Login_with_cookies_instead_password
 }
 
-type CookieObject{
-	content: String
-	owner: String
-	name: String
-	requestedUrl: String
-}
 
 schema{
 	query: Query

@@ -1,4 +1,6 @@
 import { SearchSettings } from "./botCallbackHandler.js"
+import { infoMess, yourSettings } from "./botMessages.js"
+import { buttonTexts, menuOptions, options } from "./botOptions.js"
 import { filters, gpt } from "./botQueryFunctions.js"
 
 
@@ -34,5 +36,11 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
   
   }else{
    console.log(" else block no response")
+   await bot.sendMessage(chat_id, "Soon you will be have here simply chat gpt for talking about anythings, but now i can do only search work", menuOptions.SettingsButton);
+        await bot.sendMessage(
+          chat_id,
+          infoMess.settingsNow + yourSettings(settings),
+          settings.searchType === buttonTexts.Filters ? options.Search : settings.searchType === buttonTexts.GPTSearch ? options.SearchGPT : options.SearchFiltersAndGPT
+        );
   }
 }

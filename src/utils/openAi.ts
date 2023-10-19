@@ -12,7 +12,7 @@ export async function sendToOpenAi(messages: any[], topic:string){
     
   })
 
-    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {text: String}"}, {role: "user", content:`{ messages:'${allContent}', topic:'${topic}'}` }]});
+    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {text: String}"}, {role: "user", content:`{ messages:['${allContent}'], topic:'${topic}'}` }]});
       
     
     console.log(completion?.usage);
@@ -28,7 +28,7 @@ export async function sendToOpenAi(messages: any[], topic:string){
     console.log(cleanText(findedTexts[0].text))
     const returnMessages = messages.filter((mess) => {
       const cleanedMessageText = cleanText(mess.text);
-      console.log("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+      console.log("____________")
       console.log(cleanedMessageText)
       
       return findedTexts.some(keyword => cleanText(keyword.text) && cleanedMessageText.includes(cleanText(keyword.text)));
