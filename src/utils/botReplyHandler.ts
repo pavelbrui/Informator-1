@@ -62,9 +62,13 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
           chat_id, settings.searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeTopicWithFilters, options.InputValue);
         break;
     
-      case infoMess.chatNames:
-        settings.chats = msg.text.split('/');
-        await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
+      case infoMess.chatNames: 
+        if(text === infoMess.chatNames) settings.chats = msg.text.split('/');
+      case infoMess.sities:
+        if(text === infoMess.sities)   settings.sities = msg.text.split('/');
+      case infoMess.otherDaysAgo: 
+        if(text === infoMess.otherDaysAgo)  settings.daysAgo = msg.text;
+        await bot.sendMessage(chat_id, infoMess.success, menuOptions.SearchSettings);
         await bot.sendMessage(
           chat_id,
           infoMess.settingsNow + yourSettings(settings),
@@ -72,15 +76,9 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         );
         break;
     
-      case infoMess.sities:
-        settings.sities = msg.text.split('/');
-        await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
-        await bot.sendMessage(
-          chat_id,
-          infoMess.settingsNow + yourSettings(settings),
-          settings.searchType === buttonTexts.Filters ? options.Search : settings.searchType === buttonTexts.GPTSearch ? options.SearchGPT : options.SearchFiltersAndGPT
-        );
-        break;
+      
+        
+
     
       default:
         console.log('HHHHH')

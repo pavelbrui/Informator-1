@@ -116,7 +116,7 @@
         },
         "TelegramMutation.newChats": {
             "resolve": {
-                "name": "lib\\TelegramMutation\\newChats"
+                "name": "lib/TelegramMutation/newChats"
             }
         },
         "TelegramQuery.getChatsMessages": {

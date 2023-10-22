@@ -11,7 +11,7 @@ const chat_id = callback.message?.chat?.id
   const content = callback.data
   switch (content) {
     case 'KeyWords':
-            bot.sendMessage(chat_id, infoMess.writeKeyWords, options.InputValue)//, { parse_mode: 'Markdown' });
+            bot.sendMessage(chat_id, infoMess.writeKeyWords,  options.InputValue) //, { parse_mode: 'Markdown' });
          break
 
    case 'KeyWordsForTopic':
@@ -32,6 +32,7 @@ const chat_id = callback.message?.chat?.id
     case 'Sities':
             bot.sendMessage(chat_id, infoMess.sities, options.InputValue);
          break
+
     case 'BackToSearchTypes':
       await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
       await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);

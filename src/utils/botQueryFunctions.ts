@@ -1,6 +1,7 @@
 import  fetch from 'node-fetch'
 import { options, menuOptions } from './botOptions.js';
 import { SearchSettings } from './botCallbackHandler.js';
+import { infoMess } from './botMessages.js';
 
 export async function sendToServer(query: string) {
     const todo = JSON.stringify({
@@ -24,13 +25,13 @@ export async function sendToServer(query: string) {
 
 
 export async function filters(bot: any, chat_id: number, settings: SearchSettings ){
-  let response = 'Anyone message not found'
+  let response = infoMess.any
   const getMessagesByTags = `query {
 	telegram{
 		getMessagesByTags(
-			chats: ${JSON.stringify(settings.chats || ["Белосток"])}
+			chats: ${JSON.stringify(settings.chats || [''])}
 			keyWords: ${JSON.stringify(settings.keyWords)}
-      collections:${JSON.stringify(settings.sities || ['Bialystok'])}
+      collections:${JSON.stringify(settings.sities ||[ 'b', 'p' ]|| [''])}
       daysAgo: ${settings.daysAgo || 30}
 		){
       chat_name

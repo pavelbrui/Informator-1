@@ -1,9 +1,7 @@
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 
-import { MongOrb, getEnv } from '../utils/orm.js';
-
-import { MongoClient} from 'mongodb';
+import { MongOrb, defineCollections } from '../utils/orm.js';
 import { sendToOpenAi } from '../utils/openAi.js';
 
 
@@ -15,16 +13,11 @@ export const handler = async (input: FieldResolveInput) =>
     const date = new Date()
     if(consDays) date.setDate(date.getDate() - consDays)
     const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
-    const client = new MongoClient(getEnv('MONGO_URL'), {  monitorCommands: true });
-    const collections = await client.db('son_dev').listCollections().toArray();
+    const collections = await defineCollections(args.collections)
      let messagesForGpt:any =[];
 
-  for (const collec of collections) {
-          const collectionName = collec.name;
-          if(args.collections?.length && args.collections?.length !== 0 && !args.collections.some(element => collectionName.includes(element)))  continue
-          const collection = collec?.name.length>2 ? collec.name : "Bialystok"
-      
-          const aggregationPipeline = [
+  for (const collection of collections) {  
+    const aggregationPipeline = [
           {
             $match: {
               name: {

@@ -9,7 +9,7 @@ const bot2 = new TelegramBot(getEnv("HappyEmigrant"), { polling: true });
 
 // Obsługa przychodzących wiadomości
 bot2.on('message', async (msg) => {
-23 // console.log(msg);
+   //console.log(msg);
   const id = msg.message_id;
   const isBot = msg.from?.is_bot
   const chat_name = msg.chat.title;
@@ -20,7 +20,7 @@ bot2.on('message', async (msg) => {
   const reply_to_message_id = msg.reply_to_message?.message_id
   const text = msg.text;
   const date = new Date(msg.date * 1000).toISOString(); 
-  console.log("For HappyEmigrant! from: ", from, ", chat_name: ", chat_name, ", text: ", text, ", date: ", date )
+  console.log("\n For HappyEmigrant! from: ", from, ",\n chat_name: ", chat_name, ",\n text: ", text, ",\n date: ", date )
   if(text?.length&&text?.length>1) await MongOrb('Bialystok').collection.updateOne({id: chat_id},{ $set: {name: chat_name} , $push: {messages:{chat_name, chat_id,id,message_thread_id,reply_to_message_id, from, from_id, text, date, isBot }}},  { upsert: true });
 });
 

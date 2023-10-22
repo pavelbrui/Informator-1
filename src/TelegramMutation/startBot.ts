@@ -21,7 +21,6 @@ export const handler = async (input: FieldResolveInput) =>
     //bot.sendMessage(839036065, `Hej! New chats started successed !`)
 
     bot.on('message', async (msg) => {
-      
       const id = msg.message_id;
       const chat_name = msg.chat.title;
       const chat_id = msg.chat.id;
@@ -30,10 +29,10 @@ export const handler = async (input: FieldResolveInput) =>
       const content = msg.text;
       try {
       const date = new Date(msg.date * 1000); 
-      console.log("\nFor FINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
+      console.log("\n For FINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
       if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
       
-      if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id, content, date }}},  { upsert: true });
+      if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id,from_id, content, date }}},  { upsert: true });
      switch (content) {
       case '/start':
         await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
@@ -45,7 +44,8 @@ export const handler = async (input: FieldResolveInput) =>
         break;
     
       case buttonTexts.Back:
-       await  bot.sendMessage(chat_id,infoMess.chooseOption, options.Search);
+       await  bot.sendMessage(chat_id,infoMess.startTypeSearch, options.SearchType);
+       await  bot.sendMessage(chat_id, infoMess.chooseOption, menuOptions.SettingsButton);
         break;
     
     
@@ -64,6 +64,14 @@ export const handler = async (input: FieldResolveInput) =>
       case buttonTexts.ChatNamesFilter:
            await bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
          break
+
+         case buttonTexts.LocationsFilter:
+          await bot.sendMessage(chat_id, infoMess.sities , options.InputValue);
+        break
+      
+        case buttonTexts.DaysAgoOptions[4]:
+          await bot.sendMessage(chat_id, infoMess.otherDaysAgo , options.InputValue);
+        break
     
       case buttonTexts.DaysAgoOptions[0]:
       case buttonTexts.DaysAgoOptions[1]:
@@ -123,5 +131,5 @@ export const handler = async (input: FieldResolveInput) =>
 
   async function pushError(error: any){
     console.error('Error in message handler:', error);
-  // await MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push:{errors: {  error }}},  { upsert: true });
+    await MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push:{errors: {  error }}},  { upsert: true });
   }

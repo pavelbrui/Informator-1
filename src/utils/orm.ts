@@ -1,5 +1,6 @@
 import { iGraphQL } from 'i-graphql';
-import { ObjectId } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
+import { cleanText } from './openAi.js';
 const orm = async () => {
   return iGraphQL<Record<string, any>, { _id: () => string; createdAt: () => string }>({
     _id: () => new ObjectId().toHexString(),
@@ -17,3 +18,23 @@ export const getEnv = (envName: string) => {
   }
   return envValue;
 };
+
+
+
+
+
+export async function defineCollections (collectionFilters?:string[] | null) {
+  const client = new MongoClient(getEnv('MONGO_URL'), {  monitorCommands: true });
+const allCollections = await client.db('son_dev').listCollections().toArray();
+let collections = allCollections.map((c)=>c.name)
+
+if(collectionFilters?.length && collectionFilters[0]&&collectionFilters[0].length>0) {
+  collections = collections.filter((col) => {
+      const cleanedName = cleanText(col);
+      return collectionFilters?.some(keyword => cleanText(keyword) && cleanedName.includes(cleanText(keyword)));
+      });
+   }
+console.log("_______________")
+console.log(collections)
+return collections
+  }

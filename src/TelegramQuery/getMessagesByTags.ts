@@ -1,8 +1,7 @@
 
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
-import { MongOrb } from '../utils/orm.js';
-
+import { MongOrb, defineCollections } from '../utils/orm.js';
 
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('TelegramQuery','getMessagesByTags', async (args) => {
@@ -11,16 +10,20 @@ export const handler = async (input: FieldResolveInput) =>
       console.log(args);
       const consDays = args.daysAgo || 30
       const date = new Date()
+      
       if(consDays) date.setDate(date.getDate() - consDays)
       console.log(date)
+
        // Tworzymy tablicę zapytań MongoDB dla każdej grupy słów kluczowych
       const queries = keyWords?.map(group => { const regexPatterns = group?.map(keyword => new RegExp(keyword, "i"));
                                                 return {"messages.text": { $all: regexPatterns}};});
       const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
-      
-for (const collec of args.collections? args.collections : ["Bialystok", "poz"]) {
-       const collection = collec.length>2 ? collec : "Bialystok"
-      
+      const collections = await defineCollections(args.collections)
+    
+console.log(collections);
+
+
+for (const collection of collections) {   
   const aggregationPipeline = [
   {
     $match: {

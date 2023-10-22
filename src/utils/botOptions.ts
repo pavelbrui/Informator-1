@@ -12,11 +12,12 @@ export const buttonTextsEn = {
   AddChatFilterOpt: 'Limit chat names',
   SkipAddChats: 'Skip',
   DaysAgoOptions: ['1 day', '3 days', '7 days', '30 days', 'Other'],
-  NumberMessagesOptions: ['3', '5', '10', '20', 'Other'],
+  NumberMessagesOptions: ['3', '5', '10', '20', 'Max'],
   Settings: 'Settings',
 
   ChatNamesFilter: 'Chat Names Filter',
-  DaysAgo: 'Days Ago',
+  LocationsFilter: 'Locations Filter',
+  DaysAgo: 'Days Ago Filter',
   SearchType: 'Search Type',
   LimitReturnedMessages: 'Limit Returned Messages',
 };
@@ -33,12 +34,13 @@ export const buttonTextsRu = {
   TopicWithFilters: 'Введите тему или описание',
   AddChatFilterOpt: 'Ограничить названия чатов',
   SkipAddChats: 'Пропустить',
-  DaysAgoOptions: ['1 день', '3 дня', '7 дней', '30 дней'],
-  NumberMessagesOptions: ['3', '5', '10', '20'],
+  DaysAgoOptions: ['1 день', '3 дня', '7 дней', '30 дней', 'Other'],
+  NumberMessagesOptions: ['3', '5', '10', '20', '35'],
 
 
   Settings: 'Настройки',
   ChatNamesFilter: 'Фильтр чатов',
+  LocationsFilter: 'Locations Filter',
   DaysAgo: 'Старость',
   SearchType: 'Тип поиска',
   LimitReturnedMessages: 'Лимит сообщений',
@@ -132,7 +134,7 @@ export const options = {
    NumberMessages:{
      reply_markup: {
        force_reply: true, 
-       inline_keyboard: [[{text :'3',  callback_data: 'button_3' }, {text :'5',  callback_data: 'button_5' }, {text :'10',  callback_data: 'button_10' }],[{text :'20',  callback_data: 'button_20' }, {text :buttonTexts.NumberMessagesOptions[4],  callback_data: 'button_other',  color: 'blue'}]], 
+       inline_keyboard: [[{text :'3',  callback_data: 'button_3' }, {text :'5',  callback_data: 'button_5' }, {text :'10',  callback_data: 'button_10' }],[{text :'20',  callback_data: 'button_20' }, {text: buttonTexts.NumberMessagesOptions[4],  callback_data: 'button_35',  color: 'blue'}]], 
        resize_keyboard: true,
        one_time_keyboard: true
      },
@@ -169,7 +171,10 @@ export const options = {
         keyboard: [
           [
             buttonTexts.ChatNamesFilter,
-            buttonTexts.DaysAgo,
+            buttonTexts.LocationsFilter,
+            buttonTexts.DaysAgo
+          ],
+           [
             buttonTexts.SearchType,
             buttonTexts.LimitReturnedMessages,
           ],
