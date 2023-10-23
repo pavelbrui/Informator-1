@@ -2,6 +2,8 @@
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 import { MongOrb, defineCollections } from '../utils/orm.js';
+import { parseText } from '../utils/tools.js';
+
 
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('TelegramQuery','getMessagesByTags', async (args) => {
@@ -72,8 +74,8 @@ for (const collection of collections) {
         
     }
     if(messages.length ===0) return []
-    console.log(messages?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+    console.log(messages?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) ||" ", from: mess.from || mess.from_id })));
     console.log(messages?.length)   
-    return messages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text || " ", from: mess.from || mess.from_id }))
+    return messages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id }))
 })(input.arguments);
 

@@ -33,7 +33,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       
       case infoMess.writeTopicWithFilters:
         settings.topic = msg.text.split('/');
-        await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
+        await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' })
         await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
         break;
 

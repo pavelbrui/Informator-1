@@ -4,6 +4,7 @@ import { resolverFor } from '../zeus/index.js';
 import { MongOrb, defineCollections, getEnv } from '../utils/orm.js';
 
 import { sendToOpenAi } from '../utils/openAi.js';
+import { parseText } from '../utils/tools.js';
 
 
 export const handler = async (input: FieldResolveInput) => 
@@ -68,7 +69,7 @@ export const handler = async (input: FieldResolveInput) =>
           console.log("iteracija!:",collection);   
             }
    if(messagesForGpt.length ===0) return []
-   console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+   console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) , from: mess.from || mess.from_id })));
    console.log(messagesForGpt?.length)  
       
    const response = await sendToOpenAi(messagesForGpt.slice(0, 100), args.topic[0])

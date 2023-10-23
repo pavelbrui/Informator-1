@@ -1,43 +1,44 @@
+
 import { getEnv } from "./orm.js";
+import { cleanText, cleanTextForGtp, findUniqueObjects, parseText, parseTextForReturn } from "./tools.js";
 
 
 
-
-
-export const cleanText = (text: any) => ((typeof text !== 'string') ? text?.toString() : text)?.toLowerCase().replace(/object|\n/g, '').replace(/[^a-z\p{L}]/gu, '');
-export const cleanTextForGtp = (text: any) => ((typeof text !== 'string') ? text?.toString() : text)?.toLowerCase().replace(/object|\n/g, '').replace(/[^ 0-9-a-z.+(),:'":;_\p{L}]/gu, '');
 
 
 export async function sendToOpenAi(messages: any[], topic:string){
-  const allContent = messages.map((message)=>{
+
+  const allContent = findUniqueObjects(messages).map((message)=>{
     const {text, type} = message
-    if (text.length>3 || Array.isArray(text)&&text.filter((mes)=>mes.length>3).length>0) 
-    return  (Array.isArray(text)?  cleanTextForGtp(text.filter((mes)=>mes.length>3).join(', ')) : `"${cleanTextForGtp(text)}"`)
+    const cleanText = cleanTextForGtp(parseText(text))
+    if (cleanText.length>3 ) return  `"${cleanText}"`
   })
 
-    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach. I podam temat - topic, który mnie interesuje, a ty zwracasz mnie tylko te messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat.- Nie zwracaj dublicatów-Zwracaj mnie tylko array z json objektami {text: String}"}, {role: "user", content:`{ messages:['"${allContent}'], topic:'${topic}'}` }]});
+    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach.I podam temat - topic, który mnie interesuje, a ty zwracaj  mnie json z messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat. Zwracaj mnie zawsze tylko array <messages> z json objektami {text: String}"}, {role: "user", content:`{ messages:[${allContent}], topic:'${topic}'}` }]});
       
     
     console.log(completion?.usage);
     
     console.log(completion?.choices[0]?.message);
     if(completion?.error?.message)  return [{text: completion?.error.message, from: "ERROR"}]
-    const findedTexts: any[] = JSON.parse(completion?.choices[0]?.message.content);
-    console.log(findedTexts[0].text)
+    const content: { messages:any[] } | any[]  = JSON.parse(completion?.choices[0]?.message.content);
+    console.log('-------------Array----', Array.isArray(content))
+    const findedTexts = Array.isArray(content)? content : content.messages
+    console.log(findedTexts[0].text || findedTexts[0])
     console.log('-------------clean message----')
-    console.log(cleanText(findedTexts[0].text))
+    console.log(cleanText(findedTexts[0].text || findedTexts[0]))
     const returnMessages = messages.filter((mess) => {
       const cleanedMessageText = cleanText(mess.text);
       console.log("___________________")
       console.log(cleanedMessageText)
       
-      return findedTexts.some(keyword => cleanText(keyword.text) && cleanedMessageText.includes(cleanText(keyword.text)));
+      return findedTexts.some(keyword => cleanText(keyword.text || keyword) && cleanedMessageText.includes(cleanText(keyword.text || keyword)));
     });
     
     if(returnMessages.length === 0) return []
-    console.log(returnMessages?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
+    console.log(returnMessages?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id })));
     console.log(returnMessages?.length)   
-    return returnMessages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text || " ", from: mess.from || mess.from_id }))
+    return findUniqueObjects(returnMessages)?.slice(0, 1001).map((mess: any)=>({ ...mess, text:  parseTextForReturn(mess?.text) || " ", from: mess.from || mess.from_id }))
   }
 
 
@@ -86,6 +87,7 @@ const defaultTextGenerationOptions = {
       };
     };
   };
+
 
 
 

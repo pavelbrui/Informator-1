@@ -14,10 +14,10 @@ const chat_id = callback.message?.chat?.id
             bot.sendMessage(chat_id, infoMess.writeKeyWords,  options.InputValue) //, { parse_mode: 'Markdown' });
          break
 
-   case 'KeyWordsForTopic':
-    await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' }) 
-     await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
-         break
+  //  case 'KeyWordsForTopic':
+  //   await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' }) 
+  //    await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
+  //        break
 
     case 'Topic':
             bot.sendMessage(chat_id, infoMess.writeTopic, options.InputValue)//, { parse_mode: 'Markdown' });

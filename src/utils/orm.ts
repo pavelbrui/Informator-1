@@ -1,6 +1,6 @@
 import { iGraphQL } from 'i-graphql';
 import { MongoClient, ObjectId } from 'mongodb';
-import { cleanText } from './openAi.js';
+import { cleanText } from './tools.js';
 const orm = async () => {
   return iGraphQL<Record<string, any>, { _id: () => string; createdAt: () => string }>({
     _id: () => new ObjectId().toHexString(),
