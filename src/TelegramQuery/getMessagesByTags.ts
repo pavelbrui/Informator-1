@@ -11,9 +11,8 @@ export const handler = async (input: FieldResolveInput) =>
       const keyWords:(string[] | null | undefined)[]|null|undefined = args.keyWords
       console.log(args);
       const consDays = args.daysAgo || 30
-      const date = new Date()
-      
-      if(consDays) date.setDate(date.getDate() - consDays)
+      const date = new Date() 
+      date.setDate(date.getDate() - consDays)
       console.log(date)
 
        // Tworzymy tablicę zapytań MongoDB dla każdej grupy słów kluczowych

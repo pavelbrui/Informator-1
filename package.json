@@ -16,7 +16,8 @@
     "author": "GraphQL Editor Centaur Generator",
     "license": "ISC",
     "devDependencies": {
-        "@types/node": "^18.7.18",
+        "@types/mongodb": "^4.0.7",
+        "@types/node": "^18.18.7",
         "@types/node-fetch": "^2.6.2",
         "@types/node-telegram-bot-api": "^0.61.7",
         "@types/ws": "^8.5.4",
@@ -38,12 +39,12 @@
         "fs": "^0.0.1-security",
         "gei-crud": "^0.8.7",
         "i-graphql": "^0.1.2",
-        "mongoclient": "^1.0.3",
+        "input": "^1.0.1",
         "mongodb": "^5.1.0",
         "node-fetch": "^2.6.0",
         "node-telegram-bot-api": "^0.63.0",
-        "openai": "^4.8.0",
         "stucco-js": "^0.10.18",
+        "telegram": "^2.19.8",
         "ws": "^8.12.0"
     }
 }

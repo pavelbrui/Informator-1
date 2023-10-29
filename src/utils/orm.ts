@@ -24,7 +24,7 @@ export const getEnv = (envName: string) => {
 
 
 export async function defineCollections (collectionFilters?:string[] | null) {
-  const client = new MongoClient(getEnv('MONGO_URL'), {  monitorCommands: true });
+  const client = new MongoClient(getEnv('MONGO_URL2'));
 const allCollections = await client.db('son_dev').listCollections().toArray();
 let collections = allCollections.map((c)=>c.name)
 

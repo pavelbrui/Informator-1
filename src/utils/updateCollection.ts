@@ -11,7 +11,7 @@ import { MongoClient} from 'mongodb';
 
 
 
-const client = new MongoClient(getEnv('MONGO_URL'), { monitorCommands: true });
+const client = new MongoClient(getEnv('MONGO_URL'));
 
 try {
   await client.connect();

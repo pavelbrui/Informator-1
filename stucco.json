@@ -106,12 +106,12 @@
         },
         "TelegramMutation.startBot": {
             "resolve": {
-                "name": "lib\\TelegramMutation\\startBot"
+                "name": "lib/TelegramMutation/startBot"
             }
         },
         "Mutation.telegram": {
             "resolve": {
-                "name": "lib\\Mutation\\telegram"
+                "name": "lib/Mutation/telegram"
             }
         },
         "TelegramMutation.newChats": {

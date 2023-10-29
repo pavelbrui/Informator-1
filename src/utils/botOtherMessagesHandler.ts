@@ -1,7 +1,8 @@
 import { SearchSettings } from "./botCallbackHandler.js"
 import { infoMess, yourSettings } from "./botMessages.js"
-import { buttonTexts, menuOptions, options } from "./botOptions.js"
+import { menuOptions, options } from "./botOptions.js"
 import { filters, gpt } from "./botQueryFunctions.js"
+import { saveChats } from "./saveChats.js"
 
 
 
@@ -35,6 +36,12 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
      await filters(bot, chat_id, settings)
   
   }else{
+
+  if(content === 'get'){
+    saveChats(bot, chat_id, ['https://t.me/bialystok_polska', '@Tenerife_2023'], 'Tenerife', 30).catch(console.error);
+  }
+
+
    console.log(" else block no response")
    await bot.sendMessage(chat_id, "Soon you will be have here simply chat gpt for talking about anythings, but now i can do only search work", menuOptions.SettingsButton);
         await bot.sendMessage(
