@@ -48,7 +48,11 @@ export function yourSettings(settings: SearchSettings ){
     anotherKeyWords: "You can enter other keyWords or change settings",
     success: "Success",
 
-    any: "Anyone message not found"
+    any: "Anyone message not found",
+
+
+    authNumer: "For getting chats, write your phone number:",
+    authCode: "Enter sms code:"
 }
 
 
@@ -90,7 +94,10 @@ const infoMessRu = {
     "anotherKeyWords": "Вы можете ввести другие ключевые слова или изменить настройки",
     "success": "Success",
 
-    any: "Anyone message not found"
+    "any": "Anyone message not found",
+
+    "authNumer": "For getting chats, write your phone number:",
+    "authCode": "Enter sms code:"
 }
 
 

@@ -31,13 +31,13 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
 		getMessagesByTags(
 			chats: ${JSON.stringify(settings.chats || [''])}
 			keyWords: ${JSON.stringify(settings.keyWords)}
-      collections:${JSON.stringify(settings.sities ||[ 'b', 'p' ]|| [''])}
+      collections:${JSON.stringify(settings.sities ||[ 'b', 'p', 't' ])}
       daysAgo: ${settings.daysAgo || 30}
 		){
       chat_name
       chat_id
       id
-      reply_to_message_id
+      reply_to
       date
       from
       text
@@ -66,7 +66,7 @@ export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
   let responseToChat = 'Anyone message not found'
   const getMessagesByTopic = `query {
     telegram {
-        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || ["Белосток"])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities|| ['Bialystok'])},
+        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || ["teneri"])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities|| ['Tenerife'])},
         daysAgo: ${settings.daysAgo || 30}) {
           chat_name
           id
@@ -95,7 +95,7 @@ export async function gptWithFilters(bot: any, chat_id: number, settings: Search
   let responseToChat = 'Anyone message not found'
   const getMessagesByTagsAndTopic = `query {
     telegram {
-        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || ["Белосток"])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities || ['Bialystok'])},
+        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || ["b","t","p"])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities || ['B','t','p','w'])},
         daysAgo: ${settings.daysAgo || 30}, keyWords: ${JSON.stringify(settings.keyWords)}) {
           chat_name
           id

@@ -16,7 +16,7 @@ const bot = new TelegramBot(GPTFree, { polling: true });
  startBot
  }
  }`
- //const runBot = await sendToServer(query)
+ const runBot = await sendToServer(query)
  const runBot2 = sendToServer(query2)
  bot.sendMessage(839036065, `Hej! New chats started successed ${JSON.stringify(runBot2.telegram)}`)
 

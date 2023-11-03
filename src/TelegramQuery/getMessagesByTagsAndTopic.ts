@@ -55,7 +55,7 @@ export const handler = async (input: FieldResolveInput) =>
               $project: {
                 "type": 1,
                 "text": 1,            
-                "from": 1,   
+                //"from": 1,   
                 "from_id": 1,         
                 "date": 1,            
                 "chat_name":1, 

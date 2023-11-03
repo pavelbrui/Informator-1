@@ -20,8 +20,10 @@ export const handler = async (input: FieldResolveInput) =>
                                                 return {"messages.text": { $all: regexPatterns}};});
       const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
       const collections = await defineCollections(args.collections)
+
     
 console.log(collections);
+console.log(chatNameRegexPatterns);
 
 
 for (const collection of collections) {   
@@ -38,7 +40,7 @@ for (const collection of collections) {
   },
   {
     $set: {
-      "messages.chat_id": "$id", 
+      "messages.chat_id": "$_id", 
       "messages.chat_name": "$name" 
     }
   },
@@ -67,6 +69,7 @@ for (const collection of collections) {
   }
   
 ];
+        console.log(aggregationPipeline);
         const result = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
         messages = messages.concat(result)
         //console.log(result);

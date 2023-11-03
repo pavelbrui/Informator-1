@@ -98,7 +98,7 @@ export const ReturnTypes: Record<string,any> = {
 		chat_id:"String",
 		chat_name:"String",
 		message_thread_id:"String",
-		reply_to_message_id:"String",
+		reply_to:"String",
 		photo:"String",
 		type:"String"
 	},

@@ -872,7 +872,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null | Variable<any, stri
 	chat_id?:boolean | `@${string}`,
 	chat_name?:boolean | `@${string}`,
 	message_thread_id?:boolean | `@${string}`,
-	reply_to_message_id?:boolean | `@${string}`,
+	reply_to?:boolean | `@${string}`,
 	photo?:boolean | `@${string}`,
 	type?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
@@ -965,7 +965,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string
 	chat_id?:boolean | `@${string}`,
 	chat_name?:boolean | `@${string}`,
 	message_thread_id?:boolean | `@${string}`,
-	reply_to_message_id?:boolean | `@${string}`,
+	reply_to?:boolean | `@${string}`,
 	photo?:boolean | `@${string}`,
 	type?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
@@ -1060,7 +1060,7 @@ export type ModelTypes = {
 	chat_id?: string | undefined,
 	chat_name?: string | undefined,
 	message_thread_id?: string | undefined,
-	reply_to_message_id?: string | undefined,
+	reply_to?: string | undefined,
 	photo?: string | undefined,
 	type?: string | undefined
 };
@@ -1150,7 +1150,7 @@ export type GraphQLTypes = {
 	chat_id?: string | undefined,
 	chat_name?: string | undefined,
 	message_thread_id?: string | undefined,
-	reply_to_message_id?: string | undefined,
+	reply_to?: string | undefined,
 	photo?: string | undefined,
 	type?: string | undefined
 };

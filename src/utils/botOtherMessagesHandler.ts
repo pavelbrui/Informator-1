@@ -1,3 +1,4 @@
+
 import { SearchSettings } from "./botCallbackHandler.js"
 import { infoMess, yourSettings } from "./botMessages.js"
 import { menuOptions, options } from "./botOptions.js"
@@ -35,12 +36,18 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
       const collections = collection?.split(',') || ["Bialystok","po"]
      await filters(bot, chat_id, settings)
   
-  }else{
-
-  if(content === 'get'){
-    saveChats(bot, chat_id, ['https://t.me/bialystok_polska', '@Tenerife_2023'], 'Tenerife', 30).catch(console.error);
   }
-
+  else if(content === 'Get'){
+    await saveChats(bot, chat_id, ['minaTenerife'], 'Tenerife', 5).catch(console.error);
+  }
+  else if(content?.includes('Get')){
+  const chats = content.split(' ')[1]?.split('/')
+  const sity = content.split(' ')[2]
+  const old = content.split(' ')[3]? content.split(' ')[3] as unknown as number : undefined
+  if (!chats){ await bot.sendMessage(chat_id, "Chats not found in message!")} else {
+  await saveChats(bot, chat_id, chats, sity || 'Random', old || 30).catch(console.error)};
+}
+  else{
 
    console.log(" else block no response")
    await bot.sendMessage(chat_id, "Soon you will be have here simply chat gpt for talking about anythings, but now i can do only search work", menuOptions.SettingsButton);

@@ -35,8 +35,11 @@ export const handler = async (input: FieldResolveInput) =>
       if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id,from_id, content, date }}},  { upsert: true });
      switch (content) {
       case '/start':
+        console.log("HHHHHHHHHHHHHHHHHHHH");
+        
         await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
         await bot.sendMessage(chat_id, infoMess.startTypeSearch , options.SearchType);
+
         break;
     
       case buttonTexts.Settings :

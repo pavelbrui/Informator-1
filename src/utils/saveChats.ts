@@ -1,73 +1,57 @@
 import {TelegramClient } from 'telegram';
-//import input from 'input'
-import { MongOrb } from './orm.js';
-
-const mongo_uri = 'mongodb+srv://Aexol:9MNKgBB8cfpwIe0u@testowabaza.hbefbdz.mongodb.net/?retryWrites=true&w=majority'
-const mongo_db = 'Telegram'
-
-const apiId = 23922055
-const apiHash = '3455944cf82c8452feb11ae15887761f'
-
-const mongoUrl = "mongodb+srv://son_dev:87gG9XFXSbdyhqz@aexoldev.umnle.mongodb.net/son_dev"; //?retryWrites=true&w=majority";
-const dbName = 'Telegram';
+import { MongOrb, getEnv } from './orm.js';
+import { options } from './botOptions.js';
+import { infoMess } from './botMessages.js';
 
 
 export async function saveChats(bot:any, chat_id:number, chatNames:string[], city:string, maxOld?: number) {
   const date = new Date()
   date.setDate(date.getDate() - (maxOld || 30))
   const startDate = date.getTime() / 1000;
-
   const chatsCollection = await MongOrb(city||'messagesDDD');
+  const apiId = getEnv('API_ID') as unknown as number 
+  const apiHash = getEnv('API_HASH')
   const client = new TelegramClient('tgparse', apiId, apiHash, { connectionRetries: 5 });
   await client.connect();
-//   if (!await client.checkAuthorization()){
-//     bot.sendMessage(
-//       chat_id, "write Authrization")
-//     await client.signInUser({
-//       apiId :23922055,
-//       apiHash : '3455944cf82c8452feb11ae15887761f'
-//     },{
-//     phoneNumber: async () =>  await input.text("number ?"),
-//     password: async () => await input.text("password?"),
-//     phoneCode: async () => await input.text("Code ?"),
-//     onError: (err) => console.log(err),
-//     })
-//  }
+  if (!await client.checkAuthorization()) signInUser(bot, chat_id, client, apiHash,apiId);
   
+
   const chats:any[] = await client.getEntity(chatNames)
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
 
-  
   for (const chat of chats) {
     console.log(chat)
     const messages:any[] = await client.getMessages(chat.id, { reverse:true, offsetDate: startDate });
     
    const messageArray =[]
     for (const message of messages) {
+      console.log(message)
       messageArray.push({
         replyTo: message.replyTo?.replyToMsgId,
-        chatId: message.peerId?.channelId?.value,
-        messageId: message.id,
+       // chat_id: message.peerId?.channelId?.value,
+        _id: message.id,
         text: message.message,
         date: new Date(message.date * 1000),
-        fromId: message.fromId?.userId?.value
+        from_id: message.fromId?.userId?.value
       });
     }
   
     const saveChat = {
       username: chat.username,
       class_name: chat.className,
-      chat_name: chat.title,
-      chat_id: chat.id,
+      name: chat.title,
+      _id: chat.id.value,
       messages: messageArray,
       }
-      chatsCollection.collection.updateOne({chat_id: chat.id},{$set:{username: chat.username,class_name: chat.className,chat_name: chat.title}, $push: {messages: messageArray}},  { upsert: true });
+      const update = await chatsCollection.collection.updateOne({_id: chat.id.value},
+        {$set:{username: chat.username,class_name: chat.className, name: chat.title},
+         $addToSet: {messages:{$each: messageArray}}
+        },  { upsert: true });
+
+      if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
   }
+  return true
 }
-
-
-
-
 
 
 
@@ -88,4 +72,52 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
 //   //console.log(new Date(message.date * 1000));
 //   console.log(message);
   
-// }
+
+
+
+
+async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,apiId: number) {
+  try {
+    let numb = '';
+
+    await bot.sendMessage(chat_id, infoMess.authNumer, options.InputValue);
+    await new Promise((resolve) => {
+      bot.on('message', async (msg) => {
+        console.log(msg.text);
+        numb = msg.text;
+        await bot.off('message');
+        resolve(msg);
+      });
+    });
+
+    // Oczekiwanie na odpowiedź z kodem SMS
+    const code = async () =>  {
+      await bot.sendMessage(chat_id, infoMess.authCode, options.InputValue);
+      let cod = ""
+      await new Promise((resolve) => {
+      bot.on('message', async (msg) => {
+        console.log(msg.text);
+        cod = msg.text as string;
+        await bot.off('message');
+        resolve(msg);
+      });
+      
+    })
+    return cod
+  };
+
+    // Uruchomienie funkcji signInUser, przekazując numer telefonu i kod SMS
+    await client.signInUser({
+      apiId,
+      apiHash,
+    }, {
+      phoneNumber: async () => numb,
+      phoneCode: async () => await code(),
+      onError: (err) => console.log(err),
+    });
+
+    console.log("User successfully signed in.");
+  } catch (error) {
+    console.error("Error during sign-in:", error);
+  }
+}  
