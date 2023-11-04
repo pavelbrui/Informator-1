@@ -22,18 +22,26 @@ export const handler = async (input: FieldResolveInput) =>
       const collections = await defineCollections(args.collections)
 
     
-console.log(collections);
+
 console.log(chatNameRegexPatterns);
 
-
-for (const collection of collections) {   
+for (const collection of collections) { 
+  console.log(collection);  
   const aggregationPipeline = [
   {
-    $match: {
+    $match:
+     {$or:[{
       name: {
         $in: chatNameRegexPatterns 
       }
-    }
+    },
+    {
+      username: {
+        $in: chatNameRegexPatterns 
+      }
+    }]
+  }
+
   },
   {
     $unwind: "$messages"
@@ -69,15 +77,15 @@ for (const collection of collections) {
   }
   
 ];
-        console.log(aggregationPipeline);
+        //console.log(aggregationPipeline);
         const result = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
         messages = messages.concat(result)
         //console.log(result);
         
     }
     if(messages.length ===0) return []
-    console.log(messages?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) ||" ", from: mess.from || mess.from_id })));
-    console.log(messages?.length)   
-    return messages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id }))
+    console.log(messages?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) ||" ", from: mess.from || mess.from_id || "Bot" })));
+    console.log("---------- All:", messages?.length)   
+    return messages?.slice(0, 1001).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id || "Bot" }))
 })(input.arguments);
 

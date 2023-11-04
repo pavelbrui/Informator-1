@@ -30,7 +30,7 @@ export const handler = async (input: FieldResolveInput) =>
           },
           {
             $set: {
-              "messages.chat_id": "$id", 
+              "messages.chat_id": "$_id", 
               "messages.chat_name": "$name" 
             }
           },
@@ -45,7 +45,7 @@ export const handler = async (input: FieldResolveInput) =>
           {
             $project: {
               "text": 1,            
-              "from": 1,   
+             // "from": 1,   
               "from_id": 1,         
               "date": 1,            
               "chat_name":1, 
@@ -63,17 +63,18 @@ export const handler = async (input: FieldResolveInput) =>
             console.log("---------- All:", messagesForGpt?.length)  
                
             let messages: any[] = []
-            let n  = 3// Math.ceil(messagesForGpt / 100)
+            let n  =  Math.ceil(messagesForGpt.length / 100)
 
             // limiter
-            if(n>5) n=3
+            if(n>5) n=5
 
             for (let i = 1; i <= n; i++) {
             const chunkMessages= await sendToOpenAi(messagesForGpt.slice((i-1)*100, i*100), args.topic[0])
+            console.log(chunkMessages)
               messages = messages.concat(chunkMessages)
             }
             if(messages?.length&&messages?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
-                'createdAt')({topic: args.topic, chats: args.chats, messages});
+                'createdAt')({topic: args.topic, chats: args.chats,response: messages});
          
            return messages
     }

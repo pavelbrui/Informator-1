@@ -1,7 +1,7 @@
 import {TelegramClient } from 'telegram';
 import { MongOrb, getEnv } from './orm.js';
-import { options } from './botOptions.js';
-import { infoMess } from './botMessages.js';
+import { options } from '../BOT/Options.js';
+import { infoMess } from '../BOT/Messages.js';
 
 
 export async function saveChats(bot:any, chat_id:number, chatNames:string[], city:string, maxOld?: number) {
@@ -15,42 +15,42 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
   await client.connect();
   if (!await client.checkAuthorization()) signInUser(bot, chat_id, client, apiHash,apiId);
   
-
+  try{
   const chats:any[] = await client.getEntity(chatNames)
+  if (!chats) await bot.sendMessage(chat_id, `error ${chatNames[0]} !!!`)
+
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
 
   for (const chat of chats) {
-    console.log(chat)
+   // console.log("chat:", chat)
     const messages:any[] = await client.getMessages(chat.id, { reverse:true, offsetDate: startDate });
     
    const messageArray =[]
     for (const message of messages) {
-      console.log(message)
+      //console.log(message)
       messageArray.push({
         replyTo: message.replyTo?.replyToMsgId,
        // chat_id: message.peerId?.channelId?.value,
         _id: message.id,
         text: message.message,
-        date: new Date(message.date * 1000),
+        date: new Date(message.date * 1000).toISOString().slice(0,16),
         from_id: message.fromId?.userId?.value
       });
     }
   
-    const saveChat = {
-      username: chat.username,
-      class_name: chat.className,
-      name: chat.title,
-      _id: chat.id.value,
-      messages: messageArray,
-      }
       const update = await chatsCollection.collection.updateOne({_id: chat.id.value},
         {$set:{username: chat.username,class_name: chat.className, name: chat.title},
          $addToSet: {messages:{$each: messageArray}}
         },  { upsert: true });
-
+      console.log(update)
       if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
   }
   return true
+}catch(e){
+  console.log(e)
+
+  await bot.sendMessage(chat_id, ` ${e} !!!`)
+}
 }
 
 
@@ -82,7 +82,7 @@ async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,
 
     await bot.sendMessage(chat_id, infoMess.authNumer, options.InputValue);
     await new Promise((resolve) => {
-      bot.on('message', async (msg) => {
+      bot.on('message', async (msg:any) => {
         console.log(msg.text);
         numb = msg.text;
         await bot.off('message');
@@ -95,7 +95,7 @@ async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,
       await bot.sendMessage(chat_id, infoMess.authCode, options.InputValue);
       let cod = ""
       await new Promise((resolve) => {
-      bot.on('message', async (msg) => {
+      bot.on('message', async (msg: any) => {
         console.log(msg.text);
         cod = msg.text as string;
         await bot.off('message');
@@ -113,11 +113,11 @@ async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,
     }, {
       phoneNumber: async () => numb,
       phoneCode: async () => await code(),
-      onError: (err) => console.log(err),
     });
-
+    await bot.sendMessage(chat_id, "User successfully signed in.");
     console.log("User successfully signed in.");
   } catch (error) {
+    await bot.sendMessage(chat_id, "Error during sign-in: "+ error);
     console.error("Error during sign-in:", error);
   }
 }  

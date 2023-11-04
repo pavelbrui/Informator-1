@@ -7,14 +7,22 @@ import { cleanText, cleanTextForGtp, findUniqueObjects, parseText, parseTextForR
 
 
 export async function sendToOpenAi(messages: any[], topic:string){
-
+const contextForGpt = "You are my very rational assistant who searches information for me. I will provide a large dialogue - messages, where people discuss various topics.I will also provide my topic and you should read each message, try to understand its topic and return to me a JSON with messages where you found something about my topic. Always return only an array <messages> with JSON objects {text: String}"
   const allContent = findUniqueObjects(messages).map((message)=>{
     const {text, type} = message
     const cleanText = cleanTextForGtp(parseText(text))
     if (cleanText.length>3 ) return  `"${cleanText}"`
   })
 
-    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'), { messages: [{ role: "system", content: "Jestesz moim bardzo rozumnym pomocnikiem który poszukuje dla mnie informacji. Podam ci duży dialog - messages, gdzie ludzi piszą o różnych tematach.I podam temat - topic, który mnie interesuje, a ty zwracaj  mnie json z messages, gdzie znalazłeś coś o mój temat. -Powinieneś przeczytać każdą wiadomość i spróbować zrozumieć jej temat. Zwracaj mnie zawsze tylko array <messages> z json objektami {text: String}"}, {role: "user", content:`{ messages:[${allContent}], topic:'${topic}'}` }]});
+    const completion = await openAIcreateChatCompletion(getEnv('OPEN_AI_SECRET'),
+     { messages: [{
+       role: "system", 
+       content: contextForGpt
+      }, 
+     {
+       role: "user", 
+       content:`{ messages:[${allContent}], topic:'${topic}'}` 
+     }]});
       
     
     console.log(completion?.usage);

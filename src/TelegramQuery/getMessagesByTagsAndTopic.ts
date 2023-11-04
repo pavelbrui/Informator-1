@@ -34,7 +34,7 @@ export const handler = async (input: FieldResolveInput) =>
             },
             {
               $set: {
-                "messages.chat_id": "$id", 
+                "messages.chat_id": "$_id", 
                 "messages.chat_name": "$name" 
               }
             },
@@ -70,13 +70,25 @@ export const handler = async (input: FieldResolveInput) =>
             }
    if(messagesForGpt.length ===0) return []
    console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) , from: mess.from || mess.from_id })));
-   console.log(messagesForGpt?.length)  
-      
-   const response = await sendToOpenAi(messagesForGpt.slice(0, 100), args.topic[0])
-   if(response?.length&&response?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
-       'createdAt')({topic: args.topic, chats: args.chats, response});
+   console.log("---------- All:", messagesForGpt?.length)  
+    
 
-  return  response
+   let messages: any[] = []
+   let n  =  Math.ceil(messagesForGpt.length / 100)
+
+   // limiter
+   if(n>5) n=3
+
+   for (let i = 1; i <= n; i++) {
+   const chunkMessages= await sendToOpenAi(messagesForGpt.slice((i-1)*100, i*100), args.topic[0])
+   console.log(chunkMessages)
+     messages = messages.concat(chunkMessages)
+   }
+
+   if(messages?.length&&messages?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
+                'createdAt')({topic: args.topic, chats: args.chats,response: messages});
+
+  return  messages
     }
 )(input.arguments);
 

@@ -25,8 +25,8 @@ export const getEnv = (envName: string) => {
 
 export async function defineCollections (collectionFilters?:string[] | null) {
   const client = new MongoClient(getEnv('MONGO_URL'));
-const allCollections = await client.db(getEnv('BASE_NAME')).listCollections().toArray();
-let collections = allCollections.map((c)=>c.name)
+  const allCollections = await client.db(getEnv('BASE_NAME')).listCollections().toArray();
+  let collections = allCollections.map((c)=>c.name)
 
 if(collectionFilters?.length && collectionFilters[0]&&collectionFilters[0].length>0) {
   collections = collections.filter((col) => {

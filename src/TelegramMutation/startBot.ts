@@ -3,11 +3,11 @@ import { resolverFor } from '../zeus/index.js';
 import { MongOrb, getEnv } from '../utils/orm.js';
 import TelegramBot from 'node-telegram-bot-api';
 
-import { options, menuOptions, buttonTexts } from '../utils/botOptions.js';
-import { callbackHandler} from '../utils/botCallbackHandler.js';
-import { replyToMessageHandler } from '../utils/botReplyHandler.js';
-import { otherMessagesHandler } from '../utils/botOtherMessagesHandler.js';
-import { infoMess, yourSettings } from "../utils/botMessages.js"
+import { options, menuOptions, buttonTexts } from '../BOT/Options.js';
+import { callbackHandler} from '../BOT/botCallbackHandler.js';
+import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
+import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
+import { infoMess, yourSettings } from "../BOT/Messages.js"
 
 
 
@@ -109,7 +109,6 @@ export const handler = async (input: FieldResolveInput) =>
      
   bot.on('callback_query', async (callback) => {
     
-    //console.log(callback.message)
     const chat_id = callback.message?.chat.id 
     try {
     if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
