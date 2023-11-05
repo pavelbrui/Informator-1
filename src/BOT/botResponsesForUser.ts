@@ -3,7 +3,7 @@ import { infoMess } from "./Messages.js";
 import { menuOptions, options } from "./Options.js";
 
 
-const responseString = (messages: any)=>( messages.map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString())
+const responseString = (messages: any)=>( messages.map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text.length>300? m.text +'\n https://t.me/'+m.chat_id : m.text  }"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString())
 
 export async function responseForUser(data:any, bot: any, chat_id: number, settings: SearchSettings ){
     let response = infoMess.any

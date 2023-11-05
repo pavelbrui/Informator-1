@@ -9,46 +9,21 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
   date.setDate(date.getDate() - (maxOld || 30))
   const startDate = date.getTime() / 1000;
   const chatsCollection = await MongOrb(city||'messagesDDD');
-  const apiId = getEnv('API_ID') as unknown as number 
-  const apiHash = getEnv('API_HASH')
-  const client = new TelegramClient('tgparse', apiId, apiHash, { connectionRetries: 5 });
-  await client.connect();
-  if (!await client.checkAuthorization()) signInUser(bot, chat_id, client, apiHash,apiId);
-  
+  const client = await tgConnect() 
+  if (!await client.checkAuthorization()) signInUser(bot, chat_id, client);
   try{
   const chats:any[] = await client.getEntity(chatNames)
   if (!chats) await bot.sendMessage(chat_id, `error ${chatNames[0]} !!!`)
 
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
-
   for (const chat of chats) {
    // console.log("chat:", chat)
-    const messages:any[] = await client.getMessages(chat.id, { reverse:true, offsetDate: startDate });
-    
-   const messageArray =[]
-    for (const message of messages) {
-      //console.log(message)
-      messageArray.push({
-        replyTo: message.replyTo?.replyToMsgId,
-       // chat_id: message.peerId?.channelId?.value,
-        _id: message.id,
-        text: message.message,
-        date: new Date(message.date * 1000).toISOString().slice(0,16),
-        from_id: message.fromId?.userId?.value
-      });
-    }
-  
-      const update = await chatsCollection.collection.updateOne({_id: chat.id.value},
-        {$set:{username: chat.username,class_name: chat.className, name: chat.title},
-         $addToSet: {messages:{$each: messageArray}}
-        },  { upsert: true });
-      console.log(update)
-      if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
+    const update = await saveOneChat(client, chatsCollection.collection, chat, startDate )
+    if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
   }
   return true
 }catch(e){
   console.log(e)
-
   await bot.sendMessage(chat_id, ` ${e} !!!`)
 }
 }
@@ -56,27 +31,56 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
 
 
 
-// async function listDialogs() {
-//   // Iterate over all dialogs
-//   for await (const dialog of client.iterDialogs({})) {
-//     //console.log(`${dialog.id}: ${dialog.title}`);
-//   }
-// }
-// const startDate = new Date('2023-09-16T12:00:00Z').getTime() / 1000;
-// // Call the function to list dialogs
-// listDialogs();
-
-// for await (const message of client.iterMessages(chats[0], { reverse:true, offsetDate: startDate })) {
-//   //console.log(message.text);
-//   //console.log(startDate, message.date );
-//   //console.log(new Date(message.date * 1000));
-//   console.log(message);
+export async function saveOneChat(client:any, collection:any, chat: any, startDate: number){
+  const messages:any[] = await client.getMessages(chat.id || {value: chat._id}, { reverse:true, offsetDate: startDate });
   
+ const messageArray =[]
+  for (const message of messages) {
+    //console.log(message)
+    messageArray.push({
+      replyTo: message.replyTo?.replyToMsgId,
+     // chat_id: message.peerId?.channelId?.value,
+      _id: message.id,
+      text: message.message,
+      date: new Date(message.date * 1000).toISOString().slice(0,16),
+      from_id: message.fromId?.userId?.value
+    });
+  }
+
+  const update = await collection.updateOne(
+     {_id: chat.id.value || chat._id},
+     {$set:{
+        username: chat.username, 
+        class_name: chat.className,
+        name: chat.title,
+        updateAt: new Date().toISOString()
+           },
+       $addToSet:
+        {messages: {$each: messageArray}}
+      }, 
+       { upsert: true });
+    console.log(update)
+    return update
+ }
 
 
 
 
-async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,apiId: number) {
+
+
+
+
+
+ export async function tgConnect(){
+  const apiId = getEnv('API_ID') as unknown as number 
+  const apiHash = getEnv('API_HASH')
+  const client = new TelegramClient('tgparse', apiId, apiHash, { connectionRetries: 5 });
+  await client.connect();
+  return client
+  }
+
+
+async function signInUser(bot:any, chat_id:number, client: any, apiHash?: string,apiId?: number) {
   try {
     let numb = '';
 
@@ -108,9 +112,10 @@ async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,
 
     // Uruchomienie funkcji signInUser, przekazując numer telefonu i kod SMS
     await client.signInUser({
-      apiId,
-      apiHash,
-    }, {
+      apiId: apiId || (getEnv('API_ID') as unknown as number),
+      apiHash: apiHash || getEnv('API_HASH')
+    },
+       {
       phoneNumber: async () => numb,
       phoneCode: async () => await code(),
     });
@@ -121,3 +126,22 @@ async function signInUser(bot:any, chat_id:number, client: any, apiHash: string,
     console.error("Error during sign-in:", error);
   }
 }  
+
+
+
+// async function listDialogs() {
+//   // Iterate over all dialogs
+//   for await (const dialog of client.iterDialogs({})) {
+//     //console.log(`${dialog.id}: ${dialog.title}`);
+//   }
+// }
+// const startDate = new Date('2023-09-16T12:00:00Z').getTime() / 1000;
+// // Call the function to list dialogs
+// listDialogs();
+
+// for await (const message of client.iterMessages(chats[0], { reverse:true, offsetDate: startDate })) {
+//   //console.log(message.text);
+//   //console.log(startDate, message.date );
+//   //console.log(new Date(message.date * 1000));
+//   console.log(message);
+  

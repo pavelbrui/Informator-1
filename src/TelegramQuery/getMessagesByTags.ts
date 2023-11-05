@@ -41,14 +41,13 @@ for (const collection of collections) {
       }
     }]
   }
-
   },
   {
     $unwind: "$messages"
   },
   {
     $set: {
-      "messages.chat_id": "$_id", 
+      "messages.chat_id":  { $ifNull: ["$username", "$_id"] }, 
       "messages.chat_name": "$name" 
     }
   },

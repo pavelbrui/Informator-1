@@ -19,18 +19,25 @@ export const handler = async (input: FieldResolveInput) =>
   for (const collection of collections) {  
     const aggregationPipeline = [
           {
-            $match: {
-              name: {
-                $in: chatNameRegexPatterns 
-              }
-            }
+            $match:
+     {$or:[{
+      name: {
+        $in: chatNameRegexPatterns 
+      }
+    },
+    {
+      username: {
+        $in: chatNameRegexPatterns 
+      }
+    }]
+  }
           },
           {
             $unwind: "$messages"
           },
           {
             $set: {
-              "messages.chat_id": "$_id", 
+              "messages.chat_id": { $ifNull: ["$username", "$_id"] }, 
               "messages.chat_name": "$name" 
             }
           },

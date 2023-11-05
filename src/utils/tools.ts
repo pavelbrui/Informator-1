@@ -23,7 +23,7 @@ function levenshteinDistance(a:string, b:string) {
     return similarityPercentage >= 95;
   }
  
-  export const parseTextForReturn = (text:any)=>parseText(text).length>300 ? parseText(text).slice(0, 300) + '......' : parseText(text)
+  export const parseTextForReturn = (text:any)=>parseText(text).length>300 ? parseText(text).slice(0, 300).concat('......') : parseText(text)
   export const parseText = (text:any)=>Array.isArray(text) ? text?.map((t)=>(typeof t === 'object' ? JSON.stringify(t): t)).join(", ") : typeof text === 'object' ? JSON.stringify(text) : text
 
   export const cleanText = (text: any) => parseText(text).toLowerCase().replace(/object|\n/g, '').replace(/[^a-z\p{L}]/gu, '');

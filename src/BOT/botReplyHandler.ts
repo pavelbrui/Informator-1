@@ -3,6 +3,7 @@ import { SearchSettings } from './botCallbackHandler.js';
 import { options, menuOptions, buttonTexts } from './Options.js';
 import {filters, gpt, gptWithFilters } from './QueryFunctions.js';
 import { infoMess, yourSettings } from "./Messages.js"
+import { getMongoChats } from '../utils/updateChats.js';
 
 
 
@@ -47,15 +48,12 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
          break;
      
     
-      // case infoMess.writeKeyWordsForTopicWithFilters:
-      //   settings.keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: string) => w.split('&'));
-      //   await bot.sendMessage(chat_id, "Enter filter", options.InputValue);
-      //   break;
-    
+   
   
       case infoMess.chatNamesFilterReq:
       case infoMess.chatNamesFilterOpt:
         settings.chats = msg.text.split('/');
+        await getMongoChats(settings.chats || [], settings.sities )
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
         if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
         await bot.sendMessage(
@@ -66,6 +64,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         if(text === infoMess.chatNames) settings.chats = msg.text.split('/');
       case infoMess.sities:
         if(text === infoMess.sities)   settings.sities = msg.text.split('/');
+        await getMongoChats(settings.chats || [], settings.sities )
       case infoMess.otherDaysAgo: 
         if(text === infoMess.otherDaysAgo)  settings.daysAgo = msg.text;
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SearchSettings);

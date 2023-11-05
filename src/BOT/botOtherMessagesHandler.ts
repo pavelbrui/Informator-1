@@ -2,7 +2,7 @@
 import { SearchSettings } from "./botCallbackHandler.js"
 import { infoMess, yourSettings } from "./Messages.js"
 import { menuOptions, options } from "./Options.js"
-import { filters, gpt } from "./QueryFunctions.js"
+import { filters, gpt, gptWithFilters } from "./QueryFunctions.js"
 import { saveChats } from "../utils/saveChats.js"
 
 
@@ -48,6 +48,29 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
   await saveChats(bot, chat_id, chats, sity || 'Random', old || 30).catch(console.error)};
 }
   else{
+    
+    await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
+    switch (settings.searchType) {
+      case "Filters":
+           settings.keyWords = content?.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
+           await filters(bot, chat_id, settings);
+           await bot.sendMessage(chat_id, infoMess.anotherKeyWords, options.Search);
+   
+      case "GPT":
+          settings.topic = content?.split('/');
+          await gpt(bot, chat_id, settings);
+          await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchGPT);
+
+      case "Filters+GPT":
+          if (settings.topic) {
+            settings.keyWords = content?.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'))
+          }else{
+            settings.topic = content?.split('/')
+          };
+           await gptWithFilters(bot, chat_id, settings);
+           await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchFiltersAndGPT);
+    }
+
 
    console.log(" else block no response")
    await bot.sendMessage(chat_id, "Soon you will be have here simply chat gpt for talking about anythings, but now i can do only search work", menuOptions.SettingsButton);
