@@ -3,16 +3,18 @@ import { infoMess } from "./Messages.js";
 import { menuOptions, options } from "./Options.js";
 
 
-const responseString = (messages: any)=>( messages.map((m:any)=>`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text.length>300? m.text +'\n https://t.me/'+m.chat_id : m.text  }"\n                           ${m.date.slice(0, -3).replace('T', " ")}\n `)?.toString())
+const responseString = (messages: any)=>
+  ( messages.map((m:any)=>
+`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}\nhttps://t.me/${m.chat_id }/${m._id}"\n                           ${m.date.replace('T', " ")}\n `)?.toString())
 
 export async function responseForUser(data:any, bot: any, chat_id: number, settings: SearchSettings ){
-    let response = infoMess.any
+    let response = infoMess.anyoneMessage
     if (!data.telegram) {
       console.log(data)
     await bot.sendMessage(chat_id, "Connection error", menuOptions.SettingsButton);
     return
     }
-    const messages = data.telegram.getMessagesByTags || data.telegram.getMessagesByTagsAndTopic || data?.telegram?.getMessagesByTopic
+    const messages = data.telegram.getMessagesByTags || data.telegram.getMessagesByTagsAndTopic || data.telegram.getMessagesByTopic
     if (!messages?.length) {
       console.log(data)
     await bot.sendMessage(chat_id, response, menuOptions.SettingsButton);
@@ -28,7 +30,7 @@ export async function responseForUser(data:any, bot: any, chat_id: number, setti
     
      
     for (n; n < messages.length; n += limit) {
-      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} messages>>`, options.ShowNext)
+      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} from ${messages?.length} messages >>`, options.ShowNext)
       await new Promise((resolve) => {
         bot.on('callback_query', async (callback:any) => {
           const text = callback.data 

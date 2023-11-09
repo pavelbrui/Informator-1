@@ -1,7 +1,5 @@
 import  fetch from 'node-fetch'
-import { options, menuOptions } from './Options.js';
 import { SearchSettings } from './botCallbackHandler.js';
-import { infoMess } from './Messages.js';
 import { responseForUser } from './botResponsesForUser.js';
 
 export async function sendToServer(query: string) {
@@ -26,18 +24,17 @@ export async function sendToServer(query: string) {
 
 
 export async function filters(bot: any, chat_id: number, settings: SearchSettings ){
-  let response = infoMess.any
   const getMessagesByTags = `query {
 	telegram{
 		getMessagesByTags(
 			chats: ${JSON.stringify(settings.chats || [''])}
 			keyWords: ${JSON.stringify(settings.keyWords)}
-      collections:${JSON.stringify(settings.sities ||[ 'b', 'p', 't' ])}
+      collections:${JSON.stringify(settings.sities)||['']}
       daysAgo: ${settings.daysAgo || 30}
 		){
       chat_name
       chat_id
-      id
+      _id
       reply_to
       date
       from
@@ -56,13 +53,13 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
 
 
 export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
-  let responseToChat = 'Anyone message not found'
   const getMessagesByTopic = `query {
     telegram {
-        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities|| ['Tenerife'])},
+        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities|| [''])},
         daysAgo: ${settings.daysAgo || 30}) {
           chat_name
-          id
+          chat_id
+          _id
           date
           from
           text
@@ -77,13 +74,13 @@ export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
 
 
 export async function gptWithFilters(bot: any, chat_id: number, settings: SearchSettings ){
-  let responseToChat = 'Anyone message not found'
   const getMessagesByTagsAndTopic = `query {
     telegram {
-        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities || ['B','t','p','w'])},
+        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities||[''])},
         daysAgo: ${settings.daysAgo || 30}, keyWords: ${JSON.stringify(settings.keyWords)}) {
           chat_name
-          id
+          chat_id
+          _id
           date
           from
           text

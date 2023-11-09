@@ -94,7 +94,7 @@ export const ReturnTypes: Record<string,any> = {
 		from_id:"String",
 		text:"String",
 		date:"String",
-		id:"String",
+		_id:"String",
 		chat_id:"String",
 		chat_name:"String",
 		message_thread_id:"String",
@@ -104,7 +104,7 @@ export const ReturnTypes: Record<string,any> = {
 	},
 	Chat:{
 		type:"String",
-		id:"String",
+		_id:"String",
 		name_id:"String",
 		name:"String",
 		updateAt:"String",

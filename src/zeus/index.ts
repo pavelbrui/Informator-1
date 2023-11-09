@@ -868,7 +868,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null | Variable<any, stri
 	from_id?:boolean | `@${string}`,
 	text?:boolean | `@${string}`,
 	date?:boolean | `@${string}`,
-	id?:boolean | `@${string}`,
+	_id?:boolean | `@${string}`,
 	chat_id?:boolean | `@${string}`,
 	chat_name?:boolean | `@${string}`,
 	message_thread_id?:boolean | `@${string}`,
@@ -879,7 +879,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null | Variable<any, stri
 }>;
 	["Chat"]: AliasType<{
 	type?:boolean | `@${string}`,
-	id?:boolean | `@${string}`,
+	_id?:boolean | `@${string}`,
 	name_id?:boolean | `@${string}`,
 	name?:boolean | `@${string}`,
 	updateAt?:boolean | `@${string}`,
@@ -961,7 +961,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string
 	from_id?:boolean | `@${string}`,
 	text?:boolean | `@${string}`,
 	date?:boolean | `@${string}`,
-	id?:boolean | `@${string}`,
+	_id?:boolean | `@${string}`,
 	chat_id?:boolean | `@${string}`,
 	chat_name?:boolean | `@${string}`,
 	message_thread_id?:boolean | `@${string}`,
@@ -972,7 +972,7 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string
 }>;
 	["Chat"]: AliasType<{
 	type?:boolean | `@${string}`,
-	id?:boolean | `@${string}`,
+	_id?:boolean | `@${string}`,
 	name_id?:boolean | `@${string}`,
 	name?:boolean | `@${string}`,
 	updateAt?:boolean | `@${string}`,
@@ -1056,7 +1056,7 @@ export type ModelTypes = {
 	from_id?: string | undefined,
 	text: string,
 	date?: string | undefined,
-	id?: string | undefined,
+	_id?: string | undefined,
 	chat_id?: string | undefined,
 	chat_name?: string | undefined,
 	message_thread_id?: string | undefined,
@@ -1066,7 +1066,7 @@ export type ModelTypes = {
 };
 	["Chat"]: {
 		type?: string | undefined,
-	id?: string | undefined,
+	_id?: string | undefined,
 	name_id?: string | undefined,
 	name: string,
 	updateAt?: string | undefined,
@@ -1146,7 +1146,7 @@ export type GraphQLTypes = {
 	from_id?: string | undefined,
 	text: string,
 	date?: string | undefined,
-	id?: string | undefined,
+	_id?: string | undefined,
 	chat_id?: string | undefined,
 	chat_name?: string | undefined,
 	message_thread_id?: string | undefined,
@@ -1157,7 +1157,7 @@ export type GraphQLTypes = {
 	["Chat"]: {
 	__typename: "Chat",
 	type?: string | undefined,
-	id?: string | undefined,
+	_id?: string | undefined,
 	name_id?: string | undefined,
 	name: string,
 	updateAt?: string | undefined,

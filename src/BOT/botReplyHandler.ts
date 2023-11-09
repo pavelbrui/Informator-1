@@ -3,7 +3,7 @@ import { SearchSettings } from './botCallbackHandler.js';
 import { options, menuOptions, buttonTexts } from './Options.js';
 import {filters, gpt, gptWithFilters } from './QueryFunctions.js';
 import { infoMess, yourSettings } from "./Messages.js"
-import { getMongoChats } from '../utils/updateChats.js';
+import { findAndUpdateChats } from '../utils/updateChats.js';
 
 
 
@@ -17,8 +17,9 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         break;
     
       case infoMess.writeKeyWords:
+      case infoMess.anotherKeyWords:
         settings.keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
-        await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................`);
+        await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n......................⏳`);
         await filters(bot, chat_id, settings);
         await bot.sendMessage(chat_id, infoMess.anotherKeyWords, options.Search);
         break;
@@ -27,7 +28,6 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         settings.topic = msg.text.split('/');
         await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
         await gpt(bot, chat_id, settings);
-
         await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchGPT);
         break;
     
@@ -38,10 +38,9 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
         break;
 
-        case infoMess.writeKeyWordsForTopic:
+      case infoMess.writeKeyWordsForTopic:
           settings.keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
-          await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................`);
-          console.log(settings);
+          await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n..........................\n ....⏳`);
           
           await gptWithFilters(bot, chat_id, settings);
           await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchFiltersAndGPT);
@@ -53,9 +52,9 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       case infoMess.chatNamesFilterReq:
       case infoMess.chatNamesFilterOpt:
         settings.chats = msg.text.split('/');
-        await getMongoChats(settings.chats || [], settings.sities )
+        findAndUpdateChats(settings.chats || [], settings.sities )
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
-        if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
+        //if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
         await bot.sendMessage(
           chat_id, settings.searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeTopicWithFilters, options.InputValue);
         break;
@@ -64,14 +63,14 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         if(text === infoMess.chatNames) settings.chats = msg.text.split('/');
       case infoMess.sities:
         if(text === infoMess.sities)   settings.sities = msg.text.split('/');
-        await getMongoChats(settings.chats || [], settings.sities )
+        findAndUpdateChats(settings.chats || [], settings.sities )
       case infoMess.otherDaysAgo: 
         if(text === infoMess.otherDaysAgo)  settings.daysAgo = msg.text;
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SearchSettings);
         await bot.sendMessage(
           chat_id,
           infoMess.settingsNow + yourSettings(settings),
-          settings.searchType === buttonTexts.Filters ? options.Search : settings.searchType === buttonTexts.GPTSearch ? options.SearchGPT : options.SearchFiltersAndGPT
+          settings.searchType === buttonTexts.Filters ? options.Search : settings.searchType === buttonTexts.GPTSearch ? options.SearchGPT :  settings.searchType === buttonTexts.FiltersGPT ? options.SearchFiltersAndGPT : options.SearchType
         );
         break;
     

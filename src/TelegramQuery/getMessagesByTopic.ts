@@ -63,8 +63,9 @@ export const handler = async (input: FieldResolveInput) =>
         ];
         const result = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
         messagesForGpt = messagesForGpt.concat(result)
-          console.log("iteracija!:",collection);   
-            }
+        console.log("iteracija!:",collection);   
+       }
+
             if(messagesForGpt.length ===0) return [{  }]
             //console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: Array.isArray(mess?.text) ? mess?.text?.toString() : mess?.text , from: mess.from || mess.from_id })));
             console.log("---------- All:", messagesForGpt?.length)  
@@ -73,7 +74,7 @@ export const handler = async (input: FieldResolveInput) =>
             let n  =  Math.ceil(messagesForGpt.length / 100)
 
             // limiter
-            if(n>5) n=5
+            if(n>5) n=2
 
             for (let i = 1; i <= n; i++) {
             const chunkMessages= await sendToOpenAi(messagesForGpt.slice((i-1)*100, i*100), args.topic[0])

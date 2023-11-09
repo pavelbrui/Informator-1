@@ -8,7 +8,6 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
   const date = new Date()
   date.setDate(date.getDate() - (maxOld || 30))
   const startDate = date.getTime() / 1000;
-  const chatsCollection = await MongOrb(city||'messagesDDD');
   const client = await tgConnect() 
   if (!await client.checkAuthorization()) signInUser(bot, chat_id, client);
   try{
@@ -18,7 +17,7 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
   for (const chat of chats) {
    // console.log("chat:", chat)
-    const update = await saveOneChat(client, chatsCollection.collection, chat, startDate )
+    const update = await saveOneChat(client, city, chat, startDate )
     if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
   }
   return true
@@ -31,35 +30,56 @@ export async function saveChats(bot:any, chat_id:number, chatNames:string[], cit
 
 
 
-export async function saveOneChat(client:any, collection:any, chat: any, startDate: number){
-  const messages:any[] = await client.getMessages(chat.id || {value: chat._id}, { reverse:true, offsetDate: startDate });
-  
+export async function saveOneChat(client:any, collection: string, chat: any, startDate: number){
+  const chatID = chat.id || (await client.getEntity([chat.username || chat._id]))[0].id
+  console.log(chatID.value)
+  //   class Integer {
+  //   value: bigint;
+    
+  //   constructor(value: bigint) {
+  //     this.value = value;
+  //   }
+  // }
+  // const myObject:{id: Integer } = {
+  //   id: new Integer(BigInt((chat._id+'n') as unknown as bigint))
+  // };
+  // console.log(chatID);
+  // console.log(myObject.id)
+
+  const messages:any[] = await client.getMessages(chat.id, { reverse:true, offsetDate: startDate });
+  console.log("!!!!!!!!!!  all messages.length: ", messages.length)
  const messageArray =[]
   for (const message of messages) {
-    //console.log(message)
+    
+    if (message.message?.length >2){
     messageArray.push({
-      replyTo: message.replyTo?.replyToMsgId,
+      ...(message.replyTo?.replyToMsgId&&{replyTo: message.replyTo?.replyToMsgId}),
      // chat_id: message.peerId?.channelId?.value,
       _id: message.id,
       text: message.message,
       date: new Date(message.date * 1000).toISOString().slice(0,16),
-      from_id: message.fromId?.userId?.value
+      ...(message.fromId?.userId?.value&&{from_id: message.fromId?.userId?.value})
     });
   }
+  }
 
-  const update = await collection.updateOne(
+  const chatsCollection = MongOrb(collection);
+  
+  const update = await chatsCollection.collection.updateOne(
      {_id: chat.id.value || chat._id},
      {$set:{
         username: chat.username, 
         class_name: chat.className,
         name: chat.title,
-        updateAt: new Date().toISOString()
+        updatedAt: new Date().toISOString().slice(0,16)
            },
        $addToSet:
         {messages: {$each: messageArray}}
       }, 
        { upsert: true });
     console.log(update)
+    console.log("pushed messages length: ", messageArray.length)
+    console.log("pushed first message: ", messageArray[0])
     return update
  }
 
@@ -72,10 +92,12 @@ export async function saveOneChat(client:any, collection:any, chat: any, startDa
 
 
  export async function tgConnect(){
-  const apiId = getEnv('API_ID') as unknown as number 
+  console.log('login1')
+  const apiId = parseInt(getEnv('API_ID')) 
   const apiHash = getEnv('API_HASH')
   const client = new TelegramClient('tgparse', apiId, apiHash, { connectionRetries: 5 });
   await client.connect();
+  console.log('login2')
   return client
   }
 

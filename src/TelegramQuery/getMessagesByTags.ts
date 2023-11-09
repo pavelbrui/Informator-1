@@ -71,7 +71,8 @@ for (const collection of collections) {
       "from_id": 1,         
       "date": 1,            
       "chat_name":1, 
-      "chat_id":1,      
+      "chat_id":1,
+      "_id":1,      
     }
   }
   

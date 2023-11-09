@@ -1,7 +1,7 @@
 
 import { SearchSettings } from "./botCallbackHandler.js"
 import { infoMess, yourSettings } from "./Messages.js"
-import { menuOptions, options } from "./Options.js"
+import { buttonTexts, menuOptions, options } from "./Options.js"
 import { filters, gpt, gptWithFilters } from "./QueryFunctions.js"
 import { saveChats } from "../utils/saveChats.js"
 
@@ -47,30 +47,32 @@ otherMessagesHandler(bot:any, settings: SearchSettings, chat_id: number, content
   if (!chats){ await bot.sendMessage(chat_id, "Chats not found in message!")} else {
   await saveChats(bot, chat_id, chats, sity || 'Random', old || 30).catch(console.error)};
 }
-  else{
-    
-    await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
+  else if(settings.searchType){
     switch (settings.searchType) {
-      case "Filters":
+      case buttonTexts.Filters:
            settings.keyWords = content?.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
+           await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
            await filters(bot, chat_id, settings);
            await bot.sendMessage(chat_id, infoMess.anotherKeyWords, options.Search);
-   
-      case "GPT":
+           break
+      case buttonTexts.GPTSearch:
           settings.topic = content?.split('/');
+          await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
           await gpt(bot, chat_id, settings);
           await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchGPT);
-
-      case "Filters+GPT":
+          break
+      case buttonTexts.FiltersGPT:
           if (settings.topic) {
             settings.keyWords = content?.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'))
           }else{
             settings.topic = content?.split('/')
           };
+          await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n........................\n ....⏳`);
            await gptWithFilters(bot, chat_id, settings);
            await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchFiltersAndGPT);
+           break
     }
-
+  }else{
 
    console.log(" else block no response")
    await bot.sendMessage(chat_id, "Soon you will be have here simply chat gpt for talking about anythings, but now i can do only search work", menuOptions.SettingsButton);

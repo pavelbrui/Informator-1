@@ -1,4 +1,4 @@
-import { options, menuOptions } from "./Options.js"
+import { options, menuOptions, buttonTexts } from "./Options.js"
 
 import { infoMess, yourSettings } from "./Messages.js"
 
@@ -40,7 +40,7 @@ const chat_id = callback.message?.chat?.id
 
     
     case 'Filters + GPT':
-        settings.searchType = content;
+        settings.searchType = buttonTexts.FiltersGPT;
       delete settings.keyWords;
      await bot.sendMessage(chat_id, infoMess.filtersAndGptSettings  + yourSettings(settings), menuOptions.Back );
      await bot.sendMessage(chat_id, infoMess.step_1, { parse_mode: 'Markdown' }) 
@@ -48,7 +48,7 @@ const chat_id = callback.message?.chat?.id
       break;
 
       case 'GPT search':
-        settings.searchType = content;
+        settings.searchType = buttonTexts.GPTSearch;
         delete settings.keyWords;
        await bot.sendMessage(chat_id, infoMess.gptTypeInfo, options.Back );
        await bot.sendMessage(chat_id, infoMess.chatNamesFilterReq, options.InputValue)
@@ -56,7 +56,7 @@ const chat_id = callback.message?.chat?.id
 
       
     case 'Filters' :
-      settings.searchType = content;
+      settings.searchType = buttonTexts.Filters;
       settings.limitMessages = settings.limitMessages || 5;
       settings.daysAgo = settings.daysAgo || 30;
      await bot.sendMessage(chat_id, infoMess.filtersSettings + yourSettings(settings), menuOptions.SettingsButton );

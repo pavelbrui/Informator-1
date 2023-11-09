@@ -2,26 +2,37 @@ import { MongOrb, defineCollections } from './orm.js';
 import { saveOneChat, tgConnect } from './saveChats.js';
 
 
-export async function updateChats(chatsReg: string[], sitiesReg: string[] ){
-const chats = await getMongoChats(chatsReg, sitiesReg)
-const client = await tgConnect() 
-  if (!await client.checkAuthorization()) console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHATS NOT UPDATED!!!!! \n !!!!!NOT AUTHORIZATION!!!!!!');
-for (const chat of chats) {
-    const startDate = new Date(chat.updateAt).getTime() / 1000;
-     await saveOneChat(client, chat.collection, chat, startDate ).catch(console.error);
+
+
+
+export async function updateChats( mongoChats:{_id: string,username: string, collection: string, updatedAt: string}[]) {
+
+  const client = await tgConnect() 
+  if (!await client.checkAuthorization()) return;
+  try{
+  const tgChats:any[] = await client.getEntity(mongoChats.map((c)=>c.username ||c._id))
+  if (!tgChats) return
+
+  //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
+  for (const chat of tgChats) {
+    const startDate = Math.round(new Date(chat.updatedAt || '2023-11-06T21:13' ).getTime() / 1000);
+    console.log("chat:", chat.title)
+    const update = await saveOneChat(client, "Tenerife", chat, startDate )
+    if (update) console.log(`Chat ${chat.username} successfully saved!!!`);
+  }
+  return true
+}catch(e){
+  console.log(e)
 }
 }
 
 
-export async function getMongoChats(chatsReg: string[], sitiesReg?: string[] ){
-  let chats:any = []
-    
-  // Tworzymy tablicę zapytań MongoDB dla każdej grupy słów kluczowych
-  const chatNameRegexPatterns = chatsReg?.map(name => new RegExp(name, "i"));
+
+export async function findAndUpdateChats(chatsReg: string[], sitiesReg?: string[] ): Promise<any[]> {
+  let chats:any[] = []
+ 
+  const chatNameRegexPatterns = (chatsReg.length>0? chatsReg : [''])?.map(name => new RegExp(name, "i"));
   const collections = await defineCollections(sitiesReg)
-
-    
-console.log(chatNameRegexPatterns);
 
 for (const collection of collections) { 
   console.log(collection);  
@@ -42,7 +53,7 @@ for (const collection of collections) {
     },
     {
       $project: { 
-        "updateAt": 1,         
+        "updatedAt": 1,         
         "date": 1, 
         "username":1, 
         "class_name":1,            
@@ -51,10 +62,10 @@ for (const collection of collections) {
       }
     }]
 
-    const result = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
-        chats = chats.concat(result.map((chat)=>({...chat, collection: collection })))
-        console.log(result);
-        
-}
+    const result: any[]= await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
+        chats = chats.concat(result.map((chat)=>({...chat, collection: collection , updatedAt: chat.updatedAt || new Date().toISOString()})))       
+   }
+console.log(chats);
+if (chats.length>0) await updateChats(chats)
 return chats
  }
