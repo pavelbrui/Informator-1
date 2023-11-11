@@ -29,7 +29,7 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
 		getMessagesByTags(
 			chats: ${JSON.stringify(settings.chats || [''])}
 			keyWords: ${JSON.stringify(settings.keyWords)}
-      collections:${JSON.stringify(settings.sities)||['']}
+      collections:${JSON.stringify(settings.sities||[''])}
       daysAgo: ${settings.daysAgo || 30}
 		){
       chat_name

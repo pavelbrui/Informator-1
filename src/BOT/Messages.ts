@@ -44,8 +44,8 @@ export function yourSettings(settings: SearchSettings ){
     filtersAndGptSettings: "Good choose! Your settings now: ",
     addChatNamesOrSkip: `Before starting you can limit chats for search`,
     chatNamesFilterOpt: `Enter the names or part names of chats \n(separated by use '/'):`,
-    writeTopicWithFilters: `Enter only topic or full description for your query::  `,
-    writeKeyWordsForTopic: `For example if you write:\n 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text):`,
+    writeTopicWithFilters: `Provide one topic or full description for your query:`,
+    writeKeyWordsForTopic: `For example if you write:\n 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text )::`,
     step_1:"*Step 1: Chats filter*",
     step_2:"*Step 2: Topic*",
     step_3:"*Step 3: Enter keywords or fragments\n(for variants use '/', for combinations use '&')*",
@@ -54,7 +54,7 @@ export function yourSettings(settings: SearchSettings ){
     searchType:'Choose type search:',
     maxReturnMess:'Choose max number returned messages for one response:',
     chatNames :`Enter chat names or fragments names (separated by '/'):`,
-    otherDaysAgo: 'Enter only digital value number days',
+    otherDaysAgo: 'Enter only digital value number days:',
     sities: `For use this filter enter only names or fragments names sities (but now it works only for added sities):`,
 
 

@@ -78,11 +78,11 @@ export const handler = async (input: FieldResolveInput) =>
 
             for (let i = 1; i <= n; i++) {
             const chunkMessages= await sendToOpenAi(messagesForGpt.slice((i-1)*100, i*100), args.topic[0])
-            console.log(chunkMessages)
+            console.log("chunkMessages",chunkMessages)
               messages = messages.concat(chunkMessages)
             }
-            if(messages?.length&&messages?.length>1) await MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
-                'createdAt')({topic: args.topic, chats: args.chats,response: messages});
+            if(messages?.length&&messages?.length>0) MongOrb('GPTResponseForTarget').createWithAutoFields('_id',
+                'createdAt')({topic: args.topic.join(','), chats: args.chats?.join(','), response: messages.join(";")});
          
            return messages
     }

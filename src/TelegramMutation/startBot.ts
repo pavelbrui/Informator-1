@@ -32,7 +32,7 @@ export const handler = async (input: FieldResolveInput) =>
       console.log("\n For FINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
       if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
       
-      if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{id,from_id, content, date }}},  { upsert: true });
+      if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{ id, from_id, content, date }}},  { upsert: true });
      switch (content) {
       case '/start':
         console.log("HHHHHHHHHHHHHHHHHHHH");
@@ -65,15 +65,15 @@ export const handler = async (input: FieldResolveInput) =>
         break
     
       case buttonTexts.ChatNamesFilter:
-           await bot.sendMessage(chat_id, infoMess.chatNames , options.InputValue);
+           await bot.sendMessage(chat_id, infoMess.chatNames, options.InputValue);
          break
 
          case buttonTexts.LocationsFilter:
-          await bot.sendMessage(chat_id, infoMess.sities , options.InputValue);
+          await bot.sendMessage(chat_id, infoMess.sities, options.InputValue);
         break
       
         case buttonTexts.DaysAgoOptions[4]:
-          await bot.sendMessage(chat_id, infoMess.otherDaysAgo , options.InputValue);
+          await bot.sendMessage(chat_id, infoMess.otherDaysAgo, options.InputValue);
         break
     
       case buttonTexts.DaysAgoOptions[0]:
@@ -92,28 +92,22 @@ export const handler = async (input: FieldResolveInput) =>
         const settings = userSettings[chat_id]
         await replyToMessageHandler(msg.reply_to_message.text, bot, chat_id, msg, settings)
         break;
-    }
+       }
     
        // Handle other messages
-      await  bot.sendMessage(chat_id, ".......")
+      await bot.sendMessage(chat_id, ".......")
       await otherMessagesHandler(bot, userSettings[chat_id], chat_id, content);
  
-     }} catch (error) {
-      pushError(error)
-    
-    }
-    
+     }} catch (error) {pushError(error)}
     })
 
 
      
   bot.on('callback_query', async (callback) => {
-    
     const chat_id = callback.message?.chat.id 
     try {
     if(chat_id && !userSettings[chat_id] ) userSettings[chat_id] = defaultSettings
-    if(chat_id) callbackHandler(callback, bot, userSettings[chat_id] )
-
+    if(chat_id) await callbackHandler(callback, bot, userSettings[chat_id] )
   } catch (error) {
     pushError(error)
   }

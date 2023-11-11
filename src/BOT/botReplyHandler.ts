@@ -10,7 +10,7 @@ import { findAndUpdateChats } from '../utils/updateChats.js';
 
 
 export async function  replyToMessageHandler(text: string, bot:any, chat_id: number, msg: any, settings: SearchSettings){
-    
+
     switch (text) {
       case infoMess.maxReturnMess:
         settings.limitMessages = msg.text;
@@ -31,17 +31,18 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchGPT);
         break;
     
-      
+        
       case infoMess.writeTopicWithFilters:
+        console.log('writeTopicWithFilters');
+        
         settings.topic = msg.text.split('/');
-        await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' })
+        await bot.sendMessage(chat_id, infoMess.step_3) //, { parse_mode: 'Markdown' })
         await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
         break;
 
       case infoMess.writeKeyWordsForTopic:
           settings.keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
           await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings)}\n..........................\n ....⏳`);
-          
           await gptWithFilters(bot, chat_id, settings);
           await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchFiltersAndGPT);
          break;
@@ -54,7 +55,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
         settings.chats = msg.text.split('/');
         findAndUpdateChats(settings.chats || [], settings.sities )
         await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
-        //if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' })
+        if(settings.searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2)
         await bot.sendMessage(
           chat_id, settings.searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeTopicWithFilters, options.InputValue);
         break;
@@ -79,7 +80,7 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
 
     
       default:
-        console.log('HHHHH')
-        break;
+        console.log('botReplyHandler :     HHHHH')
+      break;
     }
 }

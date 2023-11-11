@@ -58,7 +58,8 @@ for (const collection of collections) {
         "username":1, 
         "class_name":1,            
         "name":1, 
-        "_id":1,      
+        "_id":1,  
+        "isPartner":1,   
       }
     }]
 
@@ -66,6 +67,6 @@ for (const collection of collections) {
         chats = chats.concat(result.map((chat)=>({...chat, collection: collection , updatedAt: chat.updatedAt || new Date().toISOString()})))       
    }
 console.log(chats);
-if (chats.length>0) await updateChats(chats)
+if (chats.length>0) await updateChats(chats.filter((ch)=>!ch.isPartner))
 return chats
  }
