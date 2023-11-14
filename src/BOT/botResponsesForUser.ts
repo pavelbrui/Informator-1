@@ -30,7 +30,7 @@ export async function responseForUser(data:any, bot: any, chat_id: number, setti
     
      
     for (n; n < messages.length; n += limit) {
-      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} from ${messages?.length} messages >>`, options.ShowNext)
+      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} from ${messages?.length - n} messages >>`, options.ShowNext)
       await new Promise((resolve) => {
         bot.on('callback_query', async (callback:any) => {
           const text = callback.data 
@@ -38,9 +38,10 @@ export async function responseForUser(data:any, bot: any, chat_id: number, setti
           if (text === 'ShowNext'){
           const partNext = responseString( messages.slice(n, n + limit))
           await sendBigMessage(bot, chat_id, partNext, menuOptions.SettingsButton); 
+          resolve(callback);
           }
           //await bot.off('callback_query');
-          resolve(callback);
+          
         });
         
       })

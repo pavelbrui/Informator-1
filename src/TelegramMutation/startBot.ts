@@ -8,6 +8,7 @@ import { callbackHandler} from '../BOT/botCallbackHandler.js';
 import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
 import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
 import { infoMess, yourSettings } from "../BOT/Messages.js"
+import { pushError } from '../utils/tools.js';
 
 
 
@@ -125,7 +126,4 @@ export const handler = async (input: FieldResolveInput) =>
 
 
 
-  async function pushError(error: any){
-    console.error('Error in message handler:', error);
-    await MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push:{errors: {  error }}},  { upsert: true });
-  }
+  

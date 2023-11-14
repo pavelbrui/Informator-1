@@ -1,3 +1,5 @@
+import { MongOrb } from "./orm.js";
+
 function levenshteinDistance(a:string, b:string) {
     const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
     for (let i = 1; i <= a.length; i++) {
@@ -41,4 +43,9 @@ function levenshteinDistance(a:string, b:string) {
     });
   
     return uniqueObjects;
+  }
+
+  export async function pushError(error: any){
+    console.error('Error in message handler:', error);
+    await MongOrb('FinderListener').collection.updateOne({chatName: "errors"},{$push:{errors: {  error }}},  { upsert: true });
   }
