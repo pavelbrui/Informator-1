@@ -13,7 +13,7 @@
         "watch": "tsc --watch",
         "update": "gecli codegen models && gecli schema && gecli codegen typings"
     },
-    "author": "GraphQL Editor Centaur Generator",
+    "author": "Pavel Brui",
     "license": "ISC",
     "devDependencies": {
         "@types/mongodb": "^4.0.7",
