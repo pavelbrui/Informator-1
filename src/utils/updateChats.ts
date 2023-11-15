@@ -15,7 +15,7 @@ export async function updateChats( mongoChats:{_id: string,username: string, col
 
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
   for (const chat of tgChats) {
-    const startDate = Math.round(new Date(chat.updatedAt || '2023-11-06T21:13' ).getTime() / 1000);
+    const startDate = Math.round(new Date(chat.updatedAt || '2023-12-01T21:13' ).getTime() / 1000);
     console.log("chat:", chat.title)
     const update = await saveOneChat(client, "Tenerife", chat, startDate )
     if (update) console.log(`Chat ${chat.username} successfully saved!!!`);
@@ -28,11 +28,13 @@ export async function updateChats( mongoChats:{_id: string,username: string, col
 
 
 
-export async function findAndUpdateChats(chatsReg: string[], sitiesReg?: string[] ): Promise<any[]> {
+export async function findAndUpdateChats(chatsReg: string[], sities?: string[] ): Promise<{chats?: string[], collections?: string[]}> {
   let chats:any[] = []
  
   const chatNameRegexPatterns = (chatsReg.length>0? chatsReg : [''])?.map(name => new RegExp(name, "i"));
-  const collections = await defineCollections(sitiesReg)
+  const collections = sities || await defineCollections([])
+  if (!collections) return {chats:[], collections:[]}
+
 
 for (const collection of collections) { 
   console.log(collection);  
@@ -67,6 +69,6 @@ for (const collection of collections) {
         chats = chats.concat(result.map((chat)=>({...chat, collection: collection , updatedAt: chat.updatedAt || new Date().toISOString()})))       
    }
 console.log(chats);
-if (chats.length>0) await updateChats(chats.filter((ch)=>!ch.isPartner))
-return chats
+if (chats.length>0) updateChats(chats.filter((ch)=>!ch.isPartner))
+return { chats: chats.map((ch)=>(ch.name || ch.username)), collections}
  }

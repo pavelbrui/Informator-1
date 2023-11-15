@@ -17,7 +17,7 @@ export const handler = async (input: FieldResolveInput) =>
     const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
     const queries = keyWords?.map(group => { const regexPatterns = group?.map(keyword => new RegExp(keyword, "i"));
     return {"messages.text": { $all: regexPatterns}};});
-    const collections = await defineCollections(args.collections)
+    const collections = args.collections || await defineCollections([])
      let messagesForGpt:any =[];
 
   for (const collection of collections) {

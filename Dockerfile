@@ -1,8 +1,6 @@
-FROM node:lts-alpine
+FROM node:18
 
 WORKDIR /app
-
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 COPY . /app
 

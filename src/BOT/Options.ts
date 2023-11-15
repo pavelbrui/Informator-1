@@ -2,8 +2,8 @@ import { getEnv } from "../utils/orm.js";
 
 export const buttonTextsEn = {
   GPTSearch: 'GPT search',
-  Filters: 'Filters',
-  FiltersGPT: 'Filters + GPT',
+  Filters: 'KeyWords',
+  FiltersGPT: 'KeyWords + GPT',
   AddKeywordsRun: 'Add KeyWords and run🚀',
   Back: 'Back',
   TopicRun: 'Enter topic or description and run🚀',
