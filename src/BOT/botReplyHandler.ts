@@ -79,11 +79,12 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       }
       }
       case infoMess.chatNames: 
-        if(text === infoMess.chatNames) {settings[chat_id].chats = msg.text.split('/');
-        const chatsByChatNames = await findAndUpdateChats(settings[chat_id].chats || [], settings[chat_id].sities )
+        if(text === infoMess.chatNames) {
+        const chatsByChatNames = await findAndUpdateChats(msg.text.split('/')|| [], settings[chat_id].sities )
         if (!chatsByChatNames.chats?.length) {await bot.sendMessage(chat_id, "Anyone chat not find, please change filter", menuOptions.SearchSettings)
       }else{
-        await bot.sendMessage(chat_id, "Success! Finded saved: \n" +chatsByChatNames.chats.join('\n') , menuOptions.SearchSettings)
+        settings[chat_id].chats = chatsByChatNames.chats;
+        await bot.sendMessage(chat_id, "Success! Finded saved chats: \n <" +chatsByChatNames.chats.join('>\n<')+'>' , menuOptions.SearchSettings)
       };
         }
       case infoMess.otherDaysAgo: 

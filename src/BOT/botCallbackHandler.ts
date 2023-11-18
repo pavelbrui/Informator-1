@@ -1,7 +1,7 @@
 import { options, menuOptions, buttonTexts } from "./Options.js"
 
 import { infoMess, yourSettings } from "./Messages.js"
-import { defaultSettings } from "../TelegramMutation/startBot.js"
+//import { defaultSettings } from "../TelegramMutation/startBot.js"
 
 
 
@@ -9,7 +9,7 @@ import { defaultSettings } from "../TelegramMutation/startBot.js"
 
 export async function callbackHandler(callback:any, bot:any, settings: UserSettings){
 const chat_id = callback.message?.chat?.id
-if(chat_id && !settings[chat_id]) settings[chat_id] = defaultSettings
+if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessages: 5 }
   const content = callback.data
   switch (content) {
     case 'KeyWords':

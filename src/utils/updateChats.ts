@@ -14,9 +14,12 @@ export async function updateChats( mongoChats:{_id: string,username: string, col
   if (!tgChats) return
 
   //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
+  let i = 0
   for (const chat of tgChats) {
-    const startDate = Math.round(new Date(chat.updatedAt || '2023-12-01T21:13' ).getTime() / 1000);
-    console.log("chat:", chat.title)
+    const startDate = Math.round(new Date(mongoChats[i].updatedAt || '2023-12-01T21:13' ).getTime() / 1000);
+    i+=1
+    console.log("!!!!!!!!!!!chat:", chat.title)
+    console.log("!!!!!!!!!!!data for update:", new Date(chat.updatedAt || '2023-12-01T21:13' ))
     const update = await saveOneChat(client, "Tenerife", chat, startDate )
     if (update) console.log(`Chat ${chat.username} successfully saved!!!`);
   }

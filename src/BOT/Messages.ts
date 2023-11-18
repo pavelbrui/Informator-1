@@ -10,16 +10,19 @@ const settingsEn= {
 const settingsNames = settingsEn
 
 export function yourSettings(settings: SearchSettings ){
-    const newSettings= {...settings,
-         chats: JSON.stringify(settings.chats)?.replaceAll(',', '+'),
+    const newSettings= {
+         searchType: settings.searchType,
+         maxReturnMessages: settings.limitMessages,
+         daysAgo: "max " + settings.daysAgo + " days",
          keyWords: JSON.stringify(settings.keyWords)?.replaceAll('],[', ' + ').replaceAll('[[', '[').replaceAll(']]', ']').replaceAll(',', '&'),
+         topic: JSON.stringify(settings.topic)?.replaceAll(',', '+'),
          sities: JSON.stringify(settings.sities)?.replaceAll(',', '+'),
-         topic: JSON.stringify(settings.topic)?.replaceAll(',', '+')
+         chats: ',<' +JSON.stringify(settings.chats)?.replaceAll(',', '>,<')+'>',
         }
 
       //  newSettings[`${settingsNames.keyWords}`] = "dvdvd"
      
-    return  JSON.stringify(newSettings).replaceAll(',"', '\n"').replace("{", "\n").replace("}", "").replaceAll('\\', "")
+    return  JSON.stringify(newSettings).replaceAll(',<', '\n<').replaceAll(',"', '\n"').replace("{", "\n").replace("}", "").replaceAll('\\', "")
 }
     
 
@@ -27,7 +30,7 @@ export function yourSettings(settings: SearchSettings ){
 
     const infoMessEn = {
   
-    welcom : ' *Welcome to Messages Search Bot!* 🌟',
+    welcom: ' *Welcome to Messages Search Bot!* 🌟',
     startTypeSearch:'🚀 For starting choose type search:',
     chooseOption: 'Choose an option:',
 
@@ -117,5 +120,5 @@ const infoMessRu = {
   
 
 
-const infoMessEnv = (lang: string) => lang === 'En' ? infoMessEn : infoMessRu
+export const infoMessEnv = (lang: string) => lang === 'En' ? infoMessEn : infoMessRu
 export const infoMess =  infoMessEnv(getEnv('LANGUAGE'))

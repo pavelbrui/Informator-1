@@ -7,19 +7,21 @@ import { options, menuOptions, buttonTexts } from '../BOT/Options.js';
 import { callbackHandler} from '../BOT/botCallbackHandler.js';
 import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
 import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
-import { infoMess, yourSettings } from "../BOT/Messages.js"
+import { infoMessEnv, yourSettings } from "../BOT/Messages.js"
 import { pushError } from '../utils/tools.js';
 //export const defaultSettings = { daysAgo: 30, limitMessages: 5 }
+const infoMess = infoMessEnv('Ru')
 
 
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('TelegramMutation','newChats',async (args) => {
 
-    const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
-    const bot = new TelegramBot(FinderByChats, { polling: true });
+   
+    const ChatContentFinder='6640497227:AAGNiWbp_trRXIrr9S-JhdHH9Da7Jgwn1Nw'
+    const bot = new TelegramBot(ChatContentFinder, { polling: true });
     
     let userSettings: any = {};
-    //bot.sendMessage(839036065, `Hej! New chats started successed !`)
+    bot.sendMessage(839036065, `Hej! New ru chat started successed!`)
 
     bot.on('message', async (msg) => {
       const id = msg.message_id;
@@ -30,7 +32,7 @@ export const handler = async (input: FieldResolveInput) =>
       const content = msg.text;
       try {
       const date = new Date(msg.date * 1000); 
-      console.log("\n For FINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
+      console.log("\n For ChatContentFINDER! \n from: ", from, ", chat_id: ", chat_id, ", \n text: ", content)
 
 
 
