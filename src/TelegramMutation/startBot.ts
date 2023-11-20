@@ -4,7 +4,7 @@ import { MongOrb, getEnv } from '../utils/orm.js';
 import TelegramBot from 'node-telegram-bot-api';
 
 import { options, menuOptions, buttonTexts } from '../BOT/Options.js';
-import { callbackHandler} from '../BOT/botCallbackHandler.js';
+import { UserSettings, callbackHandler} from '../BOT/botCallbackHandler.js';
 import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
 import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
 import { infoMess, yourSettings } from "../BOT/Messages.js"
@@ -15,10 +15,10 @@ import { pushError } from '../utils/tools.js';
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('TelegramMutation','newChats',async (args) => {
 
-    const FinderByChats='6659125986:AAGcWZCUcBhJknQNmK_2InwjwOQo6-h9S7Y'
+    const FinderByChats=getEnv('FinderByChats')
     const bot = new TelegramBot(FinderByChats, { polling: true });
     
-    let userSettings: any = {};
+    let userSettings: UserSettings = {};
     //bot.sendMessage(839036065, `Hej! New chats started successed !`)
 
     bot.on('message', async (msg) => {
@@ -85,7 +85,7 @@ export const handler = async (input: FieldResolveInput) =>
       case buttonTexts.DaysAgoOptions[1]:
       case buttonTexts.DaysAgoOptions[2]:
       case buttonTexts.DaysAgoOptions[3]:
-          userSettings[chat_id].daysAgo = content?.split(" ")[0] ;
+          userSettings[chat_id].daysAgo = content?.split(" ")[0] as unknown as number ;
           await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton )
           await bot.sendMessage(chat_id, yourSettings(userSettings[msg.chat.id]), options.Search)
        break;

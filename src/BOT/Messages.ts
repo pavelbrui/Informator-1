@@ -13,11 +13,11 @@ export function yourSettings(settings: SearchSettings ){
     const newSettings= {
          searchType: settings.searchType,
          maxReturnMessages: settings.limitMessages,
-         daysAgo: "max " + settings.daysAgo + " days",
+         maxDaysAgo: settings.daysAgo,
          keyWords: JSON.stringify(settings.keyWords)?.replaceAll('],[', ' + ').replaceAll('[[', '[').replaceAll(']]', ']').replaceAll(',', '&'),
          topic: JSON.stringify(settings.topic)?.replaceAll(',', '+'),
          sities: JSON.stringify(settings.sities)?.replaceAll(',', '+'),
-         chats: ',<' +JSON.stringify(settings.chats)?.replaceAll(',', '>,<')+'>',
+         chats: settings.chats? ',<' +JSON.stringify(settings.chats)?.replace('[', '').replace(']', '').replaceAll(',', '>,<')+'>': "All saved in DB",
         }
 
       //  newSettings[`${settingsNames.keyWords}`] = "dvdvd"
@@ -47,7 +47,7 @@ export function yourSettings(settings: SearchSettings ){
     filtersAndGptSettings: "Good choose! Your settings now: ",
     addChatNamesOrSkip: `Before starting you can limit chats for search`,
     chatNamesFilterOpt: `Enter the names or part names of chats \n(separated by use '/'):`,
-    writeTopicWithFilters: `Provide one topic or full description for your query:`,
+    writeTopicBeforKeyWords: `Provide one topic or full description for your query:`,
     writeKeyWordsForTopic: `For example if you write:\n 'Warszawa&Bialystok/warshaw&tomorrow' >\n you get messages include the full fragments of "warszawa" and "bialystok" + all messages with the fragment warszaw and the word tomorrow in one text )::`,
     step_1:"*Step 1: Chats filter*",
     step_2:"*Step 2: Topic*",
@@ -86,14 +86,14 @@ const infoMessRu = {
     writeKeyWords: "**Введите ключевые слова или фрагменты**\n (для вариантов используйте '/', для комбинаций используйте '&')*\n Например, если вы напишете: 'Warszawa&Bialystok/warshaw&tomorrow' >\n вы получите сообщения, включающие полные фрагменты \"warszawa\" и \"bialystok\" + все сообщения с фрагментом warszaw и словом tomorrow в одном тексте):",
   
     gptTypeInfo: "Хороший выбор!\n Для этого типа поиска вы должны ограничить чаты:\n ",
-    chatNamesFilterReq: "Введите имена чатов или фрагменты (разделяйте '/'):",
+    chatNamesFilterReq: "Vведите имена чатов или фрагменты (разделяйте '/'):",
     settingsNow: "Ваши настройки сейчас:\n",
     writeTopic: "*Введите только тему или полное описание запроса*:",
   
     filtersAndGptSettings: "Хороший выбор! Ваши настройки сейчас:\n ",
     addChatNamesOrSkip: "Прежде чем начать, вы можете ограничить чаты для поиска",
     chatNamesFilterOpt: "Введите имена или фрагменты имен чатов (разделяйте '/'):",
-    writeTopicWithFilters: " Введите тему или полное описание вашего запроса:",
+    writeTopicBeforKeyWords: " Введите тему или полное описание вашего запроса:",
     writeKeyWordsForTopic: "Например, если вы напишете: 'Warszawa&Bialystok/warshaw&tomorrow' >\n вы получите сообщения, включающие полные фрагменты \"warszawa\" и \"bialystok\" + все сообщения с фрагментом \"warszaw\" и словом \"tomorrow\" в одном тексте):",
     step_1: "*Шаг 1: *",
     step_2: "*Шаг 2: *",
@@ -102,7 +102,7 @@ const infoMessRu = {
     maxOldMessages: "Выберите максимальную старость сообщений для поиска:",
     searchType: "Выберите тип поиска:",
     maxReturnMess: "Выберите максимальное количество возвращаемых сообщений для одного ответа:",
-    chatNames: "Введите имена чатов или фрагменты (разделяйте '/') :  ",
+    chatNames: "Введите именa чатоv или фрагменты (pазделяйте '/'):",
     otherDaysAgo: 'Enter only value',
     sities: "Введите значение фильтра городов:",
   

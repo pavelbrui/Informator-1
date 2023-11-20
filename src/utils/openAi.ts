@@ -32,7 +32,7 @@ const contextForGpt = "You are my very rational assistant who searches informati
     console.log(completion?.usage);
     console.log(completion?.choices[0]?.message);
     //console.log('-------------Array----', Array.isArray(content))
-    const findedTexts = Array.isArray(content)? content : Array.isArray(content.messages) ? content.messages : JSON.parse(content.messages)
+    const findedTexts: any[] = Array.isArray(content)? content : Array.isArray(content.messages) ? content.messages : JSON.parse(content.messages)
     if (!findedTexts || findedTexts.length === 0) return []
     
     //console.log(findedTexts[0].text || findedTexts[0])
@@ -50,7 +50,7 @@ const contextForGpt = "You are my very rational assistant who searches informati
     if(returnMessages.length === 0) return []
     //console.log(returnMessages?.slice(0, 1).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id })));
        
-    return findUniqueObjects(returnMessages)?.slice(0, 1001).map((mess: any)=>({ ...mess, text:  parseTextForReturn(mess?.text) || " ", from: mess.from || mess.from_id }))
+    return findUniqueObjects(returnMessages)?.slice(0, 1001).map((mess: any)=>({ ...mess, text:  parseTextForReturn(mess?.text) || " ", from: mess.from || mess.from_id || 'bot'}))
   }
 
 

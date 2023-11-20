@@ -17,7 +17,7 @@ export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramMutation','newChats',async (args) => {
 
    
-    const ChatContentFinder='6640497227:AAGNiWbp_trRXIrr9S-JhdHH9Da7Jgwn1Nw'
+    const ChatContentFinder=getEnv('ChatContentFinder')
     const bot = new TelegramBot(ChatContentFinder, { polling: true });
     
     let userSettings: any = {};

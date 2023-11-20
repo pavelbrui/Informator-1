@@ -1,6 +1,7 @@
 import { options, menuOptions, buttonTexts } from "./Options.js"
 
 import { infoMess, yourSettings } from "./Messages.js"
+import { responseLink, restMessages, sendPartMessages } from "./botResponsesForUser.js"
 //import { defaultSettings } from "../TelegramMutation/startBot.js"
 
 
@@ -27,7 +28,7 @@ if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessag
       
     case 'TopicWithFilters':
       await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
-      await bot.sendMessage(chat_id, infoMess.writeTopicWithFilters, options.InputValue)
+      await bot.sendMessage(chat_id, infoMess.writeTopicBeforKeyWords, options.InputValue)
     break
       
     
@@ -77,8 +78,20 @@ if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessag
       await bot.sendMessage(chat_id, infoMess.settingsNow + yourSettings(settings[chat_id]), menuOptions.SettingsButton);
       await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
       await bot.sendMessage(
-      chat_id, infoMess.writeTopicWithFilters, options.InputValue);
+      chat_id, infoMess.writeTopicBeforKeyWords, options.InputValue);
       break;
+
+
+     case 'ShowNext':
+        const limit =  settings[chat_id].limitMessages
+        const partNext = restMessages[chat_id].slice(0, limit)
+        await sendPartMessages(bot, chat_id, partNext, menuOptions.SettingsButton)
+        if (limit<restMessages[chat_id].length) {
+          restMessages[chat_id] = restMessages[chat_id].slice(limit);
+          await bot.sendMessage(chat_id, `Next ${settings[chat_id].limitMessages||10} from rest ${restMessages[chat_id].length - limit} messages >>`, options.ShowNext)
+        }
+        break
+        
       
       
     default:

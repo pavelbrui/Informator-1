@@ -17,7 +17,7 @@ export const handler = async (input: FieldResolveInput) =>
     const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
     const queries = keyWords?.map(group => { const regexPatterns = group?.map(keyword => new RegExp(keyword, "i"));
     return {"messages.text": { $all: regexPatterns}};});
-    const collections = args.collections || await defineCollections([])
+    const collections = args.collections?.length ? args.collections : await defineCollections([])
      let messagesForGpt:any =[];
 
   for (const collection of collections) {
@@ -76,7 +76,7 @@ export const handler = async (input: FieldResolveInput) =>
           console.log("iteracija!:",collection);   
             }
    if(messagesForGpt.length ===0) return []
-   console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) , from: mess.from || mess.from_id })));
+   console.log(messagesForGpt?.slice(0, 3).map((mess: any)=>({ ...mess, text: parseText(mess?.text) , from: mess.from || mess.from_id || 'bot'})));
    console.log("---------- All:", messagesForGpt?.length)  
     
 

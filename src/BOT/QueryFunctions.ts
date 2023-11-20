@@ -29,7 +29,7 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
 		getMessagesByTags(
 			chats: ${JSON.stringify(settings.chats || [''])}
 			keyWords: ${JSON.stringify(settings.keyWords)}
-      collections:${JSON.stringify(settings.sities||[''])}
+      collections:${JSON.stringify(settings.sities||null)}
       daysAgo: ${settings.daysAgo || 30}
 		){
       chat_name
@@ -55,7 +55,7 @@ export async function filters(bot: any, chat_id: number, settings: SearchSetting
 export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
   const getMessagesByTopic = `query {
     telegram {
-        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities|| [''])},
+        getMessagesByTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities||null)},
         daysAgo: ${settings.daysAgo || 30}) {
           chat_name
           chat_id
@@ -76,7 +76,7 @@ export async function gpt(bot: any, chat_id: number, settings: SearchSettings ){
 export async function gptWithFilters(bot: any, chat_id: number, settings: SearchSettings ){
   const getMessagesByTagsAndTopic = `query {
     telegram {
-        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities||[''])},
+        getMessagesByTagsAndTopic(chats: ${JSON.stringify(settings.chats || [""])}, topic: ${JSON.stringify(settings.topic)},collections:${JSON.stringify(settings.sities||null)},
         daysAgo: ${settings.daysAgo || 30}, keyWords: ${JSON.stringify(settings.keyWords)}) {
           chat_name
           chat_id

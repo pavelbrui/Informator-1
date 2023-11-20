@@ -4,10 +4,17 @@ import { menuOptions, options } from "./Options.js";
 
 
 const responseString = (messages: any)=>
-  ( messages.map((m:any)=>
-`\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text}\nhttps://t.me/${m.chat_id }/${m._id}"\n                           ${m.date.replace('T', " ")}\n `)?.toString())
+  ( messages.map((m:any)=>{
+  return `\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text || ""}\nhttps://t.me/${m.chat_id }/${m._id}"\n                           ${m.date.replace('T', " ")}\n `})?.toString())
+
+
+ export const responseLink = (m: any)=> `https://t.me/${m.chat_id.startsWith('-100') ? m.chat_id.replace('-100', 'c/'): m.chat_id}/${m._id}`
+
+export let restMessages:{[key: number]: any } ={}
+
 
 export async function responseForUser(data:any, bot: any, chat_id: number, settings: SearchSettings ){
+  try{
     let response = infoMess.anyoneMessage
     if (!data.telegram) {
       console.log(data)
@@ -22,40 +29,45 @@ export async function responseForUser(data:any, bot: any, chat_id: number, setti
    }
   
     await bot.sendMessage(chat_id,`I found ${messages?.length>1000 ? "more then 1000" : messages?.length} messages!!!`)
-    const limit = settings.limitMessages || 10
-    let n = limit
+    const limit = settings.limitMessages || 5
     
-    const partOne = responseString(messages.slice(0, limit))
-    await sendBigMessage(bot, chat_id, partOne, menuOptions.SettingsButton); 
     
-     
-    for (n; n < messages.length; n += limit) {
-      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} from ${messages?.length - n} messages >>`, options.ShowNext)
-      await new Promise((resolve) => {
-        bot.on('callback_query', async (callback:any) => {
-          const text = callback.data 
-          console.log(text);
-          if (text === 'ShowNext'){
-          const partNext = responseString( messages.slice(n, n + limit))
-          await sendBigMessage(bot, chat_id, partNext, menuOptions.SettingsButton); 
-          resolve(callback);
-          }
-          //await bot.off('callback_query');
-          
-        });
-        
-      })
-     }
+   // const partOne = responseString(messages.slice(0, limit))
+    //console.log(partOne);
+    await sendPartMessages(bot, chat_id, messages.slice(0,limit), menuOptions.SettingsButton)
+    if (limit<messages.length) {
+      restMessages[chat_id] = messages.slice(limit);
+      await bot.sendMessage(chat_id, `Next ${settings.limitMessages||10} from rest ${messages?.length - limit} messages >>`, options.ShowNext)
+    }
+      
+    }catch(e){
+      console.log(e)
+    }
   }
 
  
 
 
+  export async function sendPartMessages(bot: any, chat_id: number, messages: any[], option:any){ 
+    for (let i =0; i < messages.length-1; i++) {
+      await bot.sendMessage(chat_id, responseLink(messages[i])); 
+    }
+    await bot.sendMessage(chat_id, responseLink(messages[messages.length-1]), option)
+  }
+
+
 
  async function sendBigMessage(bot: any, chat_id: number, response: string, option:any){ 
     try{
+    console.log(response.length);
+    if (response.length > 4000) {
+      await bot.sendMessage(chat_id, response.slice(0, 4000));
+      await sendBigMessage(bot, chat_id, response.slice(4000), option); 
+    }
     await bot.sendMessage(chat_id, response, option); 
     }catch(e){
+
+      console.log("error")
       console.log(e)
       console.log(response.length)
       if (JSON.stringify(e).includes('TelegramError: ETELEGRAM: 400 Bad Request: message is too long')){

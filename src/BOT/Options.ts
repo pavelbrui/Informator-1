@@ -1,12 +1,12 @@
 import { getEnv } from "../utils/orm.js";
 
 export const buttonTextsEn = {
-  GPTSearch: 'GPT search',
-  Filters: 'KeyWords',
-  FiltersGPT: 'KeyWords + GPT',
-  AddKeywordsRun: 'Add KeyWords and run🚀',
+  GPTSearch: 'GPT search 🐌',
+  Filters: 'KeyWords 🔎',
+  FiltersGPT: 'Combo 🚀',
+  AddKeywordsRun: 'Add KeyWords and run 🚀',
   Back: 'Back',
-  TopicRun: 'Enter topic or description and run🚀',
+  TopicRun: 'Enter topic or description and run 🚀',
   TopicBack: 'Back',
   TopicWithFilters: 'Enter topic or description',
   AddChatFilterOpt: 'Limit chat names',

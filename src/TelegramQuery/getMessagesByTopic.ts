@@ -13,7 +13,7 @@ export const handler = async (input: FieldResolveInput) =>
     const date = new Date()
     if(consDays) date.setDate(date.getDate() - consDays)
     const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
-    const collections = args.collections || await defineCollections([])
+    const collections = args.collections?.length ? args.collections : await defineCollections([])
      let messagesForGpt:any =[];
 
   for (const collection of collections) {  

@@ -14,12 +14,11 @@ export const handler = async (input: FieldResolveInput) =>
       const date = new Date() 
       date.setDate(date.getDate() - consDays)
       console.log(date)
-
        // Tworzymy tablicę zapytań MongoDB dla każdej grupy słów kluczowych
       const queries = keyWords?.map(group => { const regexPatterns = group?.map(keyword => new RegExp(keyword, "i"));
                                                 return {"messages.text": { $all: regexPatterns}};});
       const chatNameRegexPatterns = args.chats?.map(name => new RegExp(name, "i"));
-      const collections = args.collections || await defineCollections([])
+      const collections = args.collections ? args.collections : await defineCollections([])
 
     
 
