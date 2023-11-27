@@ -18,8 +18,8 @@ export const handler = async (input: FieldResolveInput) =>
     const FinderByChats=getEnv('FinderByChats')
     const bot = new TelegramBot(FinderByChats, { polling: true });
     
-    let userSettings: UserSettings = {};
-    //bot.sendMessage(839036065, `Hej! New chats started successed !`)
+    let usersSettings: UserSettings = {};
+    bot.sendMessage(839036065, `Hej! New chats started successed !`)
 
     bot.on('message', async (msg) => {
       const id = msg.message_id;
@@ -34,8 +34,8 @@ export const handler = async (input: FieldResolveInput) =>
 
 
 
-      if(chat_id && !userSettings[chat_id] ) userSettings[msg.chat.id] = { daysAgo: 30, limitMessages: 5 }
-      console.log(userSettings)
+      if(chat_id && !usersSettings[chat_id] ) usersSettings[msg.chat.id] = { daysAgo: 30, limitMessages: 5 }
+      console.log(usersSettings)
       
       if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{ id, from_id, content, date }}},  { upsert: true });
      switch (content) {
@@ -85,22 +85,22 @@ export const handler = async (input: FieldResolveInput) =>
       case buttonTexts.DaysAgoOptions[1]:
       case buttonTexts.DaysAgoOptions[2]:
       case buttonTexts.DaysAgoOptions[3]:
-          userSettings[chat_id].daysAgo = content?.split(" ")[0] as unknown as number ;
+          usersSettings[chat_id].daysAgo = content?.split(" ")[0] as unknown as number ;
           await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton )
-          await bot.sendMessage(chat_id, yourSettings(userSettings[msg.chat.id]), options.Search)
+          await bot.sendMessage(chat_id, yourSettings(usersSettings[msg.chat.id]), options.Search)
        break;
           
          
       default:
        // Handle reply messages
        if (msg.reply_to_message?.text){
-        await replyToMessageHandler(msg.reply_to_message.text, bot, chat_id, msg, userSettings)
+        await replyToMessageHandler(msg.reply_to_message.text, bot, chat_id, msg, usersSettings)
         break;
        }
     
        // Handle other messages
       await bot.sendMessage(chat_id, ".......")
-      otherMessagesHandler(bot, userSettings, chat_id, content);
+      otherMessagesHandler(bot, usersSettings, chat_id, content);
  
      }} catch (error) {pushError(error)}
     })
@@ -109,7 +109,11 @@ export const handler = async (input: FieldResolveInput) =>
      
   bot.on('callback_query', async (callback) => {
     try {
-    await callbackHandler(callback, bot, userSettings)
+    const chat_id = callback.message?.chat?.id
+    if(chat_id){ 
+      if(!usersSettings[chat_id]) usersSettings[chat_id] = { daysAgo: 30, limitMessages: 5}
+      await callbackHandler(callback, bot, usersSettings, chat_id)
+  }
   } catch (error) {
     pushError(error)
   }

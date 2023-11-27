@@ -165,7 +165,10 @@ export const Thunder =
     operation: O,
     graphqlOptions?: ThunderGraphQLOptions<SCLR>,
   ) =>
-  <Z extends ValueTypes[R]>(o: Z | ValueTypes[R], ops?: OperationOptions & { variables?: Record<string, unknown> }) =>
+  <Z extends ValueTypes[R]>(
+    o: (Z & ValueTypes[R]) | ValueTypes[R],
+    ops?: OperationOptions & { variables?: Record<string, unknown> },
+  ) =>
     fn(
       Zeus(operation, o, {
         operationOptions: ops,
@@ -194,7 +197,10 @@ export const SubscriptionThunder =
     operation: O,
     graphqlOptions?: ThunderGraphQLOptions<SCLR>,
   ) =>
-  <Z extends ValueTypes[R]>(o: Z | ValueTypes[R], ops?: OperationOptions & { variables?: ExtractVariables<Z> }) => {
+  <Z extends ValueTypes[R]>(
+    o: (Z & ValueTypes[R]) | ValueTypes[R],
+    ops?: OperationOptions & { variables?: ExtractVariables<Z> },
+  ) => {
     const returnedFunction = fn(
       Zeus(operation, o, {
         operationOptions: ops,
@@ -230,7 +236,7 @@ export const Zeus = <
   R extends keyof ValueTypes = GenericOperation<O>,
 >(
   operation: O,
-  o: Z | ValueTypes[R],
+  o: (Z & ValueTypes[R]) | ValueTypes[R],
   ops?: {
     operationOptions?: OperationOptions;
     scalars?: ScalarDefinition;
@@ -700,7 +706,7 @@ type IsInterfaced<SRC extends DeepAnify<DST>, DST, SCLR extends ScalarDefinition
       [P in keyof SRC]: SRC[P] extends '__union' & infer R
         ? P extends keyof DST
           ? IsArray<R, '__typename' extends keyof DST ? DST[P] & { __typename: true } : DST[P], SCLR>
-          : IsArray<R, '__typename' extends keyof DST ? { __typename: true } : never, SCLR>
+          : IsArray<R, '__typename' extends keyof DST ? { __typename: true } : Record<string, never>, SCLR>
         : never;
     }[keyof SRC] & {
       [P in keyof Omit<
@@ -829,18 +835,28 @@ export const $ = <Type extends GraphQLVariableType, Name extends string>(name: N
 };
 type ZEUS_INTERFACES = never
 export type ScalarCoders = {
+	DgraphDateTime?: ScalarResolver;
+	AWSDateTime?: ScalarResolver;
+	AWSDate?: ScalarResolver;
+	AWSTime?: ScalarResolver;
+	AWSTimestamp?: ScalarResolver;
+	AWSEmail?: ScalarResolver;
+	AWSJSON?: ScalarResolver;
+	AWSURL?: ScalarResolver;
+	AWSPhone?: ScalarResolver;
+	AWSIPAddress?: ScalarResolver;
 }
 type ZEUS_UNIONS = never
 
 export type ValueTypes = {
     ["Mutation"]: AliasType<{
-gmail?: [{	login: ValueTypes["Credentials"] | Variable<any, string>},ValueTypes["GmailMutation"]],
-olx?: [{	login: ValueTypes["Credentials"] | Variable<any, string>,	loginType?: ValueTypes["LoginType"] | undefined | null | Variable<any, string>,	microsoftMail?: string | undefined | null | Variable<any, string>,	microsoftPassword?: string | undefined | null | Variable<any, string>},ValueTypes["OlxMutation"]],
 	telegram?:ValueTypes["TelegramMutation"],
 		__typename?: boolean | `@${string}`
 }>;
 	["TelegramMutation"]: AliasType<{
 	startBot?:boolean | `@${string}`,
+	startBotRu?:boolean | `@${string}`,
+	startBotClone?:boolean | `@${string}`,
 newChats?: [{	ids?: Array<string | undefined | null> | undefined | null | Variable<any, string>},boolean | `@${string}`],
 		__typename?: boolean | `@${string}`
 }>;
@@ -850,9 +866,14 @@ getChats?: [{	regName?: string | undefined | null | Variable<any, string>},Value
 getChatsMessages?: [{	input: Array<ValueTypes["GetInfoInput"]> | Variable<any, string>},ValueTypes["Message"]],
 getChatContent?: [{	input: ValueTypes["GetInfoInput"] | Variable<any, string>},boolean | `@${string}`],
 getMessagesFromManyChats?: [{	daysAgo?: number | undefined | null | Variable<any, string>,	keyWords?: Array<Array<string> | undefined | null> | Variable<any, string>,	keyWordsReg?: boolean | undefined | null | Variable<any, string>,	chats?: Array<string> | undefined | null | Variable<any, string>,	chatsReg?: boolean | undefined | null | Variable<any, string>},ValueTypes["Message"]],
-getMessagesByTags?: [{	daysAgo?: number | undefined | null | Variable<any, string>,	keyWords?: Array<Array<string> | undefined | null> | Variable<any, string>,	keyWordsReg?: boolean | undefined | null | Variable<any, string>,	collections?: Array<string> | undefined | null | Variable<any, string>,	collectionsReg?: boolean | undefined | null | Variable<any, string>,	chats?: Array<string> | undefined | null | Variable<any, string>,	chatsReg?: boolean | undefined | null | Variable<any, string>},ValueTypes["Message"]],
+getMessagesByTags?: [{	daysAgo?: number | undefined | null | Variable<any, string>,	keyWords?: Array<Array<string>> | Variable<any, string>,	keyWordsReg?: boolean | undefined | null | Variable<any, string>,	collections?: Array<string> | undefined | null | Variable<any, string>,	collectionsReg?: boolean | undefined | null | Variable<any, string>,	chats?: Array<string> | undefined | null | Variable<any, string>,	chatsReg?: boolean | undefined | null | Variable<any, string>},ValueTypes["FiltersResponse"]],
 getMessagesByTagsAndTopic?: [{	daysAgo?: number | undefined | null | Variable<any, string>,	topic: Array<string> | Variable<any, string>,	keyWords?: Array<Array<string> | undefined | null> | Variable<any, string>,	keyWordsReg?: boolean | undefined | null | Variable<any, string>,	collections?: Array<string> | undefined | null | Variable<any, string>,	collectionsReg?: boolean | undefined | null | Variable<any, string>,	chats?: Array<string> | undefined | null | Variable<any, string>,	chatsReg?: boolean | undefined | null | Variable<any, string>},ValueTypes["Message"]],
 getMessagesByTopic?: [{	daysAgo?: number | undefined | null | Variable<any, string>,	topic: Array<string> | Variable<any, string>,	collections?: Array<string> | undefined | null | Variable<any, string>,	collectionsReg?: boolean | undefined | null | Variable<any, string>,	chats?: Array<string> | undefined | null | Variable<any, string>,	chatsReg?: boolean | undefined | null | Variable<any, string>},ValueTypes["Message"]],
+		__typename?: boolean | `@${string}`
+}>;
+	["FiltersResponse"]: AliasType<{
+	messages?:ValueTypes["Message"],
+	length?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
 }>;
 	["GetInfoInput"]: {
@@ -880,34 +901,15 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null | Variable<any, stri
 	["Chat"]: AliasType<{
 	type?:boolean | `@${string}`,
 	_id?:boolean | `@${string}`,
+	username?:boolean | `@${string}`,
 	name_id?:boolean | `@${string}`,
 	name?:boolean | `@${string}`,
 	updateAt?:boolean | `@${string}`,
 	messages?:ValueTypes["Message"],
 		__typename?: boolean | `@${string}`
 }>;
-	["GmailMutation"]: AliasType<{
-signByText?: [{	text?: string | undefined | null | Variable<any, string>},ValueTypes["ResponseWithUrls"]],
-signLast?: [{	autentiLogin: ValueTypes["Credentials"] | Variable<any, string>},ValueTypes["ResponseWithUrls"]],
-		__typename?: boolean | `@${string}`
-}>;
 	["Query"]: AliasType<{
-olx?: [{	login: ValueTypes["Credentials"] | Variable<any, string>,	loginType?: ValueTypes["LoginType"] | undefined | null | Variable<any, string>},ValueTypes["OlxQuery"]],
 	telegram?:ValueTypes["TelegramQuery"],
-		__typename?: boolean | `@${string}`
-}>;
-	["Credentials"]: {
-	email: string | Variable<any, string>,
-	password: string | Variable<any, string>
-};
-	["OlxMutation"]: AliasType<{
-autoResponder?: [{	responseText: string | Variable<any, string>,	timeLimit?: number | undefined | null | Variable<any, string>},boolean | `@${string}`],
-autoResponderLoop?: [{	responseText: string | Variable<any, string>,	timeLimit?: number | undefined | null | Variable<any, string>},boolean | `@${string}`],
-		__typename?: boolean | `@${string}`
-}>;
-	["OlxQuery"]: AliasType<{
-	getCookies?:ValueTypes["ResponseWithUrls"],
-	getApartmens?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
 }>;
 	["ResponseWithUrls"]: AliasType<{
@@ -916,24 +918,74 @@ autoResponderLoop?: [{	responseText: string | Variable<any, string>,	timeLimit?:
 		__typename?: boolean | `@${string}`
 }>;
 	["LoginType"]:LoginType;
-	["CookieObject"]: AliasType<{
-	content?:boolean | `@${string}`,
-	owner?:boolean | `@${string}`,
-	name?:boolean | `@${string}`,
-	requestedUrl?:boolean | `@${string}`,
-		__typename?: boolean | `@${string}`
-}>
+	["DgraphDgraphIndex"]:DgraphDgraphIndex;
+	["DgraphDateTime"]:unknown;
+	["AWSDateTime"]:unknown;
+	["AWSDate"]:unknown;
+	["AWSTime"]:unknown;
+	["AWSTimestamp"]:unknown;
+	["AWSEmail"]:unknown;
+	["AWSJSON"]:unknown;
+	["AWSURL"]:unknown;
+	["AWSPhone"]:unknown;
+	["AWSIPAddress"]:unknown;
+	["ModelMutationMap"]: {
+	create?: string | undefined | null | Variable<any, string>,
+	update?: string | undefined | null | Variable<any, string>,
+	delete?: string | undefined | null | Variable<any, string>
+};
+	["ModelQueryMap"]: {
+	get?: string | undefined | null | Variable<any, string>,
+	list?: string | undefined | null | Variable<any, string>
+};
+	["ModelSubscriptionMap"]: {
+	onCreate?: Array<string | undefined | null> | undefined | null | Variable<any, string>,
+	onUpdate?: Array<string | undefined | null> | undefined | null | Variable<any, string>,
+	onDelete?: Array<string | undefined | null> | undefined | null | Variable<any, string>,
+	level?: ValueTypes["ModelSubscriptionLevel"] | undefined | null | Variable<any, string>
+};
+	["ModelSubscriptionLevel"]:ModelSubscriptionLevel;
+	["TimestampConfiguration"]: {
+	createdAt?: string | undefined | null | Variable<any, string>,
+	updatedAt?: string | undefined | null | Variable<any, string>
+};
+	["HttpMethod"]:HttpMethod;
+	["HttpHeader"]: {
+	key?: string | undefined | null | Variable<any, string>,
+	value?: string | undefined | null | Variable<any, string>
+};
+	["PredictionsActions"]:PredictionsActions;
+	["SearchableQueryMap"]: {
+	search?: string | undefined | null | Variable<any, string>
+};
+	["AuthRule"]: {
+	allow: ValueTypes["AuthStrategy"] | Variable<any, string>,
+	provider?: ValueTypes["AuthProvider"] | undefined | null | Variable<any, string>,
+	ownerField?: string | undefined | null | Variable<any, string>,
+	identityClaim?: string | undefined | null | Variable<any, string>,
+	groupClaim?: string | undefined | null | Variable<any, string>,
+	groups?: Array<string | undefined | null> | undefined | null | Variable<any, string>,
+	groupsField?: string | undefined | null | Variable<any, string>,
+	operations?: Array<ValueTypes["ModelOperation"] | undefined | null> | undefined | null | Variable<any, string>,
+	queries?: Array<ValueTypes["ModelQuery"] | undefined | null> | undefined | null | Variable<any, string>,
+	mutations?: Array<ValueTypes["ModelMutation"] | undefined | null> | undefined | null | Variable<any, string>
+};
+	["AuthStrategy"]:AuthStrategy;
+	["AuthProvider"]:AuthProvider;
+	["ModelOperation"]:ModelOperation;
+	["ModelQuery"]:ModelQuery;
+	["ModelMutation"]:ModelMutation
   }
 
 export type ResolverInputTypes = {
     ["Mutation"]: AliasType<{
-gmail?: [{	login: ResolverInputTypes["Credentials"]},ResolverInputTypes["GmailMutation"]],
-olx?: [{	login: ResolverInputTypes["Credentials"],	loginType?: ResolverInputTypes["LoginType"] | undefined | null,	microsoftMail?: string | undefined | null,	microsoftPassword?: string | undefined | null},ResolverInputTypes["OlxMutation"]],
 	telegram?:ResolverInputTypes["TelegramMutation"],
 		__typename?: boolean | `@${string}`
 }>;
 	["TelegramMutation"]: AliasType<{
 	startBot?:boolean | `@${string}`,
+	startBotRu?:boolean | `@${string}`,
+	startBotClone?:boolean | `@${string}`,
 newChats?: [{	ids?: Array<string | undefined | null> | undefined | null},boolean | `@${string}`],
 		__typename?: boolean | `@${string}`
 }>;
@@ -943,9 +995,14 @@ getChats?: [{	regName?: string | undefined | null},ResolverInputTypes["Chat"]],
 getChatsMessages?: [{	input: Array<ResolverInputTypes["GetInfoInput"]>},ResolverInputTypes["Message"]],
 getChatContent?: [{	input: ResolverInputTypes["GetInfoInput"]},boolean | `@${string}`],
 getMessagesFromManyChats?: [{	daysAgo?: number | undefined | null,	keyWords?: Array<Array<string> | undefined | null>,	keyWordsReg?: boolean | undefined | null,	chats?: Array<string> | undefined | null,	chatsReg?: boolean | undefined | null},ResolverInputTypes["Message"]],
-getMessagesByTags?: [{	daysAgo?: number | undefined | null,	keyWords?: Array<Array<string> | undefined | null>,	keyWordsReg?: boolean | undefined | null,	collections?: Array<string> | undefined | null,	collectionsReg?: boolean | undefined | null,	chats?: Array<string> | undefined | null,	chatsReg?: boolean | undefined | null},ResolverInputTypes["Message"]],
+getMessagesByTags?: [{	daysAgo?: number | undefined | null,	keyWords?: Array<Array<string> | undefined | null>,	keyWordsReg?: boolean | undefined | null,	collections?: Array<string> | undefined | null,	collectionsReg?: boolean | undefined | null,	chats?: Array<string> | undefined | null,	chatsReg?: boolean | undefined | null},ResolverInputTypes["FiltersResponse"]],
 getMessagesByTagsAndTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string>,	keyWords?: Array<Array<string> | undefined | null>,	keyWordsReg?: boolean | undefined | null,	collections?: Array<string> | undefined | null,	collectionsReg?: boolean | undefined | null,	chats?: Array<string> | undefined | null,	chatsReg?: boolean | undefined | null},ResolverInputTypes["Message"]],
 getMessagesByTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string>,	collections?: Array<string> | undefined | null,	collectionsReg?: boolean | undefined | null,	chats?: Array<string> | undefined | null,	chatsReg?: boolean | undefined | null},ResolverInputTypes["Message"]],
+		__typename?: boolean | `@${string}`
+}>;
+	["FiltersResponse"]: AliasType<{
+	messages?:ResolverInputTypes["Message"],
+	length?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
 }>;
 	["GetInfoInput"]: {
@@ -973,34 +1030,15 @@ getMessagesByTopic?: [{	daysAgo?: number | undefined | null,	topic: Array<string
 	["Chat"]: AliasType<{
 	type?:boolean | `@${string}`,
 	_id?:boolean | `@${string}`,
+	username?:boolean | `@${string}`,
 	name_id?:boolean | `@${string}`,
 	name?:boolean | `@${string}`,
 	updateAt?:boolean | `@${string}`,
 	messages?:ResolverInputTypes["Message"],
 		__typename?: boolean | `@${string}`
 }>;
-	["GmailMutation"]: AliasType<{
-signByText?: [{	text?: string | undefined | null},ResolverInputTypes["ResponseWithUrls"]],
-signLast?: [{	autentiLogin: ResolverInputTypes["Credentials"]},ResolverInputTypes["ResponseWithUrls"]],
-		__typename?: boolean | `@${string}`
-}>;
 	["Query"]: AliasType<{
-olx?: [{	login: ResolverInputTypes["Credentials"],	loginType?: ResolverInputTypes["LoginType"] | undefined | null},ResolverInputTypes["OlxQuery"]],
 	telegram?:ResolverInputTypes["TelegramQuery"],
-		__typename?: boolean | `@${string}`
-}>;
-	["Credentials"]: {
-	email: string,
-	password: string
-};
-	["OlxMutation"]: AliasType<{
-autoResponder?: [{	responseText: string,	timeLimit?: number | undefined | null},boolean | `@${string}`],
-autoResponderLoop?: [{	responseText: string,	timeLimit?: number | undefined | null},boolean | `@${string}`],
-		__typename?: boolean | `@${string}`
-}>;
-	["OlxQuery"]: AliasType<{
-	getCookies?:ResolverInputTypes["ResponseWithUrls"],
-	getApartmens?:boolean | `@${string}`,
 		__typename?: boolean | `@${string}`
 }>;
 	["ResponseWithUrls"]: AliasType<{
@@ -1009,28 +1047,78 @@ autoResponderLoop?: [{	responseText: string,	timeLimit?: number | undefined | nu
 		__typename?: boolean | `@${string}`
 }>;
 	["LoginType"]:LoginType;
-	["CookieObject"]: AliasType<{
-	content?:boolean | `@${string}`,
-	owner?:boolean | `@${string}`,
-	name?:boolean | `@${string}`,
-	requestedUrl?:boolean | `@${string}`,
-		__typename?: boolean | `@${string}`
-}>;
 	["schema"]: AliasType<{
 	query?:ResolverInputTypes["Query"],
 	mutation?:ResolverInputTypes["Mutation"],
 		__typename?: boolean | `@${string}`
-}>
+}>;
+	["DgraphDgraphIndex"]:DgraphDgraphIndex;
+	["DgraphDateTime"]:unknown;
+	["AWSDateTime"]:unknown;
+	["AWSDate"]:unknown;
+	["AWSTime"]:unknown;
+	["AWSTimestamp"]:unknown;
+	["AWSEmail"]:unknown;
+	["AWSJSON"]:unknown;
+	["AWSURL"]:unknown;
+	["AWSPhone"]:unknown;
+	["AWSIPAddress"]:unknown;
+	["ModelMutationMap"]: {
+	create?: string | undefined | null,
+	update?: string | undefined | null,
+	delete?: string | undefined | null
+};
+	["ModelQueryMap"]: {
+	get?: string | undefined | null,
+	list?: string | undefined | null
+};
+	["ModelSubscriptionMap"]: {
+	onCreate?: Array<string | undefined | null> | undefined | null,
+	onUpdate?: Array<string | undefined | null> | undefined | null,
+	onDelete?: Array<string | undefined | null> | undefined | null,
+	level?: ResolverInputTypes["ModelSubscriptionLevel"] | undefined | null
+};
+	["ModelSubscriptionLevel"]:ModelSubscriptionLevel;
+	["TimestampConfiguration"]: {
+	createdAt?: string | undefined | null,
+	updatedAt?: string | undefined | null
+};
+	["HttpMethod"]:HttpMethod;
+	["HttpHeader"]: {
+	key?: string | undefined | null,
+	value?: string | undefined | null
+};
+	["PredictionsActions"]:PredictionsActions;
+	["SearchableQueryMap"]: {
+	search?: string | undefined | null
+};
+	["AuthRule"]: {
+	allow: ResolverInputTypes["AuthStrategy"],
+	provider?: ResolverInputTypes["AuthProvider"] | undefined | null,
+	ownerField?: string | undefined | null,
+	identityClaim?: string | undefined | null,
+	groupClaim?: string | undefined | null,
+	groups?: Array<string | undefined | null> | undefined | null,
+	groupsField?: string | undefined | null,
+	operations?: Array<ResolverInputTypes["ModelOperation"] | undefined | null> | undefined | null,
+	queries?: Array<ResolverInputTypes["ModelQuery"] | undefined | null> | undefined | null,
+	mutations?: Array<ResolverInputTypes["ModelMutation"] | undefined | null> | undefined | null
+};
+	["AuthStrategy"]:AuthStrategy;
+	["AuthProvider"]:AuthProvider;
+	["ModelOperation"]:ModelOperation;
+	["ModelQuery"]:ModelQuery;
+	["ModelMutation"]:ModelMutation
   }
 
 export type ModelTypes = {
     ["Mutation"]: {
-		gmail: ModelTypes["GmailMutation"],
-	olx: ModelTypes["OlxMutation"],
-	telegram: ModelTypes["TelegramMutation"]
+		telegram: ModelTypes["TelegramMutation"]
 };
 	["TelegramMutation"]: {
 		startBot: boolean,
+	startBotRu: boolean,
+	startBotClone: boolean,
 	newChats: boolean
 };
 	["TelegramQuery"]: {
@@ -1039,9 +1127,13 @@ export type ModelTypes = {
 	getChatsMessages?: Array<ModelTypes["Message"]> | undefined,
 	getChatContent?: Array<string> | undefined,
 	getMessagesFromManyChats?: Array<ModelTypes["Message"]> | undefined,
-	getMessagesByTags?: Array<ModelTypes["Message"]> | undefined,
+	getMessagesByTags?: ModelTypes["FiltersResponse"] | undefined,
 	getMessagesByTagsAndTopic?: Array<ModelTypes["Message"]> | undefined,
 	getMessagesByTopic?: Array<ModelTypes["Message"]> | undefined
+};
+	["FiltersResponse"]: {
+		messages?: Array<ModelTypes["Message"]> | undefined,
+	length?: number | undefined
 };
 	["GetInfoInput"]: {
 	chat_id?: Array<string | undefined> | undefined,
@@ -1067,58 +1159,118 @@ export type ModelTypes = {
 	["Chat"]: {
 		type?: string | undefined,
 	_id?: string | undefined,
+	username?: string | undefined,
 	name_id?: string | undefined,
 	name: string,
 	updateAt?: string | undefined,
 	messages?: Array<ModelTypes["Message"]> | undefined
 };
-	["GmailMutation"]: {
-		signByText: ModelTypes["ResponseWithUrls"],
-	signLast: ModelTypes["ResponseWithUrls"]
-};
 	["Query"]: {
-		olx: ModelTypes["OlxQuery"],
-	telegram: ModelTypes["TelegramQuery"]
-};
-	["Credentials"]: {
-	email: string,
-	password: string
-};
-	["OlxMutation"]: {
-		autoResponder?: Array<string> | undefined,
-	autoResponderLoop?: Array<string> | undefined
-};
-	["OlxQuery"]: {
-		getCookies: ModelTypes["ResponseWithUrls"],
-	getApartmens?: string | undefined
+		telegram: ModelTypes["TelegramQuery"]
 };
 	["ResponseWithUrls"]: {
 		responseText?: string | undefined,
 	urls?: Array<string> | undefined
 };
 	["LoginType"]:LoginType;
-	["CookieObject"]: {
-		content?: string | undefined,
-	owner?: string | undefined,
-	name?: string | undefined,
-	requestedUrl?: string | undefined
-};
 	["schema"]: {
 	query?: ModelTypes["Query"] | undefined,
 	mutation?: ModelTypes["Mutation"] | undefined
-}
+};
+	["DgraphDgraphIndex"]:DgraphDgraphIndex;
+	["DgraphDateTime"]:any;
+	["AWSDateTime"]:any;
+	["AWSDate"]:any;
+	["AWSTime"]:any;
+	["AWSTimestamp"]:any;
+	["AWSEmail"]:any;
+	["AWSJSON"]:any;
+	["AWSURL"]:any;
+	["AWSPhone"]:any;
+	["AWSIPAddress"]:any;
+	["ModelMutationMap"]: {
+	create?: string | undefined,
+	update?: string | undefined,
+	delete?: string | undefined
+};
+	["ModelQueryMap"]: {
+	get?: string | undefined,
+	list?: string | undefined
+};
+	["ModelSubscriptionMap"]: {
+	onCreate?: Array<string | undefined> | undefined,
+	onUpdate?: Array<string | undefined> | undefined,
+	onDelete?: Array<string | undefined> | undefined,
+	level?: ModelTypes["ModelSubscriptionLevel"] | undefined
+};
+	["ModelSubscriptionLevel"]:ModelSubscriptionLevel;
+	["TimestampConfiguration"]: {
+	createdAt?: string | undefined,
+	updatedAt?: string | undefined
+};
+	["HttpMethod"]:HttpMethod;
+	["HttpHeader"]: {
+	key?: string | undefined,
+	value?: string | undefined
+};
+	["PredictionsActions"]:PredictionsActions;
+	["SearchableQueryMap"]: {
+	search?: string | undefined
+};
+	["AuthRule"]: {
+	allow: ModelTypes["AuthStrategy"],
+	provider?: ModelTypes["AuthProvider"] | undefined,
+	ownerField?: string | undefined,
+	identityClaim?: string | undefined,
+	groupClaim?: string | undefined,
+	groups?: Array<string | undefined> | undefined,
+	groupsField?: string | undefined,
+	operations?: Array<ModelTypes["ModelOperation"] | undefined> | undefined,
+	queries?: Array<ModelTypes["ModelQuery"] | undefined> | undefined,
+	mutations?: Array<ModelTypes["ModelMutation"] | undefined> | undefined
+};
+	["AuthStrategy"]:AuthStrategy;
+	["AuthProvider"]:AuthProvider;
+	["ModelOperation"]:ModelOperation;
+	["ModelQuery"]:ModelQuery;
+	["ModelMutation"]:ModelMutation
     }
 
 export type GraphQLTypes = {
-    ["Mutation"]: {
+    // https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-model-transformer/src/graphql-model-transformer.ts#L126;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-maps-to-transformer/src/graphql-maps-to-transformer.ts#L14;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-index-transformer/src/graphql-primary-key-transformer.ts#L31;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-index-transformer/src/graphql-index-transformer.ts#L24;
+	// https://github.com/aws-amplify/amplify-cli/tree/master/packages/amplify-graphql-function-transformer;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-http-transformer/src/graphql-http-transformer.ts#L74;
+	// https://github.com/aws-amplify/amplify-cli/tree/master/packages/amplify-graphql-predictions-transformer#predictions;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-searchable-transformer/src/graphql-searchable-transformer.ts#L64;
+	// Streams data from DynamoDB to OpenSearch and exposes search capabilities.;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-has-one-transformer.ts#L26;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-has-many-transformer.ts#L27;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-belongs-to-transformer.ts#L25;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-many-to-many-transformer.ts#L40;
+	// V2: https://docs.amplify.aws/cli/graphql/authorization-rules/#how-it-works;
+	// V1: https://docs.amplify.aws/cli-legacy/graphql-transformer/auth/#definition;
+	// When applied to a type, augments the application with;
+	// owner and group-based authorization rules.;
+	// V1: The following arguments are deprecated. It is encouraged to use the 'operations' argument.;
+	// V1: The following objects are deprecated. It is encouraged to use ModelOperations.;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-connection-transformer/src/ModelConnectionTransformer.ts#L170;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-versioned-transformer/src/VersionedModelTransformer.ts#L21;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-appsync-simulator/src/schema/directives/auth.ts#L15;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-appsync-simulator/src/schema/directives/aws-subscribe.ts#L6;
+	// https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-key-transformer/src/KeyTransformer.ts#L84;
+	["Mutation"]: {
 	__typename: "Mutation",
-	gmail: GraphQLTypes["GmailMutation"],
-	olx: GraphQLTypes["OlxMutation"],
 	telegram: GraphQLTypes["TelegramMutation"]
 };
 	["TelegramMutation"]: {
 	__typename: "TelegramMutation",
 	startBot: boolean,
+	startBotRu: boolean,
+	startBotClone: boolean,
 	newChats: boolean
 };
 	["TelegramQuery"]: {
@@ -1128,9 +1280,14 @@ export type GraphQLTypes = {
 	getChatsMessages?: Array<GraphQLTypes["Message"]> | undefined,
 	getChatContent?: Array<string> | undefined,
 	getMessagesFromManyChats?: Array<GraphQLTypes["Message"]> | undefined,
-	getMessagesByTags?: Array<GraphQLTypes["Message"]> | undefined,
+	getMessagesByTags?: GraphQLTypes["FiltersResponse"] | undefined,
 	getMessagesByTagsAndTopic?: Array<GraphQLTypes["Message"]> | undefined,
 	getMessagesByTopic?: Array<GraphQLTypes["Message"]> | undefined
+};
+	["FiltersResponse"]: {
+	__typename: "FiltersResponse",
+	messages?: Array<GraphQLTypes["Message"]> | undefined,
+	length?: number | undefined
 };
 	["GetInfoInput"]: {
 		chat_id?: Array<string | undefined> | undefined,
@@ -1158,34 +1315,15 @@ export type GraphQLTypes = {
 	__typename: "Chat",
 	type?: string | undefined,
 	_id?: string | undefined,
+	username?: string | undefined,
 	name_id?: string | undefined,
 	name: string,
 	updateAt?: string | undefined,
 	messages?: Array<GraphQLTypes["Message"]> | undefined
 };
-	["GmailMutation"]: {
-	__typename: "GmailMutation",
-	signByText: GraphQLTypes["ResponseWithUrls"],
-	signLast: GraphQLTypes["ResponseWithUrls"]
-};
 	["Query"]: {
 	__typename: "Query",
-	olx: GraphQLTypes["OlxQuery"],
 	telegram: GraphQLTypes["TelegramQuery"]
-};
-	["Credentials"]: {
-		email: string,
-	password: string
-};
-	["OlxMutation"]: {
-	__typename: "OlxMutation",
-	autoResponder?: Array<string> | undefined,
-	autoResponderLoop?: Array<string> | undefined
-};
-	["OlxQuery"]: {
-	__typename: "OlxQuery",
-	getCookies: GraphQLTypes["ResponseWithUrls"],
-	getApartmens?: string | undefined
 };
 	["ResponseWithUrls"]: {
 	__typename: "ResponseWithUrls",
@@ -1193,22 +1331,159 @@ export type GraphQLTypes = {
 	urls?: Array<string> | undefined
 };
 	["LoginType"]: LoginType;
-	["CookieObject"]: {
-	__typename: "CookieObject",
-	content?: string | undefined,
-	owner?: string | undefined,
-	name?: string | undefined,
-	requestedUrl?: string | undefined
-}
+	["DgraphDgraphIndex"]: DgraphDgraphIndex;
+	["DgraphDateTime"]: "scalar" & { name: "DgraphDateTime" };
+	["AWSDateTime"]: "scalar" & { name: "AWSDateTime" };
+	["AWSDate"]: "scalar" & { name: "AWSDate" };
+	["AWSTime"]: "scalar" & { name: "AWSTime" };
+	["AWSTimestamp"]: "scalar" & { name: "AWSTimestamp" };
+	["AWSEmail"]: "scalar" & { name: "AWSEmail" };
+	["AWSJSON"]: "scalar" & { name: "AWSJSON" };
+	["AWSURL"]: "scalar" & { name: "AWSURL" };
+	["AWSPhone"]: "scalar" & { name: "AWSPhone" };
+	["AWSIPAddress"]: "scalar" & { name: "AWSIPAddress" };
+	["ModelMutationMap"]: {
+		create?: string | undefined,
+	update?: string | undefined,
+	delete?: string | undefined
+};
+	["ModelQueryMap"]: {
+		get?: string | undefined,
+	list?: string | undefined
+};
+	["ModelSubscriptionMap"]: {
+		onCreate?: Array<string | undefined> | undefined,
+	onUpdate?: Array<string | undefined> | undefined,
+	onDelete?: Array<string | undefined> | undefined,
+	level?: GraphQLTypes["ModelSubscriptionLevel"] | undefined
+};
+	["ModelSubscriptionLevel"]: ModelSubscriptionLevel;
+	["TimestampConfiguration"]: {
+		createdAt?: string | undefined,
+	updatedAt?: string | undefined
+};
+	["HttpMethod"]: HttpMethod;
+	["HttpHeader"]: {
+		key?: string | undefined,
+	value?: string | undefined
+};
+	["PredictionsActions"]: PredictionsActions;
+	["SearchableQueryMap"]: {
+		search?: string | undefined
+};
+	["AuthRule"]: {
+		allow: GraphQLTypes["AuthStrategy"],
+	provider?: GraphQLTypes["AuthProvider"] | undefined,
+	ownerField?: string | undefined,
+	identityClaim?: string | undefined,
+	groupClaim?: string | undefined,
+	groups?: Array<string | undefined> | undefined,
+	groupsField?: string | undefined,
+	operations?: Array<GraphQLTypes["ModelOperation"] | undefined> | undefined,
+	queries?: Array<GraphQLTypes["ModelQuery"] | undefined> | undefined,
+	mutations?: Array<GraphQLTypes["ModelMutation"] | undefined> | undefined
+};
+	["AuthStrategy"]: AuthStrategy;
+	["AuthProvider"]: AuthProvider;
+	["ModelOperation"]: ModelOperation;
+	["ModelQuery"]: ModelQuery;
+	["ModelMutation"]: ModelMutation
     }
 export const enum LoginType {
 	Login_with_Olx_password = "Login_with_Olx_password",
 	Login_with_Google_account = "Login_with_Google_account",
 	Login_with_cookies_instead_password = "Login_with_cookies_instead_password"
 }
+export const enum DgraphDgraphIndex {
+	int = "int",
+	float = "float",
+	bool = "bool",
+	hash = "hash",
+	exact = "exact",
+	term = "term",
+	fulltext = "fulltext",
+	trigram = "trigram",
+	regexp = "regexp",
+	year = "year",
+	month = "month",
+	day = "day",
+	hour = "hour"
+}
+export const enum ModelSubscriptionLevel {
+	off = "off",
+	public = "public",
+	on = "on"
+}
+export const enum HttpMethod {
+	GET = "GET",
+	POST = "POST",
+	PUT = "PUT",
+	DELETE = "DELETE",
+	PATCH = "PATCH"
+}
+export const enum PredictionsActions {
+	identifyText = "identifyText",
+	identifyLabels = "identifyLabels",
+	convertTextToSpeech = "convertTextToSpeech",
+	translateText = "translateText"
+}
+export const enum AuthStrategy {
+	owner = "owner",
+	groups = "groups",
+	private = "private",
+	public = "public",
+	custom = "custom"
+}
+export const enum AuthProvider {
+	apiKey = "apiKey",
+	iam = "iam",
+	oidc = "oidc",
+	userPools = "userPools",
+	function = "function"
+}
+export const enum ModelOperation {
+	create = "create",
+	update = "update",
+	delete = "delete",
+	read = "read"
+}
+export const enum ModelQuery {
+	get = "get",
+	list = "list"
+}
+export const enum ModelMutation {
+	create = "create",
+	update = "update",
+	delete = "delete"
+}
 
 type ZEUS_VARIABLES = {
 	["GetInfoInput"]: ValueTypes["GetInfoInput"];
-	["Credentials"]: ValueTypes["Credentials"];
 	["LoginType"]: ValueTypes["LoginType"];
+	["DgraphDgraphIndex"]: ValueTypes["DgraphDgraphIndex"];
+	["DgraphDateTime"]: ValueTypes["DgraphDateTime"];
+	["AWSDateTime"]: ValueTypes["AWSDateTime"];
+	["AWSDate"]: ValueTypes["AWSDate"];
+	["AWSTime"]: ValueTypes["AWSTime"];
+	["AWSTimestamp"]: ValueTypes["AWSTimestamp"];
+	["AWSEmail"]: ValueTypes["AWSEmail"];
+	["AWSJSON"]: ValueTypes["AWSJSON"];
+	["AWSURL"]: ValueTypes["AWSURL"];
+	["AWSPhone"]: ValueTypes["AWSPhone"];
+	["AWSIPAddress"]: ValueTypes["AWSIPAddress"];
+	["ModelMutationMap"]: ValueTypes["ModelMutationMap"];
+	["ModelQueryMap"]: ValueTypes["ModelQueryMap"];
+	["ModelSubscriptionMap"]: ValueTypes["ModelSubscriptionMap"];
+	["ModelSubscriptionLevel"]: ValueTypes["ModelSubscriptionLevel"];
+	["TimestampConfiguration"]: ValueTypes["TimestampConfiguration"];
+	["HttpMethod"]: ValueTypes["HttpMethod"];
+	["HttpHeader"]: ValueTypes["HttpHeader"];
+	["PredictionsActions"]: ValueTypes["PredictionsActions"];
+	["SearchableQueryMap"]: ValueTypes["SearchableQueryMap"];
+	["AuthRule"]: ValueTypes["AuthRule"];
+	["AuthStrategy"]: ValueTypes["AuthStrategy"];
+	["AuthProvider"]: ValueTypes["AuthProvider"];
+	["ModelOperation"]: ValueTypes["ModelOperation"];
+	["ModelQuery"]: ValueTypes["ModelQuery"];
+	["ModelMutation"]: ValueTypes["ModelMutation"];
 }

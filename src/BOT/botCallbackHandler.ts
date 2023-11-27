@@ -1,6 +1,6 @@
-import { options, menuOptions, buttonTexts } from "./Options.js"
+import { options, menuOptions, buttonTextsEnv } from "./Options.js"
 
-import { infoMess, yourSettings } from "./Messages.js"
+import { infoMessEnv, yourSettings } from "./Messages.js"
 import { responseLink, restMessages, sendPartMessages } from "./botResponsesForUser.js"
 //import { defaultSettings } from "../TelegramMutation/startBot.js"
 
@@ -8,14 +8,20 @@ import { responseLink, restMessages, sendPartMessages } from "./botResponsesForU
 
 
 
-export async function callbackHandler(callback:any, bot:any, settings: UserSettings){
-const chat_id = callback.message?.chat?.id
-if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessages: 5 }
+export async function callbackHandler(callback:any, bot:any, settings: UserSettings, chat_id: number){
+ 
+//const chat_id = callback.message?.chat?.id
+const infoMess = infoMessEnv( settings[chat_id].language || 'En')
+const buttonTexts = buttonTextsEnv(settings[chat_id].language || 'En')
+
   const content = callback.data
   switch (content) {
     case 'KeyWords':
-        await bot.sendMessage(chat_id, infoMess.writeKeyWords,  options.InputValue) //, { parse_mode: 'Markdown' });
-        break
+      await bot.sendMessage(chat_id, infoMess.writeKeyWords,  options.InputValue) //, { parse_mode: 'Markdown' });
+      break
+    case 'ToOtherKeyWords':
+       await bot.sendMessage(chat_id, infoMess.anotherKeyWords_Or_GoToStep_3,  options.InputValue) //, { parse_mode: 'Markdown' });
+      break
 
   //  case 'KeyWordsForTopic':
   //   await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' }) 
@@ -26,9 +32,10 @@ if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessag
       await bot.sendMessage(chat_id, infoMess.writeTopic, options.InputValue)
          break
       
-    case 'TopicWithFilters':
-      await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
-      await bot.sendMessage(chat_id, infoMess.writeTopicBeforKeyWords, options.InputValue)
+   // case 'TopicWithFilters':
+    case 'FilterWithGpt':
+      await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' }) 
+      await bot.sendMessage(chat_id, infoMess.writeTopicAfterKeyWords, options.InputValue)
     break
       
     
@@ -78,7 +85,7 @@ if(chat_id && !settings[chat_id]) settings[chat_id] = { daysAgo: 30, limitMessag
       await bot.sendMessage(chat_id, infoMess.settingsNow + yourSettings(settings[chat_id]), menuOptions.SettingsButton);
       await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' }) 
       await bot.sendMessage(
-      chat_id, infoMess.writeTopicBeforKeyWords, options.InputValue);
+      chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
       break;
 
 
@@ -115,7 +122,12 @@ export type SearchSettings = {
   topic?:string[],
   keyWords?: string[][],
   sities?: string[],
+  sitiesReg?: boolean,
   chats?: string[],
+  chatsReg?: boolean,
+  user?:string,
   daysAgo: number,
   limitMessages: number,
+  excludeWords?:string[]
+  language?:string
 }

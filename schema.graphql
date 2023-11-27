@@ -4,6 +4,8 @@ type Mutation{
 
 type TelegramMutation{
 	startBot: Boolean!
+	startBotRu: Boolean!
+	startBotClone: Boolean!
 	newChats(
 		ids: [String]
 	): Boolean!
@@ -35,7 +37,7 @@ type TelegramQuery{
 		collectionsReg: Boolean
 		chats: [String!]
 		chatsReg: Boolean
-	): [Message!]
+	): FiltersResponse
 	getMessagesByTagsAndTopic(
 		daysAgo: Int
 		topic: [String!]!
@@ -54,6 +56,11 @@ type TelegramQuery{
 		chats: [String!]
 		chatsReg: Boolean
 	): [Message!]
+}
+
+type FiltersResponse{
+	messages: [Message!]
+	length: Int
 }
 
 input GetInfoInput{
@@ -82,13 +89,12 @@ type Message{
 type Chat{
 	type: String
 	_id: String
-	username:String
+	username: String
 	name_id: String
 	name: String!
 	updateAt: String
 	messages: [Message!]
 }
-
 
 type Query{
 	telegram: TelegramQuery!
@@ -105,8 +111,308 @@ enum LoginType{
 	Login_with_cookies_instead_password
 }
 
-
 schema{
 	query: Query
 	mutation: Mutation
 }
+
+# https://docs.aws.amazon.com/appsync/latest/devguide/scalars.html
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-model-transformer/src/graphql-model-transformer.ts#L126
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-maps-to-transformer/src/graphql-maps-to-transformer.ts#L14
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-index-transformer/src/graphql-primary-key-transformer.ts#L31
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-index-transformer/src/graphql-index-transformer.ts#L24
+
+# https://github.com/aws-amplify/amplify-cli/tree/master/packages/amplify-graphql-function-transformer
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-http-transformer/src/graphql-http-transformer.ts#L74
+
+# https://github.com/aws-amplify/amplify-cli/tree/master/packages/amplify-graphql-predictions-transformer#predictions
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-searchable-transformer/src/graphql-searchable-transformer.ts#L64
+
+# Streams data from DynamoDB to OpenSearch and exposes search capabilities.
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-has-one-transformer.ts#L26
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-has-many-transformer.ts#L27
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-belongs-to-transformer.ts#L25
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-graphql-relational-transformer/src/graphql-many-to-many-transformer.ts#L40
+
+# V2: https://docs.amplify.aws/cli/graphql/authorization-rules/#how-it-works
+
+# V1: https://docs.amplify.aws/cli-legacy/graphql-transformer/auth/#definition
+
+# When applied to a type, augments the application with
+
+# owner and group-based authorization rules.
+
+# V1: The following arguments are deprecated. It is encouraged to use the 'operations' argument.
+
+# V1: The following objects are deprecated. It is encouraged to use ModelOperations.
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-connection-transformer/src/ModelConnectionTransformer.ts#L170
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-versioned-transformer/src/VersionedModelTransformer.ts#L21
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-appsync-simulator/src/schema/directives/auth.ts#L15
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/amplify-appsync-simulator/src/schema/directives/aws-subscribe.ts#L6
+
+# https://github.com/aws-amplify/amplify-cli/blob/master/packages/graphql-key-transformer/src/KeyTransformer.ts#L84
+
+enum DgraphDgraphIndex{
+	int
+	float
+	bool
+	hash
+	exact
+	term
+	fulltext
+	trigram
+	regexp
+	year
+	month
+	day
+	hour
+}
+
+scalar DgraphDateTime
+
+directive @DgraphhasInverse(
+	field: String!
+) on FIELD_DEFINITION
+
+directive @Dgraphsearch(
+	by: [DgraphDgraphIndex!]
+) on FIELD_DEFINITION
+
+scalar AWSDateTime
+
+scalar AWSDate
+
+scalar AWSTime
+
+scalar AWSTimestamp
+
+scalar AWSEmail
+
+scalar AWSJSON
+
+scalar AWSURL
+
+scalar AWSPhone
+
+scalar AWSIPAddress
+
+directive @model(
+	queries: ModelQueryMap
+	mutations: ModelMutationMap
+	subscriptions: ModelSubscriptionMap
+	timestamps: TimestampConfiguration
+) on OBJECT
+
+input ModelMutationMap{
+	create: String
+	update: String
+	delete: String
+}
+
+input ModelQueryMap{
+	get: String
+	list: String
+}
+
+input ModelSubscriptionMap{
+	onCreate: [String]
+	onUpdate: [String]
+	onDelete: [String]
+	level: ModelSubscriptionLevel
+}
+
+enum ModelSubscriptionLevel{
+	off
+	public
+	on
+}
+
+input TimestampConfiguration{
+	createdAt: String
+	updatedAt: String
+}
+
+directive @mapsTo(
+	name: String!
+) on OBJECT
+
+directive @primaryKey(
+	sortKeyFields: [String]
+) on FIELD_DEFINITION
+
+directive @index(
+	name: String!
+	sortKeyFields: [String]
+	queryField: String
+) on FIELD_DEFINITION
+
+directive @function(
+	name: String!
+	region: String
+) on FIELD_DEFINITION
+
+directive @http(
+	method: HttpMethod = GET
+	url: String!
+	headers: [HttpHeader] = []
+) on FIELD_DEFINITION
+
+enum HttpMethod{
+	GET
+	POST
+	PUT
+	DELETE
+	PATCH
+}
+
+input HttpHeader{
+	key: String
+	value: String
+}
+
+directive @predictions(
+	actions: [PredictionsActions!]!
+) on FIELD_DEFINITION
+
+enum PredictionsActions{
+	identifyText
+	identifyLabels
+	convertTextToSpeech
+	translateText
+}
+
+directive @searchable(
+	queries: SearchableQueryMap
+) on OBJECT
+
+input SearchableQueryMap{
+	search: String
+}
+
+directive @hasOne(
+	fields: [String!]
+) on FIELD_DEFINITION
+
+directive @hasMany(
+	indexName: String
+	fields: [String!]
+	limit: Int = 100
+) on FIELD_DEFINITION
+
+directive @belongsTo(
+	fields: [String!]
+) on FIELD_DEFINITION
+
+directive @manyToMany(
+	relationName: String!
+	limit: Int = 100
+) on FIELD_DEFINITION
+
+directive @auth(
+	rules: [AuthRule!]!
+) on OBJECT | FIELD_DEFINITION
+
+input AuthRule{
+	allow: AuthStrategy!
+	provider: AuthProvider
+	ownerField: String
+	identityClaim: String
+	groupClaim: String
+	groups: [String]
+	groupsField: String
+	operations: [ModelOperation]
+	queries: [ModelQuery]
+	mutations: [ModelMutation]
+}
+
+enum AuthStrategy{
+	owner
+	groups
+	private
+	public
+	custom
+}
+
+enum AuthProvider{
+	apiKey
+	iam
+	oidc
+	userPools
+	function
+}
+
+enum ModelOperation{
+	create
+	update
+	delete
+	read
+}
+
+enum ModelQuery{
+	get
+	list
+}
+
+enum ModelMutation{
+	create
+	update
+	delete
+}
+
+directive @connection(
+	name: String
+	keyField: String
+	sortField: String
+	keyName: String
+	limit: Int
+	fields: [String!]
+) on FIELD_DEFINITION
+
+directive @versioned(
+	versionField: String = "version"
+	versionInput: String = "expectedVersion"
+) on OBJECT
+
+directive @aws_api_key on FIELD_DEFINITION | OBJECT
+
+directive @aws_iam on FIELD_DEFINITION | OBJECT
+
+directive @aws_oidc on FIELD_DEFINITION | OBJECT
+
+directive @aws_lambda on FIELD_DEFINITION | OBJECT
+
+directive @aws_cognito_user_pools(
+	cognito_groups: [String!]
+) on FIELD_DEFINITION | OBJECT
+
+directive @aws_auth(
+	cognito_groups: [String!]!
+) on FIELD_DEFINITION
+
+directive @aws_subscribe(
+	mutations: [String!]
+) on FIELD_DEFINITION
+
+directive @key(
+	name: String
+	fields: [String!]!
+	queryField: String
+) on OBJECT
+
+directive @default(
+	value: String
+) on FIELD_DEFINITION

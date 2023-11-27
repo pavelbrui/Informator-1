@@ -1,7 +1,7 @@
 
 import { SearchSettings, UserSettings } from "./botCallbackHandler.js"
-import { infoMess, yourSettings } from "./Messages.js"
-import { buttonTexts, menuOptions, options } from "./Options.js"
+import { infoMessEnv, yourSettings } from "./Messages.js"
+import { buttonTextsEnv, menuOptions, options } from "./Options.js"
 import { filters, gpt, gptWithFilters } from "./QueryFunctions.js"
 import { saveChats } from "../utils/saveChats.js"
 
@@ -9,6 +9,8 @@ import { saveChats } from "../utils/saveChats.js"
 
 export async function  
 otherMessagesHandler(bot:any, settings: UserSettings, chat_id: number, content?: string){
+  const infoMess = infoMessEnv( settings[chat_id].language || 'En')
+  const buttonTexts = buttonTextsEnv(settings[chat_id].language || 'En')
     let arr: string[] = []
     
     if(content?.includes('{')&&content.includes('}')){
@@ -39,6 +41,11 @@ otherMessagesHandler(bot:any, settings: UserSettings, chat_id: number, content?:
   }
   else if(content === 'Get'){
     await saveChats(bot, chat_id, ['minaTenerife'], 'Tenerife', 5).catch(console.error);
+  }
+  else if(content?.includes('user')){
+    settings[chat_id].user =  content.split('ser ')[1]
+    await filters(bot, chat_id, {...settings[chat_id], user:  content.split('ser ')[1], keyWords: undefined })
+
   }
   else if(content?.includes('Get')){
   const chats = content.split(' ')[1]?.split('/')

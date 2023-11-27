@@ -36,7 +36,7 @@ export const handler = async (input: FieldResolveInput) =>
 
 
 
-      if(chat_id && !userSettings[chat_id] ) userSettings[msg.chat.id] = { daysAgo: 30, limitMessages: 5 }
+      if(chat_id && !userSettings[chat_id] ) userSettings[msg.chat.id] = { daysAgo: 30, limitMessages: 5, language: 'Ru' }
       console.log(userSettings)
       
       if(content?.length&&content?.length>1) MongOrb('FinderListener').collection.updateOne({_id: chat_id},{ $set: {chatName: chat_name || from} , $push: {messages:{ id, from_id, content, date }}},  { upsert: true });
@@ -111,10 +111,14 @@ export const handler = async (input: FieldResolveInput) =>
      
   bot.on('callback_query', async (callback) => {
     try {
-    await callbackHandler(callback, bot, userSettings)
+      const chat_id = callback.message?.chat?.id
+      if(chat_id){ 
+        if(!userSettings[chat_id]) userSettings[chat_id] = { daysAgo: 30, limitMessages: 5, language: 'Ru'}
+        await callbackHandler(callback, bot, userSettings, chat_id)
+      }
   } catch (error) {
     pushError(error)
-  }
+  } 
   })
 
 

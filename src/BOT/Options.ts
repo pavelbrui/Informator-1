@@ -21,7 +21,10 @@ export const buttonTextsEn = {
   SearchType: 'Search Type',
   LimitReturnedMessages: 'Limit Returned Messages',
 
-  ShowNext: 'ShowNext'
+  ShowNext: 'ShowNext',
+
+  ChangeKeyWords: "Change KeyWords",
+  FilterWithGpt: "Enter Topic and send this to GPT"
 };
 
 
@@ -47,13 +50,17 @@ export const buttonTextsRu = {
   SearchType: 'Тип поиска',
   LimitReturnedMessages: 'Лимит сообщений',
 
-  ShowNext: 'ShowNext'
+  ShowNext: 'ShowNext',
+
+  //ChangeFilters: 'ChangeFilters',
+  ChangeKeyWords: "Change KeyWords",
+  FilterWithGpt: "Enter Topic and send to GPT"
 };
 
 
 
 
-const buttonTextsEnv = (lang: string) => lang === 'En' ? buttonTextsEn : buttonTextsRu
+export const buttonTextsEnv = (lang: string) => lang === 'En' ? buttonTextsEn : lang === 'Ru' ? buttonTextsRu : buttonTextsEn
 export const buttonTexts =  buttonTextsEnv(getEnv('LANGUAGE'))
 
 export const options = {
@@ -154,6 +161,18 @@ export const options = {
    Back:{
     reply_markup:  {
     inline_keyboard: [[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' } ]],
+    resize_keyboard: true,
+    one_time_keyboard: true
+  }},
+  FilterWithGptOrChange:{
+    reply_markup:  {
+    inline_keyboard: [[{text : buttonTexts.FilterWithGpt, callback_data: 'FilterWithGpt' }],[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' }, {text : buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' }]],
+    resize_keyboard: true,
+    one_time_keyboard: true
+  }},
+  BackOrOtherKeyWords:{
+    reply_markup:  {
+    inline_keyboard: [[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' }, {text : buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' } ]],
     resize_keyboard: true,
     one_time_keyboard: true
   }},

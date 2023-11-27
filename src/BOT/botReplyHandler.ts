@@ -1,16 +1,23 @@
 
 import { SearchSettings, UserSettings } from './botCallbackHandler.js';
-import { options, menuOptions, buttonTexts } from './Options.js';
+import { options, menuOptions, buttonTextsEnv } from './Options.js';
 import {filters, gpt, gptWithFilters } from './QueryFunctions.js';
-import { infoMess, yourSettings } from "./Messages.js"
+import { infoMessEnv, yourSettings } from "./Messages.js"
 import { findAndUpdateChats } from '../utils/updateChats.js';
 import { defineCollections } from '../utils/orm.js';
+import getMessagesByTags from '../TelegramQuery/getMessagesByTags.js'
+import { sendAllToGPT } from '../TelegramQuery/getMessagesByTagsAndTopic.js';
+import { responseForUser } from './botResponsesForUser.js';
 
+export interface messagesForGpt {
+  [key: number]: any[]; 
+}
+const messagesForGpt:messagesForGpt={}
 
+export async function replyToMessageHandler(text: string, bot:any, chat_id: number, msg: any, settings: UserSettings){
+  const infoMess = infoMessEnv( settings[chat_id].language || 'En')
+  const buttonTexts = buttonTextsEnv(settings[chat_id].language || 'En')
 
-
-
-export async function  replyToMessageHandler(text: string, bot:any, chat_id: number, msg: any, settings: UserSettings){
 
     switch (text) {
       case infoMess.writeKeyWords:
@@ -27,17 +34,17 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
 
       case infoMess.chatNamesFilterReq:
       case infoMess.chatNamesFilterOpt:
-          settings[chat_id].chats = msg.text.split('/');
           const chatsByChatFilter = await findAndUpdateChats(msg.text.split('/') || [], settings[chat_id].sities )
             if(!chatsByChatFilter.chats?.length) {await bot.sendMessage(chat_id, "Anyone chats not find, please change filter");
           }else{
             settings[chat_id].chats = chatsByChatFilter.chats;
             await bot.sendMessage(chat_id, "Finded saved "+chatsByChatFilter.chats.length +" chats!" , menuOptions.SearchSettings)
-          }
+          
             await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
             if(settings[chat_id].searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2)
             await bot.sendMessage(
-              chat_id, settings[chat_id].searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeTopicBeforKeyWords, options.InputValue);
+              chat_id, settings[chat_id].searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeKeyWordsForTopic, options.InputValue);
+            }
             break;
 
 
@@ -53,18 +60,24 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
     
         
 
-
-
-      case infoMess.writeTopicBeforKeyWords:
-        settings[chat_id].topic = msg.text.split('/');
-        await bot.sendMessage(chat_id, infoMess.step_3) //, { parse_mode: 'Markdown' })
-        await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
-        break;
-
+      case infoMess.anotherKeyWords_Or_GoToStep_3:
       case infoMess.writeKeyWordsForTopic:
-          settings[chat_id].keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
+        settings[chat_id].keyWords = msg.text.split('/').filter((k: string) => k !== '').map((w: any) => w.split('&'));
+        const data = await getMessagesByTags({arguments: settings[chat_id], info:{fieldName: "unknown"}});
+        
+        messagesForGpt[chat_id] = data?.messages
+        await bot.sendMessage(chat_id,data?.length? `Finded ${data?.length} messages!` : 'No messages for this query!', menuOptions.SearchSettings );
+        await bot.sendMessage(chat_id, infoMess.anotherKeyWords_Or_GoToStep_3, data?.length? options.FilterWithGptOrChange : options.BackOrOtherKeyWords );
+        break
+        
+        
+        
+      case infoMess.writeTopicAfterKeyWords:
+          settings[chat_id].topic = msg.text.split('/');
           await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings[chat_id])}\n..........................\n ....⏳`);
-          await gptWithFilters(bot, chat_id, settings[chat_id]);
+          const messages = await sendAllToGPT(messagesForGpt[chat_id], msg.text.split('/'))
+          //await gptWithFilters(bot, chat_id, settings[chat_id]);
+          await responseForUser(bot, chat_id, settings[chat_id], messages)
           await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchFiltersAndGPT);
          break;
      
@@ -76,13 +89,14 @@ export async function  replyToMessageHandler(text: string, bot:any, chat_id: num
       case infoMess.sities:
         if(text === infoMess.sities)   {
         const collections = await defineCollections(msg.text.split('/'))
-        if(!collections.length) {await bot.sendMessage(chat_id, "Anyone location not find, please change filter");
-      }else{
-        settings[chat_id].sities = collections;
-        await bot.sendMessage(chat_id, "Success! Finded saved locations: \n" +collections.join('\n') )
-        const findByLocation = await findAndUpdateChats([], collections )
-        settings[chat_id].chats = findByLocation.chats;
-        await bot.sendMessage(chat_id, "And " + findByLocation.chats?.length + " chats!", menuOptions.SearchSettings)
+        if(!collections.length) {
+          await bot.sendMessage(chat_id, "Anyone location not find, please change filter!",  menuOptions.SearchSettings);
+         }else{
+          settings[chat_id].sities = collections;
+          await bot.sendMessage(chat_id, "Success! Finded saved locations: \n" +collections.join('\n') )
+          const findByLocation = await findAndUpdateChats([], collections )
+          settings[chat_id].chats = findByLocation.chats;
+          await bot.sendMessage(chat_id, "And " + findByLocation.chats?.length + " chats!", menuOptions.SearchSettings)
       }
       }
       case infoMess.chatNames: 

@@ -109,6 +109,11 @@
                 "name": "lib/TelegramMutation/startBot"
             }
         },
+        "TelegramMutation.startBotRu": {
+            "resolve": {
+                "name": "lib/TelegramMutation/startBotRu"
+            }
+        },
         "Mutation.telegram": {
             "resolve": {
                 "name": "lib/Mutation/telegram"

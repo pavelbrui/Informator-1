@@ -32,6 +32,7 @@ export async function updateChats( mongoChats:{_id: string,username: string, col
 
 
 export async function findAndUpdateChats(chatsReg: string[], sities?: string[] ): Promise<{chats?: string[], collections?: string[]}> {
+  if(chatsReg.length ===1 && chatsReg[0]==='*') return sities ? {collections: sities} : {}
   let chats:any[] = []
  
   const chatNameRegexPatterns = (chatsReg.length>0? chatsReg : [''])?.map(name => new RegExp(name, "i"));

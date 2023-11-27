@@ -6,20 +6,23 @@
     "type": "module",
     "scripts": {
         "bot": "node src/bot.js",
+        "bot2": "node src/botRu.js",
         "gpt": "node src/botGPT.js",
         "des": "node src/botDesign.js",
+        "start2": "stucco",
         "start": "gecli dev",
         "build": "tsc",
         "watch": "tsc --watch",
-        "update": "gecli codegen models && gecli schema && gecli codegen typings"
+        "update": "gecli codegen models && gecli schema pull && gecli codegen typings"
     },
     "author": "Pavel Brui",
     "license": "ISC",
     "devDependencies": {
+        "@types/file-type": "^10.9.1",
         "@types/mongodb": "^4.0.7",
         "@types/node": "^18.18.7",
         "@types/node-fetch": "^2.6.2",
-        "@types/node-telegram-bot-api": "^0.61.7",
+        "@types/node-telegram-bot-api": "^0.61.11",
         "@types/ws": "^8.5.4",
         "@typescript-eslint/eslint-plugin": "^5.38.0",
         "@typescript-eslint/parser": "^5.38.0",
@@ -31,19 +34,17 @@
         "typescript": "^4.8.3"
     },
     "dependencies": {
-        "@types/file-type": "^10.9.1",
         "aws": "^0.0.3-2",
         "aws-sdk": "^2.1357.0",
-        "cli": "^1.0.1",
         "file-type": "^18.3.0",
         "fs": "^0.0.1-security",
-        "gei-crud": "^0.8.7",
+        "graphql-editor-cli": "^0.9.1",
         "i-graphql": "^0.1.2",
         "input": "^1.0.1",
-        "mongodb": "^5.1.0",
+        "mongodb": "^5.9.1",
         "node-fetch": "^2.6.0",
         "node-telegram-bot-api": "^0.63.0",
-        "stucco-js": "^0.10.18",
+        "stucco-js": "^0.10.17",
         "telegram": "^2.19.8",
         "ws": "^8.12.0"
     }

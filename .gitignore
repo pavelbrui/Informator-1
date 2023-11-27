@@ -4,3 +4,9 @@ node_modules
 /node_modules
 .graphql-editor-auth.json
 .cache
+/tgparse
+bot.js
+botRu.js
+boGPT.js
+getter.js
+botSendQuery.js

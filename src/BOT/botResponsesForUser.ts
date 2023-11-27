@@ -1,5 +1,5 @@
 import { SearchSettings } from "./botCallbackHandler.js";
-import { infoMess } from "./Messages.js";
+import { infoMessEnv } from "./Messages.js";
 import { menuOptions, options } from "./Options.js";
 
 
@@ -13,15 +13,18 @@ const responseString = (messages: any)=>
 export let restMessages:{[key: number]: any } ={}
 
 
-export async function responseForUser(data:any, bot: any, chat_id: number, settings: SearchSettings ){
+export async function responseForUser(bot: any, chat_id: number, settings: SearchSettings, messages?:any[], data?:any, ){
+  const infoMess = infoMessEnv( settings.language || 'En')
   try{
     let response = infoMess.anyoneMessage
-    if (!data.telegram) {
+    if (!messages&&!data.telegram) {
       console.log(data)
     await bot.sendMessage(chat_id, "Connection error", menuOptions.SettingsButton);
     return
     }
-    const messages = data.telegram.getMessagesByTags || data.telegram.getMessagesByTagsAndTopic || data.telegram.getMessagesByTopic
+    if(!messages){
+    const messages = data.telegram.getMessagesByTags?.messages || data.telegram.getMessagesByTagsAndTopic || data.telegram.getMessagesByTopic
+    }
     if (!messages?.length) {
       console.log(data)
     await bot.sendMessage(chat_id, response, menuOptions.SettingsButton);
