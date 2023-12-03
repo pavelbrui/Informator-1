@@ -41,7 +41,12 @@ export async function replyToMessageHandler(text: string, bot:any, chat_id: numb
             await bot.sendMessage(chat_id, "Finded saved "+chatsByChatFilter.chats.length +" chats!" , menuOptions.SearchSettings)
           
             await bot.sendMessage(chat_id, infoMess.success, menuOptions.SettingsButton);
-            if(settings[chat_id].searchType !== buttonTexts.GPTSearch) await bot.sendMessage(chat_id, infoMess.step_2)
+            if(settings[chat_id].searchType !== buttonTexts.GPTSearch){ await bot.sendMessage(chat_id, infoMess.step_2)}
+            else{
+              const data = await getMessagesByTags({arguments: settings[chat_id], info:{fieldName: "unknown"}});
+              messagesForGpt[chat_id] = data?.messages
+              await bot.sendMessage(chat_id, "And "+messagesForGpt[chat_id].length +" messages!" )
+            }
             await bot.sendMessage(
               chat_id, settings[chat_id].searchType === buttonTexts.GPTSearch ?  infoMess.writeTopic : infoMess.writeKeyWordsForTopic, options.InputValue);
             }
@@ -54,7 +59,9 @@ export async function replyToMessageHandler(text: string, bot:any, chat_id: numb
       case infoMess.writeTopic:
         settings[chat_id].topic = msg.text.split('/');
         await bot.sendMessage(chat_id, `${infoMess.searching} ${yourSettings(settings[chat_id])}\n........................\n ....⏳`);
-        await gpt(bot, chat_id, settings[chat_id]);
+        
+        const messagesByTopic = await sendAllToGPT(messagesForGpt[chat_id], msg.text.split('/'))
+        await responseForUser(bot, chat_id, settings[chat_id], messagesByTopic)
         await bot.sendMessage(chat_id, infoMess.anotherTopic, options.SearchGPT);
         break;
     

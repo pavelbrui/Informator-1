@@ -8,7 +8,7 @@ const responseString = (messages: any)=>
   return `\n<${m.chat_name || m.chat_id ||""}>\n${m.from}:\n-"${m.text || ""}\nhttps://t.me/${m.chat_id }/${m._id}"\n                           ${m.date.replace('T', " ")}\n `})?.toString())
 
 
- export const responseLink = (m: any)=> `https://t.me/${m.chat_id.startsWith('-100') ? m.chat_id.replace('-100', 'c/'): m.chat_id}/${m._id}`
+ export const responseLink = (m: any)=> `https://t.me/${m.username || m.chat_id.toString().startsWith('-100') ? m.chat_id.toString().replace('-100', 'c/'): m.chat_id}/${m._id}`
 
 export let restMessages:{[key: number]: any } ={}
 

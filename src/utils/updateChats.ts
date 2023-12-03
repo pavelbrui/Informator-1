@@ -20,7 +20,7 @@ export async function updateChats( mongoChats:{_id: string,username: string, col
     i+=1
     console.log("!!!!!!!!!!!chat:", chat.title)
     console.log("!!!!!!!!!!!data for update:", new Date(chat.updatedAt || '2023-12-01T21:13' ))
-    const update = await saveOneChat(client, "Tenerife", chat, startDate )
+    const update = await saveOneChat(client, chat.collection, chat, startDate )
     if (update) console.log(`Chat ${chat.username} successfully saved!!!`);
   }
   return true
