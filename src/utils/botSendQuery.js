@@ -1,6 +1,8 @@
+require('dotenv').config();
+
 
 export  async function sendToServer(query) {
-
+  console.log(process.env.API_URL);
     const todo = JSON.stringify({
         query
       });
@@ -13,13 +15,13 @@ export  async function sendToServer(query) {
     // })).json();
     // console.log("REQUEST>>");
     // console.log(response.data.telegram.getMessagesByTags);
-    const response2 = await (await fetch('http://localhost:8080/graphql', {
+    const response = await (await fetch(process.env.API_UR, {
       method: 'POST',
       body: todo,
       headers: { 'Content-Type': 'application/json' },
     })).json();
     console.log("response2");
-    console.log(response.data.telegram.getMessagesByTags);
+    console.log(JSON.stringify(response.data.telegram));
     return response.data || response.errors[0].message
   }catch(e){
     console.log(e)
