@@ -34,7 +34,7 @@ export const handler = async (input: FieldResolveInput) =>
         console.log(usersSettings);
 
         if (content?.length && content?.length > 1)
-          MongOrb('FinderListener').collection.updateOne(
+          MongOrb('For_bot_En').collection.updateOne(
             { _id: chat_id },
             { $set: { chatName: chat_name || from }, $push: { messages: { id, from_id, content, date } } },
             { upsert: true },

@@ -98,7 +98,9 @@ export async function callbackHandler(callback: any, bot: any, settings: UserSet
         restMessages[chat_id] = restMessages[chat_id].slice(limit);
         await bot.sendMessage(
           chat_id,
-          `Next ${settings[chat_id].limitMessages || 10} from rest ${restMessages[chat_id].length - limit} messages >>`,
+          restMessages[chat_id].length > limit
+            ? `Next ${limit} from rest ${restMessages[chat_id].length} messages >>`
+            : `Rest ${restMessages[chat_id].length}  messages >>`,
           options.ShowNext,
         );
       }

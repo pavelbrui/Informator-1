@@ -25,11 +25,13 @@ export async function updateChats(
 
     let i = 0;
     for (const chat of tgChats) {
-      const startDate = Math.round(new Date(mongoChats[i].updatedAt || '2023-12-01T21:13').getTime() / 1000);
+      const mongoChat = mongoChats.find((ch) => ch.username === chat.username);
+      const startDate = Math.round(new Date(mongoChat?.updatedAt || '2023-12-30T21:13').getTime() / 1000);
       i += 1;
-      if (process.env.LOGS) console.log('!!!!!!!!!!!chat:', chat.title);
-      if (process.env.LOGS) console.log('!!!!!!!!!!!data for update:', new Date(chat.updatedAt || '2023-12-12T12:12'));
-      const collection = mongoChats.find((ch) => ch.username === chat.username)?.collection;
+      if (process.env.LOGS) console.log('!!!!!!!!!!!chat:', chat.title, chat.username, '=', mongoChat?.username);
+      if (process.env.LOGS)
+        console.log('!!!!!!!!!!!data for update:', new Date(mongoChat?.updatedAt || '2023-12-30T12:12'));
+      const collection = mongoChat?.collection;
       if (process.env.LOGS) console.log('>>>> collection_____', collection);
       if (!collection) return false;
       const update = await saveOneChat(client, collection, chat, startDate);

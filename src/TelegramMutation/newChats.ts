@@ -2,6 +2,7 @@ import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 import TelegramBot from 'node-telegram-bot-api';
 import { MongOrb, getEnv } from './../utils/orm.js';
+import { Collection } from 'mongodb';
 
 export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramMutation', 'startBot', async (args) => {

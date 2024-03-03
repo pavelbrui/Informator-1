@@ -61,7 +61,7 @@ export function findUniqueObjects(objects: { text: any }[]) {
 
 export async function pushError(error: any) {
   console.error('Error in message handler:', error);
-  await MongOrb('FinderListener').collection.updateOne(
+  await MongOrb('Errors').collection.updateOne(
     { chatName: 'errors' },
     { $push: { errors: { error } } },
     { upsert: true },

@@ -1,4 +1,4 @@
-import { getEnv } from "../utils/orm.js";
+import { getEnv } from '../utils/orm.js';
 
 export const buttonTextsEn = {
   GPTSearch: 'GPT search 🐌',
@@ -23,10 +23,9 @@ export const buttonTextsEn = {
 
   ShowNext: 'ShowNext',
 
-  ChangeKeyWords: "Change KeyWords",
-  FilterWithGpt: "Enter Topic and send this to GPT"
+  ChangeKeyWords: 'Change KeyWords',
+  FilterWithGpt: 'Enter Topic and send this to GPT',
 };
-
 
 export const buttonTextsRu = {
   GPTSearch: 'GPT',
@@ -42,7 +41,6 @@ export const buttonTextsRu = {
   DaysAgoOptions: ['1 день', '3 дня', '7 дней', '30 дней', 'Other'],
   NumberMessagesOptions: ['3', '5', '10', '20', '35'],
 
-
   Settings: 'Настройки',
   ChatNamesFilter: 'Фильтр чатов',
   LocationsFilter: 'Locations Filter',
@@ -53,18 +51,16 @@ export const buttonTextsRu = {
   ShowNext: 'ShowNext',
 
   //ChangeFilters: 'ChangeFilters',
-  ChangeKeyWords: "Change KeyWords",
-  FilterWithGpt: "Enter Topic and send to GPT"
+  ChangeKeyWords: 'Change KeyWords',
+  FilterWithGpt: 'Enter Topic and send to GPT',
 };
 
-
-
-
-export const buttonTextsEnv = (lang: string) => lang === 'En' ? buttonTextsEn : lang === 'Ru' ? buttonTextsRu : buttonTextsEn
-export const buttonTexts =  buttonTextsEnv(getEnv('LANGUAGE'))
+export const buttonTextsEnv = (lang: string) =>
+  lang === 'En' ? buttonTextsEn : lang === 'Ru' ? buttonTextsRu : buttonTextsEn;
+export const buttonTexts = buttonTextsEnv(getEnv('LANGUAGE'));
 
 export const options = {
-     SearchType: {
+  SearchType: {
     reply_markup: {
       inline_keyboard: [
         [
@@ -79,9 +75,7 @@ export const options = {
   },
   Search: {
     reply_markup: {
-      inline_keyboard: [
-        [{ text: buttonTexts.AddKeywordsRun, callback_data: 'KeyWords' }],
-      ],
+      inline_keyboard: [[{ text: buttonTexts.AddKeywordsRun, callback_data: 'KeyWords' }]],
       resize_keyboard: true,
       one_time_keyboard: true,
     },
@@ -134,94 +128,107 @@ export const options = {
       one_time_keyboard: true,
     },
   },
-   InputDaysAgo:{
-     reply_markup: {
-       force_reply: true, 
-       keyboard: [[buttonTexts.DaysAgoOptions[0], buttonTexts.DaysAgoOptions[1], buttonTexts.DaysAgoOptions[2]], [buttonTexts.DaysAgoOptions[3], buttonTexts.DaysAgoOptions[4]]],
-       resize_keyboard: true,
-     },
-   },
-   
-   NumberMessages:{
-     reply_markup: {
-       force_reply: true, 
-       inline_keyboard: [[{text :'3',  callback_data: 'button_3' }, {text :'5',  callback_data: 'button_5' }, {text :'10',  callback_data: 'button_10' }],[{text :'20',  callback_data: 'button_20' }, {text: buttonTexts.NumberMessagesOptions[4],  callback_data: 'button_35',  color: 'blue'}]], 
-       resize_keyboard: true,
-       one_time_keyboard: true
-     },
-   },
-   
-    InputValue: {
-     reply_markup: {
-       force_reply: true,
-       resize_keyboard: true,
-     },
-   },
-
-   Back:{
-    reply_markup:  {
-    inline_keyboard: [[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' } ]],
-    resize_keyboard: true,
-    one_time_keyboard: true
-  }},
-  FilterWithGptOrChange:{
-    reply_markup:  {
-    inline_keyboard: [[{text : buttonTexts.FilterWithGpt, callback_data: 'FilterWithGpt' }],[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' }, {text : buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' }]],
-    resize_keyboard: true,
-    one_time_keyboard: true
-  }},
-  BackOrOtherKeyWords:{
-    reply_markup:  {
-    inline_keyboard: [[{text : buttonTexts.Back, callback_data: 'BackToSearchTypes' }, {text : buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' } ]],
-    resize_keyboard: true,
-    one_time_keyboard: true
-  }},
-
-  ShowNext:{
-    reply_markup:  {
-    inline_keyboard: [[{text : buttonTexts.ShowNext, callback_data: 'ShowNext' } ]],
-    resize_keyboard: true,
-    one_time_keyboard: true
-  }},
-   }
-
-
-
-   export const menuOptions = {
-    SettingsButton: {
-      reply_markup: {
-        force_reply: true,
-        keyboard: [[buttonTexts.Settings]],
-        resize_keyboard: true,
-      },
+  InputDaysAgo: {
+    reply_markup: {
+      force_reply: true,
+      keyboard: [
+        [buttonTexts.DaysAgoOptions[0], buttonTexts.DaysAgoOptions[1], buttonTexts.DaysAgoOptions[2]],
+        [buttonTexts.DaysAgoOptions[3], buttonTexts.DaysAgoOptions[4]],
+      ],
+      resize_keyboard: true,
     },
-    SearchSettings: {
-      reply_markup: {
-        force_reply: true,
-        keyboard: [
-          [
-            buttonTexts.ChatNamesFilter,
-            buttonTexts.LocationsFilter,
-            buttonTexts.DaysAgo
-          ],
-           [
-            buttonTexts.SearchType,
-            buttonTexts.LimitReturnedMessages,
-          ],
+  },
+
+  NumberMessages: {
+    reply_markup: {
+      force_reply: true,
+      inline_keyboard: [
+        [
+          { text: '3', callback_data: 'button_3' },
+          { text: '5', callback_data: 'button_5' },
+          { text: '10', callback_data: 'button_10' },
         ],
-        resize_keyboard: true,
-      },
+        [
+          { text: '20', callback_data: 'button_20' },
+          { text: buttonTexts.NumberMessagesOptions[4], callback_data: 'button_35', color: 'blue' },
+        ],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
     },
-  Back:{
-    reply_markup:  {
-    keyboard: [[buttonTexts.Back]],
-    resize_keyboard: true,
-  }},
-   }
+  },
 
+  InputValue: {
+    reply_markup: {
+      force_reply: true,
+      resize_keyboard: true,
+    },
+  },
 
+  Back: {
+    reply_markup: {
+      inline_keyboard: [[{ text: buttonTexts.Back, callback_data: 'BackToSearchTypes' }]],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  },
+  FilterWithGptOrChange: {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: buttonTexts.FilterWithGpt, callback_data: 'FilterWithGpt' }],
+        [
+          { text: buttonTexts.Back, callback_data: 'BackToSearchTypes' },
+          { text: buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' },
+        ],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  },
+  BackOrOtherKeyWords: {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: buttonTexts.Back, callback_data: 'BackToSearchTypes' },
+          { text: buttonTexts.ChangeKeyWords, callback_data: 'ToOtherKeyWords' },
+        ],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  },
 
+  ShowNext: {
+    reply_markup: {
+      inline_keyboard: [[{ text: buttonTexts.ShowNext, callback_data: 'ShowNext' }]],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  },
+};
 
-
-
-
+export const menuOptions = {
+  SettingsButton: {
+    reply_markup: {
+      force_reply: true,
+      keyboard: [[buttonTexts.Settings]],
+      resize_keyboard: true,
+    },
+  },
+  SearchSettings: {
+    reply_markup: {
+      force_reply: true,
+      keyboard: [
+        [buttonTexts.ChatNamesFilter, buttonTexts.LocationsFilter, buttonTexts.DaysAgo],
+        [buttonTexts.SearchType, buttonTexts.LimitReturnedMessages],
+      ],
+      resize_keyboard: true,
+    },
+  },
+  Back: {
+    reply_markup: {
+      keyboard: [[buttonTexts.Back]],
+      resize_keyboard: true,
+    },
+  },
+};
