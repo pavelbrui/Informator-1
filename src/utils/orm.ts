@@ -10,7 +10,6 @@ const orm = async () => {
 
 export const MongOrb = await orm();
 
-
 export const getEnv = (envName: string) => {
   const envValue = process.env[envName];
   if (typeof envValue === 'undefined') {
@@ -19,22 +18,16 @@ export const getEnv = (envName: string) => {
   return envValue;
 };
 
-
-
-
-
-export async function defineCollections (collectionFilters?:string[] | null) {
+export async function defineCollections(collectionFilters?: string[] | null) {
   const client = new MongoClient(getEnv('MONGO_URL'));
   const allCollections = await client.db(getEnv('BASE_NAME')).listCollections().toArray();
-  let collections = allCollections.map((c)=>c.name)
+  let collections = allCollections.map((c) => c.name);
 
-if(collectionFilters?.length && collectionFilters[0]&&collectionFilters[0].length>0) {
-  collections = collections.filter((col) => {
+  if (collectionFilters?.length && collectionFilters[0] && collectionFilters[0].length > 0) {
+    collections = collections.filter((col) => {
       const cleanedName = cleanText(col);
-      return collectionFilters?.some(keyword => cleanText(keyword) && cleanedName.includes(cleanText(keyword)));
-      });
-   }
-console.log("_______________")
-console.log(collections)
-return collections
+      return collectionFilters?.some((keyword) => cleanText(keyword) && cleanedName.includes(cleanText(keyword)));
+    });
   }
+  return collections;
+}

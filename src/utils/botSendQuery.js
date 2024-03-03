@@ -7,13 +7,6 @@ export async function sendToServer(query) {
   });
   //console.log(todo);
   try {
-    // const response = await (await fetch("https://obeisant-advertisement-production.up.railway.app/graphql" || 'http://localhost:8080/graphql', {
-    //   method: 'POST',
-    //   body: todo,
-    //   headers: { 'Content-Type': 'application/json' },
-    // })).json();
-    // console.log("REQUEST>>");
-    // console.log(response.data.telegram.getMessagesByTags);
     const response = await (
       await fetch(dotenv.config().parsed.API_URL, {
         method: 'POST',
