@@ -53,13 +53,11 @@ export async function sendToOpenAi(messages: any[], topic: string) {
   if (returnMessages.length === 0) return [];
   //console.log(returnMessages?.slice(0, 1).map((mess: any)=>({ ...mess, text: parseText(mess?.text) || " ", from: mess.from || mess.from_id })));
 
-  return findUniqueObjects(returnMessages)
-    ?.slice(0, 1001)
-    .map((mess: any) => ({
-      ...mess,
-      text: parseTextForReturn(mess?.text) || ' ',
-      from: mess.from || mess.from_id || 'bot',
-    }));
+  return returnMessages?.slice(0, 1001).map((mess: any) => ({
+    ...mess,
+    text: parseTextForReturn(mess?.text) || ' ',
+    from: mess.from || mess.from_id || 'bot',
+  }));
 }
 
 const defaultTextGenerationOptions = {

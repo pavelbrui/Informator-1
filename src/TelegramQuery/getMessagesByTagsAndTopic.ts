@@ -22,7 +22,7 @@ export const handler = async (input: FieldResolveInput) =>
       keyWords,
       limitMessages: 30,
     });
-    const messages = await sendAllToGPT(messagesForGpt, args.topic);
+    const messages = await sendAllToGPT(messagesForGpt, args.topic, parseInt(getEnv('MAX_MESSAGES_FOR_AI')));
 
     return messages;
   })(input.arguments);

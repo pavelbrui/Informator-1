@@ -2,6 +2,7 @@ import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 import { filterMessages } from './getMessagesByTags.js';
 import { sendAllToGPT } from './getMessagesByTagsAndTopic.js';
+import { getEnv } from '../utils/orm.js';
 
 export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramQuery', 'getMessagesByTopic', async (args) => {
@@ -14,7 +15,7 @@ export const handler = async (input: FieldResolveInput) =>
       daysAgo,
       limitMessages: 30,
     });
-    const messages = await sendAllToGPT(messagesForGpt, args.topic, 500);
+    const messages = await sendAllToGPT(messagesForGpt, args.topic, parseInt(getEnv('MAX_MESSAGES_FOR_AI')));
 
     return messages;
   })(input.arguments);
