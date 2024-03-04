@@ -10,113 +10,116 @@ export async function callbackHandler(callback: any, bot: any, settings: UserSet
   const buttonTexts = buttonTextsEnv(settings[chat_id].language || 'En');
 
   const content = callback.data;
-  switch (content) {
-    case 'KeyWords':
-      await bot.sendMessage(chat_id, infoMess.writeKeyWords, options.InputValue); //, { parse_mode: 'Markdown' });
-      break;
-    case 'ToOtherKeyWords':
-      await bot.sendMessage(chat_id, infoMess.anotherKeyWords_Or_GoToStep_3, options.InputValue); //, { parse_mode: 'Markdown' });
-      break;
+  try {
+    switch (content) {
+      case 'KeyWords':
+        await bot.sendMessage(chat_id, infoMess.writeKeyWords, options.InputValue); //, { parse_mode: 'Markdown' });
+        break;
+      case 'ToOtherKeyWords':
+        await bot.sendMessage(chat_id, infoMess.anotherKeyWords_Or_GoToStep_3, options.InputValue); //, { parse_mode: 'Markdown' });
+        break;
 
-    //  case 'KeyWordsForTopic':
-    //   await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' })
-    //    await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
-    //        break
+      //  case 'KeyWordsForTopic':
+      //   await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' })
+      //    await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue)//, { parse_mode: 'Markdown' });
+      //        break
 
-    case 'Topic':
-      await bot.sendMessage(chat_id, infoMess.writeTopic, options.InputValue);
-      break;
+      case 'Topic':
+        await bot.sendMessage(chat_id, infoMess.writeTopic, options.InputValue);
+        break;
 
-    // case 'TopicWithFilters':
-    case 'FilterWithGpt':
-      await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' });
-      await bot.sendMessage(chat_id, infoMess.writeTopicAfterKeyWords, options.InputValue);
-      break;
+      // case 'TopicWithFilters':
+      case 'FilterWithGpt':
+        await bot.sendMessage(chat_id, infoMess.step_3, { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.writeTopicAfterKeyWords, options.InputValue);
+        break;
 
-    case 'Sities':
-      await bot.sendMessage(chat_id, infoMess.sities, options.InputValue);
-      break;
+      case 'Sities':
+        await bot.sendMessage(chat_id, infoMess.sities, options.InputValue);
+        break;
 
-    case 'BackToSearchTypes':
-      await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
-      await bot.sendMessage(chat_id, infoMess.startTypeSearch, options.SearchType);
-      break;
+      case 'BackToSearchTypes':
+        await bot.sendMessage(chat_id, infoMess.welcom, { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.startTypeSearch, options.SearchType);
+        break;
 
-    case 'Filters + GPT':
-      settings[chat_id].searchType = buttonTexts.FiltersGPT;
-      //delete settings.keyWords;
-      await bot.sendMessage(
-        chat_id,
-        infoMess.filtersAndGptSettings + yourSettings(settings[chat_id]),
-        menuOptions.Back,
-      );
-      await bot.sendMessage(chat_id, infoMess.step_1, { parse_mode: 'Markdown' });
-      await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt);
-      break;
+      case 'Filters + GPT':
+        settings[chat_id].searchType = buttonTexts.FiltersGPT;
+        //delete settings.keyWords;
+        await bot.sendMessage(chat_id, infoMess.filtersAndGptSettings + yourSettings(settings[chat_id]), {
+          parse_mode: 'Markdown',
+          reply_markup: menuOptions.Back.reply_markup,
+        });
+        await bot.sendMessage(chat_id, infoMess.step_1, { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.addChatNamesOrSkip, options.AddChatFilterOpt);
+        break;
 
-    case 'GPT search':
-      settings[chat_id].searchType = buttonTexts.GPTSearch;
-      //delete settings.keyWords;
-      await bot.sendMessage(chat_id, infoMess.gptTypeInfo, options.Back);
-      await bot.sendMessage(chat_id, infoMess.chatNamesFilterReq, options.InputValue);
-      break;
+      case 'GPT search':
+        settings[chat_id].searchType = buttonTexts.GPTSearch;
+        //delete settings.keyWords;
+        await bot.sendMessage(chat_id, infoMess.gptTypeInfo, options.Back);
+        await bot.sendMessage(chat_id, infoMess.chatNamesFilterReq, options.InputValue);
+        break;
 
-    case 'Filters':
-      settings[chat_id].searchType = buttonTexts.Filters;
-      settings[chat_id].limitMessages = settings[chat_id].limitMessages || 5;
-      settings[chat_id].daysAgo = settings[chat_id].daysAgo || 30;
-      await bot.sendMessage(
-        chat_id,
-        infoMess.filtersSettings + yourSettings(settings[chat_id]),
-        menuOptions.SettingsButton,
-      );
-      await bot.sendMessage(chat_id, infoMess.filtersMessage, options.Search);
-      break;
+      case 'Filters':
+        settings[chat_id].searchType = buttonTexts.Filters;
+        settings[chat_id].limitMessages = settings[chat_id].limitMessages || 5;
+        settings[chat_id].daysAgo = settings[chat_id].daysAgo || 30;
+        await bot.sendMessage(chat_id, infoMess.filtersSettings + yourSettings(settings[chat_id]), {
+          parse_mode: 'Markdown',
+          reply_markup: menuOptions.SettingsButton.reply_markup,
+        });
+        await bot.sendMessage(chat_id, infoMess.filtersMessage, options.Search);
+        break;
 
-    case 'addChatFilter':
-      await bot.sendMessage(chat_id, infoMess.chatNames, options.InputValue);
-      break;
+      case 'addChatFilter':
+        await bot.sendMessage(chat_id, infoMess.chatNames, options.InputValue);
+        break;
 
-    case 'addChatFilterOpt':
-      await bot.sendMessage(chat_id, infoMess.chatNamesFilterOpt, options.InputValue);
-      break;
-    case 'skipAddChats':
-      await bot.sendMessage(
-        chat_id,
-        infoMess.settingsNow + yourSettings(settings[chat_id]),
-        menuOptions.SettingsButton,
-      );
-      await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' });
-      await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
-      break;
+      case 'addChatFilterOpt':
+        await bot.sendMessage(chat_id, infoMess.chatNamesFilterOpt, options.InputValue);
+        break;
+      case 'skipAddChats':
+        await bot.sendMessage(chat_id, infoMess.settingsNow + yourSettings(settings[chat_id]), {
+          parse_mode: 'Markdown',
+          reply_markup: menuOptions.SettingsButton.reply_markup,
+        });
+        await bot.sendMessage(chat_id, infoMess.step_2, { parse_mode: 'Markdown' });
+        await bot.sendMessage(chat_id, infoMess.writeKeyWordsForTopic, options.InputValue);
+        break;
 
-    case 'ShowNext':
-      const limit = settings[chat_id].limitMessages;
-      const partNext = restMessages[chat_id].slice(0, limit);
-      await sendPartMessages(bot, chat_id, partNext, menuOptions.SettingsButton);
-      if (limit < restMessages[chat_id].length) {
-        restMessages[chat_id] = restMessages[chat_id].slice(limit);
-        await bot.sendMessage(
-          chat_id,
-          restMessages[chat_id].length > limit
-            ? `Next ${limit} from rest ${restMessages[chat_id].length} messages >>`
-            : `Rest ${restMessages[chat_id].length}  messages >>`,
-          options.ShowNext,
-        );
-      }
-      break;
+      case 'ShowNext':
+        const limit = settings[chat_id].limitMessages;
+        const partNext = restMessages[chat_id].slice(0, limit);
+        await sendPartMessages(bot, chat_id, partNext, menuOptions.SettingsButton);
+        if (limit < restMessages[chat_id].length) {
+          restMessages[chat_id] = restMessages[chat_id].slice(limit);
+          await bot.sendMessage(
+            chat_id,
+            restMessages[chat_id].length > limit
+              ? `Next ${limit} from rest ${restMessages[chat_id].length} messages >>`
+              : `Rest ${restMessages[chat_id].length}  messages >>`,
+            options.ShowNext,
+          );
+        }
+        break;
 
-    default:
-      if (callback.data.includes('button_')) {
-        settings[chat_id].limitMessages = callback.data?.replace('button_', '');
-        console.log(settings);
-        console.log(settings[chat_id]);
-        await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton);
-        await bot.sendMessage(chat_id, yourSettings(settings[chat_id]), options.Search);
-      }
+      default:
+        if (callback.data.includes('button_')) {
+          settings[chat_id].limitMessages = callback.data?.replace('button_', '');
+          console.log(settings);
+          console.log(settings[chat_id]);
+          await bot.sendMessage(chat_id, infoMess.settingsNow, menuOptions.SettingsButton);
+          await bot.sendMessage(chat_id, yourSettings(settings[chat_id]), {
+            parse_mode: 'Markdown',
+            reply_markup: options.Search.reply_markup,
+          });
+        }
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
-
 export interface UserSettings {
   [key: number]: SearchSettings;
 }

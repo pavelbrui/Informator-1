@@ -18,7 +18,7 @@ export function areTextsSimilar(text1: string, text2: string) {
   const similarityPercentage = (1 - distance / maxLength) * 100;
 
   // Ustaw dowolny próg podobieństwa, tutaj 95%
-  console.log('similarityPercentage_______:', similarityPercentage);
+  //console.log('similarityPercentage_______:', similarityPercentage);
   return similarityPercentage >= 95;
 }
 
@@ -50,7 +50,7 @@ export function findUniqueObjects(objects: { text: any }[]) {
     const isUnique = uniqueObjects.every(
       (obj2) => !areTextsSimilar(cleanText(parseText(obj1.text)), cleanText(parseText(obj2.text))),
     );
-    if (!isUnique) console.log(isUnique, 'text1:', obj1.text, 'obj2.text:', obj1.text);
+    if (!isUnique) console.log('____Finded dublikat message____:', obj1.text.slice(0, 30)); //'text1:', obj1.text, 'obj2.text:', obj1.text);
     if (isUnique) {
       uniqueObjects.push(obj1);
     }

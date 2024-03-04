@@ -73,6 +73,8 @@ const infoMessEn = {
   success: 'Success',
 
   anyoneMessage: 'Anyone message not found',
+  anyoneLocation: 'Anyone location not find, please change filter!',
+  anyoneChat: 'Anyone chat not find, please change filter!',
 
   authNumer: 'For getting chats, write your phone number:',
   authCode: 'Enter sms code:',
@@ -83,7 +85,7 @@ const infoMessRu = {
   startTypeSearch: '🚀 Для начала выберите тип поиска:',
   chooseOption: 'Выберите вариант:',
 
-  filtersSettings: 'Поехали! Ваши настройки сейчас: ',
+  filtersSettings: '*Поехали! Ваши настройки сейчас:* ',
   filtersMessage: 'Вы можете изменить настройки или перейти к вводу ключевых слов и запустить поиск: ',
   writeKeyWords: `**Введите ключевые слова или фрагменты\n (для вариантов используйте '/', для комбинаций используйте '&')**\n Например, если вы напишете: \n'Warszawa&Bialystok/warshaw&tomorrow'\n >> вы получите сообщения, включающие полные фрагменты "warszawa" и "bialystok" + все сообщения с фрагментом warszaw и словом tomorrow в одном тексте):`,
 
@@ -117,6 +119,8 @@ const infoMessRu = {
   success: 'Успеx',
 
   anyoneMessage: 'Сообщение не найдено',
+  anyoneLocation: 'Ни одного местоположения не найдено, пожалуйста, измените фильтр!',
+  anyoneChat: 'Ни одного чата не найдено, пожалуйста, измените фильтр!',
 
   authNumer: 'Для получения чатов напишите свой номер телефона:',
   authCode: 'Введите код из SMS:',
@@ -124,3 +128,5 @@ const infoMessRu = {
 
 export const infoMessEnv = (lang: string) => (lang === 'En' ? infoMessEn : lang === 'Ru' ? infoMessRu : infoMessEn);
 export const infoMess = infoMessEnv(getEnv('LANGUAGE'));
+
+export const clickLink = (text: string, link: string) => `[${text}](${link})`;
