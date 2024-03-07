@@ -78,6 +78,8 @@ const infoMessEn = {
 
   authNumer: 'For getting chats, write your phone number:',
   authCode: 'Enter sms code:',
+
+  findedSavedLocations: 'Success! Finded saved locations: \n',
 };
 
 const infoMessRu = {
@@ -124,6 +126,8 @@ const infoMessRu = {
 
   authNumer: 'Для получения чатов напишите свой номер телефона:',
   authCode: 'Введите код из SMS:',
+
+  findedSavedLocations: 'Успех! Найденные сохраненные местоположения: \n',
 };
 
 export const infoMessEnv = (lang: string) => (lang === 'En' ? infoMessEn : lang === 'Ru' ? infoMessRu : infoMessEn);

@@ -1,7 +1,8 @@
 import { TelegramClient } from 'telegram';
-import { MongOrb, getEnv } from './orm.js';
+import { MongOrb, defineCollections, getEnv } from './orm.js';
 import { options } from '../BOT/Options.js';
 import { infoMess } from '../BOT/Messages.js';
+import { newCollectionName } from './tools.js';
 
 export async function saveChats(bot: any, chat_id: number, chatNames: string[], city: string, maxOld?: number) {
   const date = new Date();
@@ -13,9 +14,15 @@ export async function saveChats(bot: any, chat_id: number, chatNames: string[], 
     const chats: any[] = await client.getEntity(chatNames);
     if (!chats) await bot.sendMessage(chat_id, `error ${chatNames[0]} !!!`);
 
-    //const filteredChats = chats.filter(chat => chat.title.includes('Tener'));
+    const sameCollectionNames = await defineCollections([city]);
+    const finalCollection =
+      city.length > 2
+        ? sameCollectionNames?.length
+          ? sameCollectionNames[0]
+          : newCollectionName(city)
+        : 'U_n_k_n_o_w_n';
     for (const chat of chats) {
-      const update = await saveOneChat(client, city, chat, startDate);
+      const update = await saveOneChat(client, finalCollection, chat, startDate);
       if (update) await bot.sendMessage(chat_id, `Chat ${chat.username} successfully saved!!!`);
     }
     return true;
@@ -49,7 +56,7 @@ export async function saveOneChat(
       });
     }
   }
-
+  console.log(`!!!!!!!!!! update collection: ${collection} - add chat: ${chat.title}`);
   const update = await MongOrb(collection)?.collection?.updateOne(
     { _id: chat.id.value || chat._id },
     {

@@ -116,7 +116,10 @@ export async function replyToMessageHandler(text: string, bot: any, chat_id: num
             await bot.sendMessage(chat_id, infoMess.anyoneLocation, menuOptions.SearchSettings);
           } else {
             settings[chat_id].sities = collections;
-            await bot.sendMessage(chat_id, 'Success! Finded saved locations: \n' + collections.join('\n'));
+            await bot.sendMessage(
+              chat_id,
+              infoMess.findedSavedLocations + collections.map((n) => n.split('_')[0]).join('\n'),
+            );
             const findByLocation = await findAndUpdateChats([], collections);
             settings[chat_id].chats = findByLocation?.chats;
             await bot.sendMessage(

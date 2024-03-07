@@ -1,8 +1,7 @@
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 import TelegramBot from 'node-telegram-bot-api';
-import { MongOrb, getEnv } from './../utils/orm.js';
-import { Collection } from 'mongodb';
+import { MongOrb, findCollectionWithObjectName, getEnv } from './../utils/orm.js';
 
 export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramMutation', 'startBot', async (args) => {
@@ -35,19 +34,23 @@ export const handler = async (input: FieldResolveInput) =>
         ',\n date: ',
         date,
       );
-      if (text?.length && text?.length > 1)
-        await MongOrb('Bialystok').collection.updateOne(
+      if (text?.length && text?.length > 1) {
+        const coll = (await findCollectionWithObjectName(chat_name || chat_id.toString())) || 'N_e_w';
+        const update = await MongOrb(coll).collection.updateOne(
           { _id: chat_id },
           {
             $set: { name: chat_name, updatedAt: new Date().toISOString(), isPartner: true },
             $push: { messages: { _id, message_thread_id, reply_to, from, from_id, text, date, isBot, topic } },
-            // $pull: {
-            //   messages: {
-            //     date: { $lt: deleteDate.toISOString() }
-            //   }
+            $pull: {
+              messages: {
+                date: { $lt: deleteDate.toISOString() },
+              },
+            },
           },
           { upsert: true },
         );
+        console.log(`Partner chat ${chat_name || chat_id} in ${coll} is update: `, update);
+      }
     });
 
     bot2.on('polling_error', (error) => {
@@ -56,15 +59,3 @@ export const handler = async (input: FieldResolveInput) =>
     bot2.sendMessage(839036065, `Hej! New chats started successed !`);
     return true;
   })(input.arguments);
-
-// db.chaty.update(
-//   {},
-//   {
-//     $pull: {
-//       messages: {
-//         date: { $lt: new Date(new Date() - 60 * 24 * 60 * 60 * 1000) }
-//       }
-//     }
-//   },
-//   { multi: true }
-// )

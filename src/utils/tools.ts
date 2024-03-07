@@ -1,3 +1,4 @@
+import { countryCityMap } from './files/locations.js';
 import { MongOrb } from './orm.js';
 
 function levenshteinDistance(a: string, b: string) {
@@ -61,9 +62,28 @@ export function findUniqueObjects(objects: { text: any }[]) {
 
 export async function pushError(error: any) {
   console.error('Error in message handler:', error);
-  await MongOrb('Errors').collection.updateOne(
+  await MongOrb('E_r_r_o_r_s').collection.updateOne(
     { chatName: 'errors' },
-    { $push: { errors: { error } } },
+    { $push: { errors: JSON.stringify(error) } },
     { upsert: true },
   );
+}
+
+export function newCollectionName(city: string): string {
+  try {
+    for (const country in countryCityMap) {
+      if (countryCityMap.hasOwnProperty(country)) {
+        const cities = countryCityMap[country];
+        if (cities.includes(city)) {
+          return `${city}_${country}`;
+        }
+      }
+    }
+
+    throw new Error('Nie można znaleźć danych dla podanego miasta');
+  } catch (error) {
+    // Obsługa błędów
+    console.error('Wystąpił błąd:', error.message);
+    throw error;
+  }
 }

@@ -1,6 +1,6 @@
 import { iGraphQL } from 'i-graphql';
-import { MongoClient, ObjectId } from 'mongodb';
-import { cleanText } from './tools.js';
+import { Db, MongoClient, ObjectId } from 'mongodb';
+import { cleanText, pushError } from './tools.js';
 const orm = async () => {
   return iGraphQL<Record<string, any>, { _id: () => string; createdAt: () => string }>({
     _id: () => new ObjectId().toHexString(),
@@ -30,4 +30,22 @@ export async function defineCollections(collectionFilters?: string[] | null) {
     });
   }
   return collections;
+}
+
+export async function findCollectionWithObjectName(name: string) {
+  try {
+    const collections = await defineCollections();
+    for (const collection of collections) {
+      console.log(collection);
+
+      const foundElement = await MongOrb(collection).collection.findOne({ name: name });
+      if (foundElement) {
+        return collection;
+      }
+    }
+    return null;
+  } catch (error) {
+    pushError(`Błąd podczas wyszukiwania kolekcji dla name: ${name}. Error:` + JSON.stringify(error));
+    throw error;
+  }
 }

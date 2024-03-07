@@ -3,6 +3,8 @@ import { infoMessEnv, yourSettings } from './Messages.js';
 import { buttonTextsEnv, menuOptions, options } from './Options.js';
 import { filters, gpt, gptWithFilters } from './QueryFunctions.js';
 import { saveChats } from '../utils/saveChats.js';
+import { defineCollections } from '../utils/orm.js';
+import { newCollectionName } from '../utils/tools.js';
 
 export async function otherMessagesHandler(bot: any, settings: UserSettings, chat_id: number, content?: string) {
   try {
@@ -38,13 +40,13 @@ export async function otherMessagesHandler(bot: any, settings: UserSettings, cha
       settings[chat_id].user = content.split('user ')[1];
       await filters(bot, chat_id, { ...settings[chat_id], user: content.split('user ')[1], keyWords: undefined });
     } else if (content?.includes('Get')) {
-      const chats = content.split(' ')[1]?.split('/');
-      const sity = content.split(' ')[2];
+      const chats = content.split(' ')[1]?.replaceAll('https://t.me/', '').split('/');
+      const city = content.split(' ')[2];
       const old = content.split(' ')[3] ? (content.split(' ')[3] as unknown as number) : undefined;
       if (!chats) {
         await bot.sendMessage(chat_id, 'Chats not found in message!');
       } else {
-        saveChats(bot, chat_id, chats, sity || 'Random', old || 30).catch(console.error);
+        saveChats(bot, chat_id, chats, city, old || 30).catch(console.error);
       }
     } else if (settings[chat_id].searchType) {
       switch (settings[chat_id].searchType) {
