@@ -8,8 +8,6 @@ const orm = async () => {
   });
 };
 
-export const MongOrb = await orm();
-
 export const getEnv = (envName: string) => {
   const envValue = process.env[envName];
   if (typeof envValue === 'undefined') {
@@ -38,7 +36,7 @@ export async function findCollectionWithObjectName(name: string) {
     for (const collection of collections) {
       console.log(collection);
 
-      const foundElement = await MongOrb(collection).collection.findOne({ name: name });
+      const foundElement = await MongOrb(collection).findOne({ name: name });
       if (foundElement) {
         return collection;
       }
@@ -49,3 +47,29 @@ export async function findCollectionWithObjectName(name: string) {
     throw error;
   }
 }
+
+let mongoConnection: MongoClient | undefined = undefined;
+let mongoDb: Db | undefined = undefined;
+
+async function mongo(): Promise<Db> {
+  if (!mongoDb) {
+    const mongoUrl = process.env.MONGO_URL ? process.env.MONGO_URL : 'mongodb://localhost:27017/';
+    const client = new MongoClient(mongoUrl);
+    mongoConnection = await client.connect();
+    return setDB(mongoConnection);
+  }
+  return mongoDb;
+}
+
+export async function DB() {
+  return mongo();
+}
+
+export async function setDB(conn: MongoClient, db = process.env.DB_NAME || 'centaur'): Promise<Db> {
+  mongoDb = conn.db(db);
+  //await createIndexes(mongoDb);
+  return mongoDb;
+}
+
+export const MongOrb = (await mongo()).collection;
+export const MongDb = await mongo();

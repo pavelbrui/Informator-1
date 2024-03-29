@@ -62,7 +62,7 @@ export function findUniqueObjects(objects: { text: any }[]) {
 
 export async function pushError(error: any) {
   console.error('Error in message handler:', error);
-  await MongOrb('E_r_r_o_r_s').collection.updateOne(
+  await MongOrb('E_r_r_o_r_s').updateOne(
     { chatName: 'errors' },
     { $push: { errors: JSON.stringify(error) } },
     { upsert: true },
@@ -83,7 +83,7 @@ export function newCollectionName(city: string): string {
     throw new Error('Nie można znaleźć danych dla podanego miasta');
   } catch (error) {
     // Obsługa błędów
-    console.error('Wystąpił błąd:', error.message);
+    console.error('Wystąpił błąd:' + error);
     throw error;
   }
 }

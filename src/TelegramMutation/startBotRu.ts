@@ -9,6 +9,7 @@ import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
 import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
 import { infoMessEnv, yourSettings } from '../BOT/Messages.js';
 import { pushError } from '../utils/tools.js';
+import { ObjectId } from 'mongodb';
 //export const defaultSettings = { daysAgo: 30, limitMessages: 5 }
 const infoMess = infoMessEnv('Ru');
 
@@ -36,8 +37,8 @@ export const handler = async (input: FieldResolveInput) =>
         console.log(userSettings);
 
         if (content?.length && content?.length > 1)
-          MongOrb('For_bot_Ru').collection.updateOne(
-            { _id: chat_id },
+          MongOrb('For_bot_Ru').updateOne(
+            { _id: new ObjectId(chat_id) },
             { $set: { chatName: chat_name || from }, $push: { messages: { id, from_id, content, date } } },
             { upsert: true },
           );

@@ -118,7 +118,7 @@ export async function filterMessagesOld(filters: SearchSettings) {
       },
     ];
     //console.log(aggregationPipeline);
-    const result = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
+    const result = await MongOrb(collection)?.aggregate(aggregationPipeline).toArray();
     messages = messages.concat(result);
     //console.log(result);
   }
@@ -177,7 +177,7 @@ export async function filterMessages2(filters: SearchSettings) {
       },
     ];
 
-    return await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
+    return await MongOrb(collection)?.aggregate(aggregationPipeline).toArray();
   });
 
   const results = await Promise.all(promises);
@@ -253,7 +253,7 @@ export async function filterMessages(filters: SearchSettings) {
       },
     ];
 
-    return await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
+    return await MongOrb(collection)?.aggregate(aggregationPipeline).toArray();
   });
 
   const results = await Promise.all(promises);

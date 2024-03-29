@@ -2,6 +2,7 @@ import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
 import TelegramBot from 'node-telegram-bot-api';
 import { MongOrb, findCollectionWithObjectName, getEnv } from './../utils/orm.js';
+import { ObjectId } from 'mongodb';
 
 export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramMutation', 'startBot', async (args) => {
@@ -36,8 +37,8 @@ export const handler = async (input: FieldResolveInput) =>
       );
       if (text?.length && text?.length > 1) {
         const coll = (await findCollectionWithObjectName(chat_name || chat_id.toString())) || 'N_e_w';
-        const update = await MongOrb(coll).collection.updateOne(
-          { _id: chat_id },
+        const update = await MongOrb(coll).updateOne(
+          { _id: new ObjectId(chat_id) },
           {
             $set: { name: chat_name, updatedAt: new Date().toISOString(), isPartner: true },
             $push: { messages: { _id, message_thread_id, reply_to, from, from_id, text, date, isBot, topic } },

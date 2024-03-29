@@ -1,6 +1,6 @@
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus/index.js';
-import { MongOrb, defineCollections, getEnv } from '../utils/orm.js';
+import { MongDb, MongOrb, defineCollections, getEnv } from '../utils/orm.js';
 
 import { sendToOpenAi } from '../utils/openAi.js';
 import { parseText } from '../utils/tools.js';
@@ -48,10 +48,7 @@ export async function sendAllToGPT(messagesForGpt: any[], topic: string[], max?:
   }
 
   if (messages?.length && messages?.length > 1)
-    await MongOrb('GPTResponseForTarget').createWithAutoFields(
-      '_id',
-      'createdAt',
-    )({ topic, input: messagesForGpt, response: messages });
+    await MongOrb('GPTResponseForTarget').insertOne({ topic, input: messagesForGpt, response: messages });
 
   return messages;
 }

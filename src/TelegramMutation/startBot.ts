@@ -9,11 +9,12 @@ import { replyToMessageHandler } from '../BOT/botReplyHandler.js';
 import { otherMessagesHandler } from '../BOT/botOtherMessagesHandler.js';
 import { infoMess, yourSettings } from '../BOT/Messages.js';
 import { pushError } from '../utils/tools.js';
+import { ObjectId } from 'mongodb';
 //export const defaultSettings = { daysAgo: 30, limitMessages: 5 }
 
 export const handler = async (input: FieldResolveInput) =>
   resolverFor('TelegramMutation', 'newChats', async (args) => {
-    const FinderByChats = getEnv('FinderByChats');
+    const FinderByChats = getEnv('ChatsInfoSeeker');
     const bot = new TelegramBot(FinderByChats, { polling: true });
 
     const usersSettings: UserSettings = {};
@@ -34,8 +35,8 @@ export const handler = async (input: FieldResolveInput) =>
         console.log(usersSettings);
 
         if (content?.length && content?.length > 1)
-          MongOrb('For_bot_En').collection.updateOne(
-            { _id: chat_id },
+          MongOrb('For_bot_En').updateOne(
+            { _id: new ObjectId(chat_id) },
             { $set: { chatName: chat_name || from }, $push: { messages: { id, from_id, content, date } } },
             { upsert: true },
           );

@@ -57,7 +57,7 @@ export async function saveOneChat(
     }
   }
   console.log(`!!!!!!!!!! update collection: ${collection} - add chat: ${chat.title}`);
-  const update = await MongOrb(collection)?.collection?.updateOne(
+  const update = await MongOrb(collection)?.updateOne(
     { _id: chat.id.value || chat._id },
     {
       $set: {

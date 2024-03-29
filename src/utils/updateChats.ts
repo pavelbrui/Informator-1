@@ -89,7 +89,7 @@ export async function findAndUpdateChats(
         },
       ];
 
-      const result: any[] = await MongOrb(collection)?.collection?.aggregate(aggregationPipeline).toArray();
+      const result: any[] = await MongOrb(collection)?.aggregate(aggregationPipeline).toArray();
       chats = chats.concat(
         result.map((chat) => ({
           ...chat,
