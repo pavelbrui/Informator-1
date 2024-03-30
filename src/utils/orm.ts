@@ -65,7 +65,7 @@ export async function DB() {
   return mongo();
 }
 
-export async function setDB(conn: MongoClient, db = process.env.DB_NAME || 'centaur'): Promise<Db> {
+export async function setDB(conn: MongoClient, db = process.env.BASE_NAME): Promise<Db> {
   mongoDb = conn.db(db);
   //await createIndexes(mongoDb);
   return mongoDb;
