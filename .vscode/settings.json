@@ -1,0 +1,6 @@
+{
+  "prettier.configPath": "/Users/pavelbrui/Projects/Informator-1/.prettierrc.json",
+  "prettier.endOfLine": "auto",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}

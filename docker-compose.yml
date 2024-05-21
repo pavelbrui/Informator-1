@@ -1,0 +1,23 @@
+version: '3'
+services:
+  sonapi:
+    restart: always
+    image: ${REGISTRY}:${TAG}
+    environment:
+      - VIRTUAL_HOST=${HOSTNAME}
+      - VIRTUAL_PORT=8080
+
+      - SPACES_BUCKET=${SPACES_BUCKET}
+      - MONGO_URL=${MONGO_URL}
+      - SPACES_KEY=${SPACES_KEY}
+      - SPACES_SECRET=${SPACES_SECRET}
+      - SPACES_ENDPOINT=${SPACES_ENDPOINT}
+      - SLOW=${SLOW}
+
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+    name: stack_backend
