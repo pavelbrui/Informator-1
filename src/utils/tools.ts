@@ -83,7 +83,7 @@ export function newCollectionName(city: string): string {
     throw new Error('Nie można znaleźć danych dla podanego miasta');
   } catch (error) {
     // Obsługa błędów
-    console.error('Wystąpił błąd:', error.message);
+    console.error('Wystąpił błąd:', (error as any).message);
     throw error;
   }
 }
