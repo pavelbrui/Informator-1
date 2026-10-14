@@ -11,9 +11,10 @@ console.log('====================================================');
 const port = process.env.PORT || '8080';
 console.log(`Port configured: ${port}`);
 
-// Run the GraphQL server via npm run start2 (stucco) or npm run start
+// Run stucco directly (start2) using precompiled lib/
 const serverCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const serverProcess = spawn(serverCmd, ['run', 'start'], {
+console.log('Launching Stucco GraphQL server...');
+const serverProcess = spawn(serverCmd, ['run', 'start2'], {
   stdio: 'inherit',
   shell: true,
   env: { ...process.env, PORT: port }
@@ -23,7 +24,7 @@ serverProcess.on('error', (err) => {
   console.error('Failed to spawn GraphQL server process:', err);
 });
 
-async function waitForServer(url, maxRetries = 30) {
+async function waitForServer(url, maxRetries = 60) {
   console.log(`Waiting for GraphQL server at ${url}...`);
   for (let i = 1; i <= maxRetries; i++) {
     try {
@@ -37,7 +38,7 @@ async function waitForServer(url, maxRetries = 30) {
         return true;
       }
     } catch (e) {
-      // Server warming up
+      // Waiting for stucco to bind port
     }
     await new Promise((r) => setTimeout(r, 2000));
   }
@@ -50,7 +51,9 @@ async function main() {
     await waitForServer(apiUrl);
     console.log('\n--- Triggering Telegram Bots Activation ---');
     await startBots();
-    console.log('--- Informator is fully operational ---\n');
+    console.log('====================================================');
+    console.log('✓ All Informator bots are ACTIVE & LISTENING 24/7');
+    console.log('====================================================\n');
   } catch (err) {
     console.error('Error during startup sequence:', err);
   }
