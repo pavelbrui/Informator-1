@@ -8,5 +8,4 @@ node_modules
 bot.js
 botRu.js
 boGPT.js
-getter.js
-botSendQuery.js
+getter.js
