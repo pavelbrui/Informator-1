@@ -13,6 +13,7 @@
     "start": "gecli dev",
     "build": "tsc",
     "watch": "tsc --watch",
+    "tg:login": "node src/loginTelegram.js",
     "update": "gecli codegen models && gecli schema pull && gecli codegen typings"
   },
   "author": "Pavel Brui",
@@ -45,7 +46,7 @@
     "node-fetch": "^2.6.0",
     "node-telegram-bot-api": "^0.63.0",
     "stucco-js": "^0.10.17",
-    "telegram": "^2.19.8",
+    "telegram": "^2.26.22",
     "ws": "^8.12.0"
   }
 }
