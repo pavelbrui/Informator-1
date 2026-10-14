@@ -56,6 +56,8 @@ export const handler = async (input: FieldResolveInput) =>
     bot2.on('polling_error', (error) => {
       console.log(`Polling error: ${error}`);
     });
-    bot2.sendMessage(839036065, `Hej! New chats started successed !`);
+    bot2.sendMessage(839036065, `Hej! New chats started successed !`).catch((err) => {
+      console.log('Notice: Could not send start notification to admin:', err.message);
+    });
     return true;
   })(input.arguments);

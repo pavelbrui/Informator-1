@@ -18,7 +18,9 @@ export const handler = async (input: FieldResolveInput) =>
     const bot = new TelegramBot(ChatContentFinder, { polling: true });
 
     const userSettings: any = {};
-    bot.sendMessage(839036065, `Hej! New ru chat started successed!`);
+    bot.sendMessage(839036065, `Hej! New ru chat started successed!`).catch((err) => {
+      console.log('Notice: Could not send start notification to admin:', err.message);
+    });
 
     bot.on('message', async (msg) => {
       const id = msg.message_id;
